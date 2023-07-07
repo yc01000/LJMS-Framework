@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"[
+	<!ENTITY INTEGRATION "https://iflyrestest.ibsgen.com:5120">	
+	<!ENTITY UAT "http://10.196.20.76:5205">
+	<!ENTITY STAGE "http://10.196.20.76:7105">
+	<!ENTITY PRODUCTION "http://10.196.21.203:7010">
+]>
+<properties>
+	<comment>IBS WSDL 4.4 base - BOOKING</comment>
+
+	<entry key="booking.bookingUtility.endpoint">&PRODUCTION;/iRes_Booking_WS/services/BookingUtilityPort</entry>
+	<entry key="booking.reservations.endpoint">&PRODUCTION;/iRes_Booking_WS/services/ReservationsPort</entry>
+	<entry key="booking.price.endpoint">&PRODUCTION;/iRes_Booking_WS/services/PricePort</entry>	
+	<entry key="booking.AuthenticatorService.endpoint">&PRODUCTION;/iRes_Booking_WS/services/AuthenticatorPort</entry>
+	<entry key="booking.ancillary.endpoint">&PRODUCTION;/iRes_Booking_WS/services/AncillaryPort</entry>
+	<entry key="booking.airlineQueue.endpoint">&PRODUCTION;/iRes_Booking_WS/services/AirlineQueuePort</entry>
+	<entry key="booking.agency.endpoint">&PRODUCTION;/iRes_Booking_WS/services/AgencyPort</entry>
+	<entry key="booking.giftVoucher.endpoint">&PRODUCTION;/iRes_Booking_WS/services/GiftVoucherPort</entry>
+	<entry key="booking.payment.endpoint">&PRODUCTION;/iRes_Booking_WS/services/PaymentPort</entry>
+	<entry key="booking.reports.endpoint">&PRODUCTION;/iRes_Booking_WS/services/ReportsPort</entry>	
+	<entry key="booking.customerProfile.endpoint">&PRODUCTION;/iRes_Booking_WS/services/CustomerProfilePort</entry>	
+	<entry key="booking.availability.endpoint">&PRODUCTION;/iRes_Booking_WS/services/AvailabilityPort</entry>	
+	<entry key="booking.flight.endpoint">&PRODUCTION;/iRes_Booking_WS/services//FlightPort</entry>	
+	<entry key="booking.flightInventory.endpoint">&PRODUCTION;/iRes_Booking_WS/services//FlightInventoryPort</entry>
+	
+	<entry key="booking.bookingUtility.currencyConvertor">urn:#currencyConvertor</entry>
+	<entry key="booking.bookingUtility.retrieveAirlineRegion">urn:#retrieveAirlineRegion</entry>
+	
+	<entry key="booking.reservations.adjustFlightInventory">urn:#adjustFlightInventory</entry>
+	<entry key="booking.reservations.saveCreateBooking">urn:#saveCreateBooking</entry>
+	<entry key="booking.reservations.retrieveBooking">urn:#retrieveBooking</entry>
+	<entry key="booking.reservations.cancelBooking">urn:#cancelBooking</entry>
+	<entry key="booking.reservations.sendItinerary">urn:#sendItinerary</entry>
+	<entry key="booking.reservations.modifyBooking">urn:#modifyBooking</entry>
+	<entry key="booking.reservations.saveModifyBooking">urn:#saveModifyBooking</entry>
+	<entry key="booking.reservations.retrieveNumericReferenceID">urn:#retrieveNumericReferenceID</entry>
+	<entry key="booking.reservations.extractReservation">urn:#extractReservation</entry>
+	<entry key="booking.reservations.splitReservation">urn:#splitReservation</entry>
+	<entry key="booking.reservations.rejectSc">urn:#rejectSc</entry>
+	<entry key="booking.reservations.acceptSc">urn:#acceptSc</entry>
+	<entry key="booking.reservations.acceptWl">urn:#acceptWl</entry>
+	<entry key="booking.reservations.rejectWl">urn:#rejectWl</entry>
+	<entry key="booking.reservations.retrieveTimelimitForCreate">urn:#retrieveTimelimitForCreate</entry>
+	<entry key="booking.reservations.retrieveTimelimitForModify">urn:#retrieveTimelimitForModify</entry>
+	<entry key="booking.reservations.retrieveReservationSummary">urn:#retrieveReservationSummary</entry>
+	<entry key="booking.reservations.listInsuranceProducts">urn:#listInsuranceProducts</entry>
+	<entry key="booking.reservations.retrievePnrHistory">urn:#retrievePnrHistory</entry>
+	<entry key="booking.reservations.guaranteeAncillary">urn:#guaranteeAncillary</entry>
+	<entry key="booking.reservations.releaseAncillary">urn:#releaseAncillary</entry>
+	<entry key="booking.reservations.confirmBookingSegments">urn:#confirmBookingSegments</entry>
+	
+	<entry key="booking.price.priceItinerary">urn:#priceItinerary</entry>
+	<entry key="booking.price.priceFee">urn:#priceFee</entry>
+	<entry key="booking.price.confirmPrice">urn:#confirmPrice</entry>
+	<entry key="booking.price.priceAncillary">urn:#priceAncillary</entry>
+	<entry key="booking.price.retrieveFareRuleDescription">urn:#retrieveFareRuleDescription</entry>
+	<entry key="booking.price.retrieveFeeCodes">urn:#retrieveFeeCodes</entry>
+	<entry key="booking.price.attachDiscountCoupons">urn:#attachDiscountCoupons</entry>
+	<entry key="booking.price.processFee">urn:#processFee</entry>
+	<entry key="booking.price.retrieveAccessibleFareLevels">urn:#retrieveAccessibleFareLevels</entry>
+	<entry key="booking.price.retrieveFareBasisSettings">urn:#retrieveFareBasisSettings</entry>
+	<entry key="booking.price.retrieveFareQuoteForOAndD">urn:#retrieveFareQuoteForOAndD</entry>
+	<entry key="booking.price.retrieveSsrFeeDetails">urn:#retrieveSsrFeeDetails</entry>
+	<entry key="booking.price.createGroupQuote">urn:#createGroupQuote</entry>
+	<entry key="booking.price.viewGroupQuote">urn:#viewGroupQuote</entry>
+	<entry key="booking.price.modifyGroupQuote">urn:#modifyGroupQuote</entry>
+	<entry key="booking.price.listGroupQuote">urn:#listGroupQuote</entry>
+	
+	<entry key="booking.AuthenticatorService.login">urn:#login</entry>
+	<entry key="booking.AuthenticatorService.logoff">urn:#logoff</entry>
+	<entry key="booking.AuthenticatorService.validateCustomer">urn:#validateCustomer</entry>
+	<entry key="booking.AuthenticatorService.authenticateAgentLogin">urn:#authenticateAgentLogin</entry>
+	<entry key="booking.AuthenticatorService.changeTravelAgentPassword">urn:#changeTravelAgentPassword</entry>
+	<entry key="booking.AuthenticatorService.moduleAccessRights">urn:#moduleAccessRights</entry>
+	
+	<entry key="booking.ancillary.retrieveSSRsForFlights">urn:#retrieveSSRsForFlights</entry>
+	<entry key="booking.ancillary.updateSsrInventory">urn:#updateSsrInventory</entry>
+	<entry key="booking.ancillary.retrieveSsrRule">urn:#retrieveSsrRule</entry>
+	<entry key="booking.ancillary.retriveAUXRules">urn:#retriveAUXRules</entry>
+	<entry key="booking.ancillary.retrieveAllSSRs">urn:#retrieveAllSSRs</entry>
+	<entry key="booking.ancillary.listSaleableAncillaryServices">urn:#listSaleableAncillaryServices</entry>
+	<entry key="booking.ancillary.listBaggageServices">urn:#listBaggageServices</entry>
+	
+	<entry key="booking.airlineQueue.placePnrsInQueue">urn:#placePnrsInQueue</entry>
+	<entry key="booking.airlineQueue.removeMultiplePnrsFromQueue">urn:#removeMultiplePnrsFromQueue</entry>
+	<entry key="booking.airlineQueue.viewPNRsInQueue">urn:#viewPNRsInQueue</entry>
+	
+	<entry key="booking.agency.createAgencyRegistration">urn:#createAgencyRegistration</entry>
+	<entry key="booking.agency.createTravelAgent">urn:#createTravelAgent</entry>
+	<entry key="booking.agency.retrieveAgencies">urn:#retrieveAgencies</entry>
+	<entry key="booking.agency.deactivateTravelAgent">urn:#deactivateTravelAgent</entry>
+	<entry key="booking.agency.listTravelAgents">urn:#listTravelAgents</entry>
+	<entry key="booking.agency.modifyAgencyProfile">urn:#modifyAgencyProfile</entry>
+	<entry key="booking.agency.modifyTravelAgent">urn:#modifyTravelAgent</entry>
+	<entry key="booking.agency.retrieveAgencyCredit">urn:#retrieveAgencyCredit</entry>
+	<entry key="booking.agency.retrieveAgentInvoiceDetails">urn:#retrieveAgentInvoiceDetails</entry>
+	<entry key="booking.agency.retrieveDutyCodesForAgency">urn:#retrieveDutyCodesForAgency</entry>
+	<entry key="booking.agency.retrieveFOPDetailsForAgency">urn:#retrieveFOPDetailsForAgency</entry>
+	<entry key="booking.agency.retrieveTravelAgentDetails">urn:#retrieveTravelAgentDetails</entry>
+	<entry key="booking.agency.viewAgencyProfile">urn:#viewAgencyProfile</entry>
+	<entry key="booking.agency.activateTravelAgent">urn:#activateTravelAgent</entry>
+	<entry key="booking.agency.agencyPayment">urn:#agencyPayment</entry>
+	<entry key="booking.agency.retrieveAgencyCreditHistory">urn:#retrieveAgencyCreditHistory</entry>
+	
+	<entry key="booking.giftVoucher.createGiftVoucher">urn:#createGiftVoucher</entry>
+	<entry key="booking.giftVoucher.issueGiftVoucher">urn:#issueGiftVoucher</entry>
+	<entry key="booking.giftVoucher.listGiftVouchers">urn:#listGiftVouchers</entry>
+	<entry key="booking.giftVoucher.loginVPP">urn:#loginVPP</entry>
+	<entry key="booking.giftVoucher.retrieveGCWithProfileAlias">urn:#retrieveGCWithProfileAlias</entry>
+	<entry key="booking.giftVoucher.retrieveGiftCertificateDetails">urn:#retrieveGiftCertificateDetails</entry>
+	<entry key="booking.giftVoucher.retrieveVPPDetails">urn:#retrieveVPPDetails</entry>
+	<entry key="booking.giftVoucher.voidVoucher">urn:#voidVoucher</entry>
+	<entry key="booking.giftVoucher.getTaxForGiftVoucher">urn:#getTaxForGiftVoucher</entry>
+	<entry key="booking.giftVoucher.sendGCEmail">urn:#sendGCEmail</entry>
+	
+	<entry key="booking.payment.preProcessPayment">urn:#preProcessPayment</entry>
+	<entry key="booking.payment.retrieveAgencyCreditFileDtls">urn:#retrieveAgencyCreditFileDtls</entry>
+	<entry key="booking.payment.retrieveCreditFile">urn:#retrieveCreditFile</entry>
+	<entry key="booking.payment.retrieveCreditFileBalance">urn:#retrieveCreditFileBalance</entry>
+	<entry key="booking.payment.retrievePaymentReceipt">urn:#retrievePaymentReceipt</entry>
+	<entry key="booking.payment.reverseCreditFiles">urn:#reverseCreditFiles</entry>
+	<entry key="booking.payment.transferCredits">urn:#transferCredits</entry>
+	<entry key="booking.payment.postProcessPayment">urn:#postProcessPayment</entry>
+	<entry key="booking.payment.retrieveChannelFOPConfigs">urn:#retrieveChannelFOPConfigs</entry>
+	
+	<entry key="booking.reports.bimonthlySalesDetailedReport">urn:#bimonthlySalesDetailedReport</entry>
+	<entry key="booking.reports.bimonthlySalesReportEmail">urn:#bimonthlySalesReportEmail</entry>
+	<entry key="booking.reports.bimonthlySalesSummaryReport">urn:#bimonthlySalesSummaryReport</entry>
+	<entry key="booking.reports.retrieveAgencySalesReport">urn:#retrieveAgencySalesReport</entry>
+	<entry key="booking.reports.listAgentInvoice">urn:#listAgentInvoice</entry>
+	<entry key="booking.reports.getAgencyStatementOfAccount">urn:#getAgencyStatementOfAccount</entry>
+	
+	<entry key="booking.customerProfile.createCustomerProfile">urn:#createCustomerProfile</entry>
+	<entry key="booking.customerProfile.retrieveCustomerBookedList">urn:#retrieveCustomerBookedList</entry>
+	<entry key="booking.customerProfile.deactivateCustomerProfile">urn:#deactivateCustomerProfile</entry>
+	<entry key="booking.customerProfile.getNewsLetterSubscriptionInfo">urn:#getNewsLetterSubscriptionInfo</entry>
+	<entry key="booking.customerProfile.listCustomerProfile">urn:#listCustomerProfile</entry>
+	<entry key="booking.customerProfile.modifyCustomerProfile">urn:#modifyCustomerProfile</entry>
+	<entry key="booking.customerProfile.resetLoyaltyPassword">urn:#resetLoyaltyPassword</entry>
+	<entry key="booking.customerProfile.setLoyaltyPassword">urn:#setLoyaltyPassword</entry>
+	<entry key="booking.customerProfile.subscribeAirlineNewsletter">urn:#subscribeAirlineNewsletter</entry>
+	<entry key="booking.customerProfile.validateLoyalty">urn:#validateLoyalty</entry>
+	<entry key="booking.customerProfile.viewCustomerProfile">urn:#viewCustomerProfile</entry>
+	<entry key="booking.customerProfile.viewCustomerProfileViaWeb">urn:#viewCustomerProfileViaWeb</entry>
+	<entry key="booking.customerProfile.validateDuplicateCustomerProfile">urn:#validateDuplicateCustomerProfile</entry>
+	
+	<entry key="booking.availability.getAirAvailability">urn:#getAirAvailability</entry>
+	<entry key="booking.availability.getEnhancedAirAvailability">urn:#getEnhancedAirAvailability</entry>
+	<entry key="booking.availability.getTimeTable">urn:#getTimeTable</entry>
+	<entry key="booking.availability.getAllOandDPairs">urn:#getAllOandDPairs</entry>
+	<entry key="booking.availability.retrieveCalendarFares">urn:#retrieveCalendarFares</entry>
+	<entry key="booking.availability.computeAvailabilityDisplayPrice">urn:#computeAvailabilityDisplayPrice</entry>
+	
+	<entry key="booking.flight.getFlightInformation">urn:#getFlightInformation</entry>
+	<entry key="booking.flight.getFlightDataElements">urn:#getFlightDataElements</entry>
+	<entry key="booking.flight.getFlightSchedule">urn:#getFlightSchedule</entry>
+	<entry key="booking.flight.getThroughFlightDetails">urn:#getThroughFlightDetails</entry>
+	<entry key="booking.flight.retrieveFlightManifest">urn:#retrieveFlightManifest</entry>
+	<entry key="booking.flight.retrievePassengerManifest">urn:#retrievePassengerManifest</entry>
+	<entry key="booking.flight.validateMinConnectionTime">urn:#validateMinConnectionTime</entry>
+	<entry key="booking.flight.showSeatMap">urn:#showSeatMap</entry>
+	
+	<entry key="booking.flightInventory.retrieveStandbyInventoryCount">urn:#retrieveStandbyInventoryCount</entry>
+	<entry key="booking.flightInventory.retrieveGroupSeatInventoryCount">urn:#retrieveGroupSeatInventoryCount</entry>
+		 
+</properties>

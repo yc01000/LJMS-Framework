@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.lj.core.common.login.mapper.LoginAuthMapper">
+	
+	<update id="updateLoginHst" parameterType="com.lj.core.common.login.vo.TBLoginHstVO">
+        /*com.lj.core.common.login.mapper.LoginAuthMapper.updateLoginHst*/
+        UPDATE TB_LOGIN_HST
+        SET LOGOUT_DTTM = #{logoutDttm}
+        WHERE TO_CHAR(LOGIN_DTTM,'YYYYMMDD') = TO_CHAR(#{loginDttm},'YYYYMMDD')
+        AND USR_ID = #{usrId}
+        AND LOGOUT_DTTM IS NULL
+    </update>
+	
+	<insert id="insertLoginHst" parameterType="com.lj.core.common.login.vo.TBLoginHstVO">
+	/* com.lj.core.common.login.mapper.LoginAuthMapper.insertLoginHst */
+	<selectKey resultType="long" keyProperty="hstSeq" order="BEFORE">
+		SELECT SQ_LOGIN_HST.NEXTVAL FROM DUAL
+	</selectKey>
+		INSERT INTO TB_LOGIN_HST (
+			HST_SEQ,
+			USR_ID,
+			LOGIN_IP,
+			LOGIN_DTTM,
+			LOGIN_CHNL_CD,
+			LOGOUT_DTTM,
+			ACS_DVC
+		) VALUES (
+			#{hstSeq},
+			#{usrId},
+			#{loginIp},
+			#{loginDttm},
+			#{loginChnlCd},
+			#{logoutDttm},
+			#{acsDvc}
+		) 
+	</insert>
+</mapper>
+

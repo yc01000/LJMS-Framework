@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>IBS WSDL 4.4 base - INVENTORY</comment>
+	<entry key="inventory.realTimeInventory.endpoint">http://10.196.20.76:7105/iRes_Inventory_WS/services/RealTimeInventoryPort</entry>
+	
+	
+	<entry key="inventory.realTimeInventory.getRealTimeInventories">urn:#getRealTimeInventories</entry>
+	<entry key="inventory.realTimeInventory.updateRealTimeInventory">urn:#updateRealTimeInventory</entry>
+</properties>

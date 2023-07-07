@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"[
+	<!ENTITY INTEGRATION "https://iflyrestest.ibsgen.com:5120">	
+	<!ENTITY UAT "http://10.196.20.76:5205">
+	<!ENTITY STAGE "http://10.196.20.76:7105">
+	<!ENTITY PRODUCTION "http://10.196.21.203:7010">
+]>
+<properties>
+	<comment>IBS WSDL 4.4 base - INVENTORY</comment>
+	<entry key="inventory.realTimeInventory.endpoint">&PRODUCTION;/iRes_Inventory_WS/services/RealTimeInventoryPort</entry>
+	
+	
+	<entry key="inventory.realTimeInventory.getRealTimeInventories">urn:#getRealTimeInventories</entry>
+	<entry key="inventory.realTimeInventory.updateRealTimeInventory">urn:#updateRealTimeInventory</entry>
+</properties>

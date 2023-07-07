@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>integration soap error message</comment>	
+	<entry key="INT.SUCESS.RESPONSE">JTRS000</entry>
+	<entry key="SOAP.SUCESS.RESPONSE">JTRS000</entry>
+	
+	<entry key="INT.ERR.SOAPFAULT">JTRS101</entry>	
+	
+	<entry key="INT.ERR.EXCEPTION">JTRS201</entry>
+	<entry key="INT.ERR.CERTIFICATION">JTRS202</entry>
+	
+	<entry key="INT.ERR.PARAMETER.ERR">JTRS301</entry>
+	<entry key="INT.ERR.NOTREGISTERED.SYSTEM">JTRS302</entry>
+			
+	<entry key="INT.FIELD.RES.CODE">resultCode</entry>
+	<entry key="INT.FIELD.RES.MSG">resultString</entry>
+	
+	<!-- GPS API CLIENT PROPERTIES -->
+	<entry key="gps.authorization.endpoint">http://gpsstg.jinair.com/api/transaction</entry>
+	<entry key="gps.authorization.authorization">http://payment.lj.com/AuthorizationWSDL/Authorization</entry>
+	<entry key="gps.authorization.cancelrefund">http://payment.lj.com/AuthorizationWSDL/CancelRefund</entry>
+	<!-- <entry key=""></entry>	 -->
+</properties>

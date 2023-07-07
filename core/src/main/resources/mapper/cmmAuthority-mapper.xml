@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lj.core.common.authority.AuthorityMapper">
+
+	<!-- 시스템 상세 조회 -->
+	<select id="selectSystem" parameterType="int" resultType="com.lj.core.common.authority.vo.SystemInfoVO">
+        /* com.lj.core.common.authority.AuthorityMapper.selectSystem */
+        SELECT
+        SYS_NO
+        , SYS_URL
+        , ST_SEQ
+        , USE_YN
+        , RGST_DTTM
+        , RGTNT_ID
+        , RGST_IP
+        , RGST_CHNL_CD
+        , UPD_DTTM
+        , UPDR_ID
+        , UPD_IP
+        , UPD_CHNL_CD
+        FROM TB_SYS
+        WHERE SYS_NO = #{sysNo}
+    </select>
+
+	<!-- 시스템 명 목록 조회 -->
+	<select id="selectSystemNameList" parameterType="com.lj.core.common.authority.vo.SystemNameInfoVO"
+			resultType="com.lj.core.common.authority.vo.SystemNameInfoVO">
+		/* com.lj.core.common.authority.AuthorityMapper.selectSystemNameList */
+		SELECT
+				  SYS_NO
+				, LANG_CD
+				, SYS_NM
+				, RGST_DTTM
+				, RGTNT_ID
+				, RGST_IP
+				, RGST_CHNL_CD
+		  FROM	TB_SYS_NM
+		<where>
+			SYS_NO = #{sysNo}
+			<if test='null != langCd and !"".equals(langCd)'>
+				AND LANG_CD = #{langCd}
+			</if>
+		</where>
+	</select>
+
+	<!-- 시스템 언어 목록 조회 -->
+	<select id="selectSystemLanguageList" parameterType="com.lj.core.common.authority.vo.SystemLanguageInfoVO"
+			resultType="com.lj.core.common.authority.vo.SystemLanguageInfoVO">
+		/* com.lj.core.common.authority.AuthorityMapper.selectSystemLanguageList */
+		SELECT
+				  SYS_NO
+				, LANG_CD
+				, RGST_DTTM
+				, RGTNT_ID
+				, RGST_IP
+				, RGST_CHNL_CD
+		  FROM	TB_SYS_LANG
+		<where>
+			SYS_NO = #{sysNo}
+			<if test='null != langCd and !"".equals(langCd)'>
+				AND LANG_CD = #{langCd}
+			</if>
+		</where>
+	</select>
+
+	<!-- 사용자 권한 목록 조회 -->
+	<select id="selectUserAuthorityList" parameterType="com.lj.core.common.authority.vo.UserAuthorityInfoVO"
+			resultType="com.lj.core.common.authority.vo.UserAuthorityInfoVO">
+		/* com.lj.core.common.authority.AuthorityMapper.selectUserAuthorityList */
+		SELECT
+				  SYS.SYS_NO
+				, SNM.SYS_NM
+				, SYS.SYS_URL
+				, MNU.MNU_NO
+				, MNM.MNU_NM
+				, SYS_CONNECT_BY_PATH(MNM.MNU_NM, '$$') AS MNU_NM_PATH
+				, MNU.MNU_URL
+				, MNU.MNU_IMG_NM
+				, UAT.ATHRT_VLUS
+		  FROM	TB_SYS SYS
+				JOIN TB_MNU MNU ON SYS.SYS_NO = MNU.SYS_NO AND MNU.USE_YN = 'Y'
+				LEFT JOIN TB_SYS_NM SNM ON SYS.SYS_NO = SNM.SYS_NO AND SNM.LANG_CD = #{langCd}
+				LEFT JOIN TB_MNU_NM MNM ON MNU.MNU_NO = MNM.MNU_NO AND MNM.LANG_CD = #{langCd}
+				JOIN (
+						SELECT
+								  MNU_NO
+								, LISTAGG(ATHRT_VLU, '|') WITHIN GROUP (ORDER BY ATHRT_VLU) ATHRT_VLUS
+						  FROM (
+								<if test='0 == grpNo or -1 == grpNo'>
+								SELECT
+										  UAT.MNU_NO
+										, UAT.ATHRT_VLU
+								  FROM	TB_USR_ATHRT UAT
+								 WHERE	UAT.USR_ID = #{usrId}
+								   AND	UAT.ATHRT_VLU != 0
+								</if>
+								<if test='0 == grpNo'>
+								 UNION
+								</if>
+								<if test='-1 != grpNo'>
+								SELECT
+										  GAT.MNU_NO
+										, NVL(GAT.ATHRT_VLU, 0) AS ATHRT_VLU
+								  FROM	TB_USR_ATHRT UAT
+										JOIN TB_GRP GRP ON GRP.USE_YN = 'Y' AND UAT.GRP_NO = GRP.GRP_NO
+										LEFT JOIN TB_GRP_ATHRT GAT ON UAT.GRP_NO = GAT.GRP_NO
+								 WHERE	UAT.USR_ID = #{usrId}
+								   AND	NVL(GAT.ATHRT_VLU, 0) != 0
+								   <if test='0 != grpNo'>
+								   AND	UAT.GRP_NO = #{grpNo}
+								   </if>
+								</if>
+							   )
+						 GROUP BY MNU_NO
+					 ) UAT ON MNU.MNU_NO = UAT.MNU_NO
+		 WHERE SYS.USE_YN = 'Y'
+		 START WITH MNU.HI_MNU_NO IS NULL
+	   CONNECT BY PRIOR MNU.MNU_NO = MNU.HI_MNU_NO
+		 ORDER SIBLINGS BY SYS.SYS_NO ASC, MNU.ST_SEQ ASC
+	</select>
+
+	<!-- 사용자 권한 조회 -->
+	<select id="selectUserAuthorityListForMenu" parameterType="com.lj.core.common.authority.vo.UserAuthorityInfoVO"
+			resultType="com.lj.core.common.authority.vo.UserAuthorityInfoVO">
+        /* com.lj.core.common.authority.AuthorityMapper.selectUserAuthorityListForMenu */
+        SELECT
+        SYS.SYS_NO
+        , MNU.HI_MNU_NO
+        , MNU.MNU_NO
+        , MNM.MNU_NM
+        , MNU.MNU_URL
+        , MNU.MNU_IMG_NM
+        , UAT.ATHRT_VLUS
+        FROM TB_SYS SYS
+        JOIN TB_MNU MNU ON SYS.SYS_NO = MNU.SYS_NO AND MNU.USE_YN = 'Y' AND MNU.MNU_URL LIKE #{mnuUrl} || '%'
+        LEFT JOIN TB_MNU_NM MNM ON MNU.MNU_NO = MNM.MNU_NO AND MNM.LANG_CD = #{langCd}
+        JOIN (
+        SELECT
+        MNU_NO
+        , LISTAGG(ATHRT_VLU, '|') WITHIN GROUP (ORDER BY ATHRT_VLU) ATHRT_VLUS
+        FROM (
+        SELECT
+        UAT.MNU_NO
+        , UAT.ATHRT_VLU
+        FROM TB_USR_ATHRT UAT
+        WHERE UAT.USR_ID = #{usrId}
+        AND UAT.ATHRT_VLU != 0
+        UNION
+        SELECT
+        GAT.MNU_NO
+        , NVL(GAT.ATHRT_VLU, 0) AS ATHRT_VLU
+        FROM TB_USR_ATHRT UAT
+        JOIN TB_GRP GRP ON GRP.USE_YN = 'Y' AND UAT.GRP_NO = GRP.GRP_NO
+        LEFT JOIN TB_GRP_ATHRT GAT ON UAT.GRP_NO = GAT.GRP_NO
+        WHERE UAT.USR_ID = #{usrId}
+        AND NVL(GAT.ATHRT_VLU, 0) != 0
+        )
+        GROUP BY MNU_NO
+        ) UAT ON MNU.MNU_NO = UAT.MNU_NO
+        WHERE SYS.SYS_NO = #{sysNo}
+        AND SYS.USE_YN = 'Y'
+    </select>
+
+	<!-- 메뉴 정보 조회 -->
+	<select id="selectMenuList" parameterType="com.lj.core.common.authority.vo.MenuInfoVO"
+			resultType="com.lj.core.common.authority.vo.MenuInfoVO">
+		/* com.lj.core.common.authority.AuthorityMapper.selectMenuList */
+		SELECT
+				  SYS.SYS_NO
+				, SNM.SYS_NM
+				, SYS.SYS_URL
+				, MNU.MNU_NO
+				, MNM.MNU_NM
+				, MNU.MNU_URL
+				, MNU.MNU_IMG_NM
+				, (SELECT COUNT(*) FROM TB_MNU WHERE HI_MNU_NO = MNU.MNU_NO AND MNU_TYP_CD = 'MENU') AS SUB_MNU_CNT
+		  FROM	TB_SYS SYS
+				JOIN TB_MNU MNU ON SYS.SYS_NO = MNU.SYS_NO AND MNU.USE_YN = 'Y' AND MNU.MNU_TYP_CD = 'MENU'
+					<if test='null == hiMnuNo or 0 == hiMnuNo'>
+						AND MNU.HI_MNU_NO IS NULL
+					</if>
+					<if test='null != hiMnuNo and 0 != hiMnuNo'>
+						AND MNU.HI_MNU_NO = #{hiMnuNo}
+					</if>
+				LEFT JOIN TB_SYS_NM SNM ON SYS.SYS_NO = SNM.SYS_NO AND SNM.LANG_CD = #{langCd}
+				LEFT JOIN TB_MNU_NM MNM ON MNU.MNU_NO = MNM.MNU_NO AND MNM.LANG_CD = #{langCd}
+		 WHERE	SYS.SYS_NO = #{sysNo}
+		   AND	MNU.MNU_NO IN (
+					SELECT
+							  UAT.MNU_NO
+					  FROM	TB_USR_ATHRT UAT
+					 WHERE	UAT.USR_ID = #{usrId}
+					   AND	UAT.ATHRT_VLU != 0
+					 UNION
+					SELECT
+							  GAT.MNU_NO
+					  FROM	TB_USR_ATHRT UAT
+							JOIN TB_GRP GRP ON GRP.USE_YN = 'Y' AND UAT.GRP_NO = GRP.GRP_NO
+							LEFT JOIN TB_GRP_ATHRT GAT ON UAT.GRP_NO = GAT.GRP_NO
+					 WHERE	UAT.USR_ID = #{usrId}
+					   AND	NVL(GAT.ATHRT_VLU, 0) != 0
+				)
+		 ORDER BY MNU.ST_SEQ ASC
+	</select>
+
+	<!-- 시스템 접근 이력 저장 -->
+	<insert id="insertSystemAccessHistory" parameterType="com.lj.core.common.authority.vo.TBSystemAccessHistoryVO">
+		/* com.lj.core.common.authority.AuthorityMapper.insertSystemAccessHistory */
+		<selectKey resultType="long" keyProperty="hstSeq" order="BEFORE">
+			SELECT SQ_CMM_SYS_ACS_HST.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO TB_CMM_SYS_ACS_HST (
+			  HST_SEQ
+			, SYS_NO
+			, MNU_NO
+			, ATHRT_VLU
+			, ACS_URL
+			, RJCT_RZN
+			, ACS_YN
+			, RGST_DTTM
+			, RGTNT_ID
+			, RGST_IP
+			, RGST_CHNL_CD
+		) VALUES (
+			  #{hstSeq}
+			, #{sysNo}
+			, #{mnuNo}
+			, #{athrtVlu}
+			, #{acsUrl}
+			, #{rjctRzn}
+			, #{acsYn}
+			, #{rgstDttm}
+			, #{rgtntId}
+			, #{rgstIp}
+			, #{rgstChnlCd}
+		)
+	</insert>
+</mapper>

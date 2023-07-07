@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>dev environment properties</comment>
+	<entry key="LJ.SystemType">DEVELOPMENT</entry>	
+
+	<entry key="cmm.msg.valid.require">[{0}] 을(를) 입력해 주세요.</entry>
+	<entry key="cmm.msg.valid.minlength">[{0}] 은(는) 최소 {1}자 이상 입력 가능합니다.</entry>
+	<entry key="cmm.msg.valid.maxlength">[{0}] 은(는) 최대 {1}자까지 입력 가능합니다.</entry>
+	<entry key="cmm.msg.valid.notcorrect">[{0}] 이(가) 올바른 형식이 아닙니다.</entry>
+	<entry key="cmm.msg.valid.date">올바른 날짜를 입력하십시오.</entry>
+	<entry key="cmm.msg.valid.duringdate">시작 날짜가 종료 날짜보다 늦습니다.</entry>
+	<entry key="cmm.msg.valid.id">아이디는 영문 또는 영숫자로 6 ~ 20 글자입니다.</entry>
+	<entry key="cmm.msg.valid.equal">[{0}] 와(과) [{1}] 이(가) 일치하지 않습니다.</entry>
+	<entry key="cmm.msg.valid.select">[{0}] 을(를) 선택해 주세요.</entry>
+	<entry key="cmm.msg.alert.capson">Caps Lock 이 켜져 있습니다.</entry>
+
+	<entry key="cmm.msg.alert.notexist">[{0}] 이(가) 존재하지 않습니다.</entry>
+	<entry key="cmm.msg.alert.saveok">[{0}] 을(를) 정상적으로 저장하였습니다.</entry>
+	<entry key="cmm.msg.alert.exist">이미 존재하는 [{0}]입니다.</entry>
+	<entry key="cmm.msg.alert.error">서버 에러 발생</entry>
+	<entry key="cmm.msg.alert.unuseok">미사용 처리되었습니다.</entry>
+	<entry key="cmm.msg.alert.deleteok">[{0}] 을(를) 삭제하였습니다.</entry>
+	<entry key="cmm.msg.alert.goportal">개인환경설정은 포탈 메인화면에서만 처리 가능합니다.</entry>
+
+	<entry key="cmm.msg.confirm.cancel">취소하시겠습니까?</entry>
+	<entry key="cmm.msg.confirm.unuse">[{0}]은(는) 삭제되지 않고 미사용 처리됩니다.&#10;계속하시겠습니까?</entry>
+	<entry key="cmm.msg.confirm.useUnuse">[{0}]은(는) 사용/미사용 처리됩니다.&#10;계속하시겠습니까?</entry>
+	<entry key="cmm.msg.confirm.delete">삭제하시겠습니까?</entry>
+
+	<entry key="cmm.msg.btn.search">검색</entry>
+	<entry key="cmm.msg.btn.read">읽기</entry>
+	<entry key="cmm.msg.btn.write">쓰기</entry>
+	<entry key="cmm.msg.btn.regist">등록</entry>
+	<entry key="cmm.msg.btn.modify">수정</entry>
+	<entry key="cmm.msg.btn.update">수정</entry>
+	<entry key="cmm.msg.btn.add">추가</entry>
+	<entry key="cmm.msg.btn.delete">삭제</entry>
+	<entry key="cmm.msg.btn.save">저장</entry>
+	<entry key="cmm.msg.btn.cancel">취소</entry>
+	<entry key="cmm.msg.btn.close">닫기</entry>
+	<entry key="cmm.msg.btn.confirm">확인</entry>
+	<entry key="cmm.msg.btn.yes">예</entry>
+	<entry key="cmm.msg.btn.no">아니오</entry>
+	<entry key="cmm.msg.btn.login">로그인</entry>
+	<entry key="cmm.msg.btn.logout">로그아웃</entry>
+	<entry key="cmm.msg.btn.prev">이전</entry>
+	<entry key="cmm.msg.btn.next">다음</entry>
+	<entry key="cmm.msg.btn.resetPwd">비밀번호 재발급</entry>
+	<entry key="cmm.msg.btn.detail">상세보기</entry>
+	<entry key="cmm.msg.btn.main">메인</entry>
+	<entry key="cmm.msg.btn.findpw">비밀번호 찾기</entry>
+	<entry key="cmm.msg.btn.dupcheck">중복확인</entry>
+	<entry key="cmm.msg.btn.post">우편번호 검색</entry>
+	<entry key="cmm.msg.btn.join">회원가입</entry>
+	<entry key="cmm.msg.btn.approval">승인</entry>
+	<entry key="cmm.msg.btn.refusal">거절</entry>
+	<entry key="cmm.msg.btn.secession">탈퇴</entry>
+	<entry key="cmm.msg.btn.reserve">예약하기</entry>
+	<entry key="cmm.msg.btn.homepage">홈페이지</entry>
+	<entry key="cmm.msg.btn.directGo">바로가기</entry>
+	<entry key="cmm.msg.btn.download">다운로드</entry>
+	<entry key="cmm.msg.btn.downloadPdf">PDF 다운로드</entry>
+	<entry key="cmm.msg.btn.downloadExcel">엑셀 다운로드</entry>
+	<entry key="cmm.msg.btn.payment">결제</entry>
+	<entry key="cmm.msg.btn.pwchange">비밀번호 변경</entry>
+	<entry key="cmm.msg.btn.reset">초기화</entry>
+	<entry key="cmm.msg.btn.chkdelete">선택 삭제</entry>
+	<entry key="cmm.msg.btn.list">목록</entry>
+	<entry key="cmm.msg.btn.print">인쇄</entry>
+	<entry key="cmm.msg.btn.send">발송</entry>
+	<entry key="cmm.msg.btn.submit">제출</entry>
+	<entry key="cmm.msg.btn.change">변경</entry>
+	<entry key="cmm.msg.btn.set">설정</entry>
+	<entry key="cmm.msg.btn.moreEvent">더 많은 이벤트 보기</entry>
+
+	<entry key="cmm.msg.lbl.all">전체</entry>
+	<entry key="cmm.msg.lbl.select">선택</entry>
+	<entry key="cmm.msg.lbl.system">시스템</entry>
+	<entry key="cmm.msg.lbl.screen">화면</entry>
+	<entry key="cmm.msg.lbl.useYn">사용여부</entry>
+	<entry key="cmm.msg.lbl.pageFirst">첫 페이지</entry>
+	<entry key="cmm.msg.lbl.stSeq">정렬 순서</entry>
+	<entry key="cmm.msg.lbl.pagePrev">이전 {0} 페이지</entry>
+	<entry key="cmm.msg.lbl.page">{0} 페이지</entry>
+	<entry key="cmm.msg.lbl.pageNext">다음 {0} 페이지</entry>
+	<entry key="cmm.msg.lbl.pageLast">마지막 페이지</entry>
+	<entry key="cmm.msg.lbl.no">번호</entry>
+	<entry key="cmm.msg.lbl.seq">순번</entry>
+	<entry key="cmm.msg.lbl.regUsr">생성자</entry>
+	<entry key="cmm.msg.lbl.regDtm">생성일시</entry>
+	<entry key="cmm.msg.lbl.atchFile">첨부파일</entry>
+	<entry key="cmm.msg.lbl.fileAtch">파일첨부</entry>
+	<entry key="cmm.msg.lbl.imageFile">사진파일</entry>
+	<entry key="cmm.msg.lbl.copy">복사</entry>
+	<entry key="cmm.msg.lbl.copyCtn">내용 복사</entry>
+	<entry key="cmm.msg.lbl.alert">알림</entry>
+	<entry key="cmm.msg.lbl.required">필수</entry>
+	
+	<entry key="cmm.msg.lbl.activeProfile"><![CDATA[
+		<span style="font-size: 20px;color:red;"><b>{0} 환경에서 사용중입니다.</b></span>
+	]]></entry>
+	
+	<entry key="cmm.msg.upload.dragDropStr"><![CDATA[
+		<span style="font-size: 20px; padding-left: 20px;"><b>여기에 파일을 드래그 &amp; 드롭하세요.</b></span>
+	]]></entry>
+	<entry key="cmm.msg.upload.dragDropCountStr"><![CDATA[
+		<span style="font-size: 20px; padding-left: 20px;"><b>여기에 파일을 드래그 &amp; 드롭하세요. &nbsp; (Max file count : {0})</b></span>
+	]]></entry>
+	<entry key="cmm.msg.upload.countStr"><![CDATA[
+		<span style="font-size: 20px; padding-left: 20px;"><b>Max file count : {0}</b></span>
+	]]></entry>
+	<entry key="cmm.msg.upload.uploadStr">파일찾기...</entry>
+	<entry key="cmm.msg.upload.abortStr">중지</entry>
+	<entry key="cmm.msg.upload.cancelStr">취소</entry>
+	<entry key="cmm.msg.upload.deleteStr">삭제</entry>
+	<entry key="cmm.msg.upload.doneStr">완료</entry>
+	<entry key="cmm.msg.upload.multiDragErrorStr">여러 파일의 드래그 &amp; 드롭은 허용하지 않습니다.</entry>
+	<entry key="cmm.msg.upload.extErrorStr"><![CDATA[파일의 확장자는 허용하지 않습니다.<br/>업로드 가능한 확장자 : ]]></entry>
+	<entry key="cmm.msg.upload.duplicateErrorStr"><![CDATA[파일은 허용하지 않습니다.<br/>동일한 이름의 파일이 존재합니다.]]></entry>
+	<entry key="cmm.msg.upload.sizeErrorStr"><![CDATA[파일은 허용하지 않습니다.<br/>업로드 가능한 파일의 최대 크기 : ]]></entry>
+	<entry key="cmm.msg.upload.uploadErrorStr">파일 업로드를 허용하지 않습니다.</entry>
+	<entry key="cmm.msg.upload.maxFileCountErrorStr"><![CDATA[파일은 허용하지 않습니다.<br/>업로드 가능한 파일의 최대 갯수 : ]]></entry>
+	<entry key="cmm.msg.upload.downloadStr">다운로드</entry>
+	<entry key="cmm.msg.file.imageUpload">사진 업로드</entry>
+	<entry key="cmm.msg.file.fileUpload">파일 업로드</entry>
+
+	<entry key="cmm.msg.error.pageNotFound">페이지를 찾을 수 없습니다.</entry>
+	<entry key="cmm.msg.error.systemError"><![CDATA[
+		죄송합니다.<br/>시스템 오류가 발생하였습니다.
+	]]></entry>
+	<entry key="cmm.msg.error.badRequest">잘못된 접근입니다.</entry>
+	<entry key="cmm.msg.error.contact"><![CDATA[
+		서비스 이용에 불편을 드려 죄송합니다.<br/>
+		궁금한 사항이 있으시면 언제든지 <a href="mailto:selbpx@jinair.com" style="vertical-align: initial;">진에어 IT전략팀 (selbpx@jinair.com)</a>으로
+		<br/>문의하시기 바랍니다. &nbsp;감사합니다.
+	]]></entry>
+	<entry key="cmm.msg.error.goMain">메인으로 이동</entry>
+	<entry key="cmm.msg.error.goPrev">이전 화면으로 가기</entry>
+	
+	<entry key="cmm.msg.error.sessionTimeout">세션이 만료되었습니다</entry>
+	<entry key="cmm.msg.lbl.logoutConfirm"><![CDATA[로그아웃하시면 SSO Portal에서도  로그아웃됩니다.<br/>진행하시겠습니까?]]></entry>
+	
+	
+	<entry key="cmm.msg.lbl.snsCancelConfirm"><![CDATA[SNS 연동을 취소하시겠습니까?]]></entry>
+</properties>

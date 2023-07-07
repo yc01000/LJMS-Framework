@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lj.core.common.file.FileMapper">
+	<!-- 첨부 파일 저장 -->
+	<insert id="insertAttachFile" parameterType="com.lj.core.common.file.vo.TBAttachFileVO">
+		/* com.lj.core.common.file.FileMapper.insertAttachFile */
+		<selectKey resultType="long" keyProperty="flNo" order="BEFORE">
+			SELECT SQ_CMM_ATCH_FL.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO TB_CMM_ATCH_FL (
+			  FL_NO
+			, SAV_PTH
+			, PBLC_SAV_PTH
+			, ORGL_FL_NM
+			, SAV_FL_NM
+			, FL_SZ
+			, ORGL_FL_EXT
+			, RGST_DTTM
+			, RGTNT_ID
+			, RGST_IP
+			, RGST_CHNL_CD
+		) VALUES (
+			  #{flNo}
+			, #{savPth}
+			, #{pblcSavPth}
+			, #{orglFlNm}
+			, #{savFlNm}
+			, #{flSz}
+			, #{orglFlExt}
+			, #{rgstDttm}
+			, #{rgtntId}
+			, #{rgstIp}
+			, #{rgstChnlCd}
+		)
+	</insert>
+
+	<!-- 첨부 파일 조회 -->
+	<select id="selectAttachFile" parameterType="long" resultType="com.lj.core.common.file.vo.TBAttachFileVO">
+        /* com.lj.core.common.file.FileMapper.selectAttachFile */
+        SELECT
+        FL_NO
+        , SAV_PTH
+        , ORGL_FL_NM
+        , SAV_FL_NM
+        , FL_SZ
+        , ORGL_FL_EXT
+        , RGST_DTTM
+        , RGTNT_ID
+        , RGST_IP
+        , RGST_CHNL_CD
+        , PBLC_SAV_PTH
+        FROM TB_CMM_ATCH_FL
+        WHERE FL_NO = #{flNo}
+    </select>
+
+	<!-- 저장이름으로 첨부 파일 조회 -->
+	<select id="selectAttachFileByName" parameterType="string" resultType="com.lj.core.common.file.vo.TBAttachFileVO">
+        /* com.lj.core.common.file.FileMapper.selectAttachFileByName */
+        SELECT
+        FL_NO
+        , SAV_PTH
+        , ORGL_FL_NM
+        , SAV_FL_NM
+        , FL_SZ
+        , ORGL_FL_EXT
+        , RGST_DTTM
+        , RGTNT_ID
+        , RGST_IP
+        , RGST_CHNL_CD
+        FROM TB_CMM_ATCH_FL
+        WHERE SAV_FL_NM = #{savFlNm}
+    </select>
+
+	<!-- 첨부 파일 매핑 정보 저장 -->
+	<insert id="insertAttachFileMapping" parameterType="com.lj.core.common.file.vo.TBAttachFileMappingVO">
+		/* com.lj.core.common.file.FileMapper.insertAttachFileMapping */
+		<selectKey resultType="long" keyProperty="mapnNo" order="BEFORE">
+			SELECT SQ_CMM_ATCH_FL_MAPN.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO TB_CMM_ATCH_FL_MAPN (
+			  MAPN_NO
+			, TB_NM
+			, TB_KEY
+			, FL_CTGR
+			, FL_NO
+			, ST_SEQ
+			, RGST_DTTM
+			, RGTNT_ID
+			, RGST_IP
+			, RGST_CHNL_CD
+		) VALUES (
+			  #{mapnNo}
+			, #{tbNm}
+			, #{tbKey}
+			, #{flCtgr}
+			, #{flNo}
+			, #{stSeq}
+			, #{rgstDttm}
+			, #{rgtntId}
+			, #{rgstIp}
+			, #{rgstChnlCd}
+		)
+	</insert>
+
+	<!-- 첨부 파일 매핑 정보 삭제 -->
+	<delete id="deleteAttachFileMapping" parameterType="com.lj.core.common.file.vo.TBAttachFileMappingVO">
+		/* com.lj.core.common.file.FileMapper.deleteAttachFileMapping */
+		DELETE FROM TB_CMM_ATCH_FL_MAPN
+		<where>
+			<if test='0 != mapnNo'>
+				AND MAPN_NO = #{mapnNo}
+			</if>
+			<if test='null != tbNm and !"".equals(tbNm)'>
+				AND TB_NM = #{tbNm}
+			</if>
+			<if test='null != tbKey and !"".equals(tbKey)'>
+				AND TB_KEY = #{tbKey}
+			</if>
+			<if test='null != flCtgr and !"".equals(flCtgr)'>
+				AND FL_CTGR = #{flCtgr}
+			</if>
+			<if test='null != keepMapnNos'>
+	            <foreach item="keepMapnNos" collection="keepMapnNos" open="AND MAPN_NO NOT IN (" separator="," close=")">
+	                #{keepMapnNos}
+	            </foreach>
+			</if>
+		</where>
+	</delete>
+
+	<!-- 첨부파일 매핑 정보 조회 -->
+	<select id="selectAttachFileMappingList" parameterType="com.lj.core.common.file.vo.TBAttachFileMappingVO"
+			resultType="com.lj.core.common.file.vo.AttachFileMappingInfoVO">
+		/* com.lj.core.common.file.FileMapper.selectAttachFileMappingList */
+		SELECT
+				  MAP.MAPN_NO
+				, MAP.TB_NM
+				, MAP.TB_KEY
+				, MAP.FL_CTGR
+				, MAP.FL_NO
+				, MAP.ST_SEQ
+				, MAP.RGST_DTTM
+				, MAP.RGTNT_ID
+				, MAP.RGST_IP
+				, MAP.RGST_CHNL_CD
+				, FL.SAV_PTH
+				, FL.PBLC_SAV_PTH
+				, FL.ORGL_FL_NM
+				, FL.SAV_FL_NM
+				, FL.FL_SZ
+				, FL.ORGL_FL_EXT
+		  FROM	TB_CMM_ATCH_FL_MAPN MAP
+				JOIN TB_CMM_ATCH_FL FL ON MAP.FL_NO = FL.FL_NO
+		<where>
+			<if test='0 != mapnNo'>
+				AND MAP.MAPN_NO = #{mapnNo}
+			</if>
+			<if test='null != tbNm and !"".equals(tbNm)'>
+				AND MAP.TB_NM = #{tbNm}
+			</if>
+			<if test='null != tbKey and !"".equals(tbKey)'>
+				AND MAP.TB_KEY = #{tbKey}
+			</if>
+			<if test='null != flCtgr and !"".equals(flCtgr)'>
+				AND MAP.FL_CTGR = #{flCtgr}
+			</if>
+		</where>
+		 ORDER BY MAP.ST_SEQ ASC
+	</select>
+	
+	
+	
+	<!-- 첨부 파일 정보 삭제 -->
+	<delete id="deleteAttachFile" parameterType="com.lj.core.common.file.vo.TBAttachFileVO">
+        /* com.lj.core.common.file.FileMapper.deleteAttachFile */
+        DELETE FROM TB_CMM_ATCH_FL
+        WHERE 1=1
+        AND FL_NO = #{flNo}
+    </delete>
+</mapper>

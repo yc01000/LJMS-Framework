@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lj.core.common.batch.CmmBatchMapper">
+
+	<!-- 배치 결과 등록 -->
+	<insert id="insertBatchResult" parameterType="com.lj.core.common.batch.vo.TBCmmBatchResultVO">
+		/* com.lj.core.common.batch.CmmBatchMapper.insertBatchResult */
+		<selectKey resultType="long" keyProperty="batchRsltNo" order="BEFORE">
+			<!-- SELECT NVL(MAX(BATCH_RSLT_NO), 0) + 1 FROM TB_CMM_BATCH_RSLT -->
+			SELECT SQ_CMM_BATCH_RSLT.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO TB_CMM_BATCH_RSLT (
+			  BATCH_RSLT_NO
+			, PROFILE_CD
+			, METHOD_NM
+			, STRT_MTHD_CD
+			, STRT_DTTM
+			, END_DTTM
+			, SUCS_YN
+			, ERR_CTN
+		) VALUES (
+			  #{batchRsltNo}
+			, #{profileCd}
+			, #{methodNm}
+			, #{strtMthdCd}
+			, #{strtDttm}
+			, #{endDttm}
+			, #{sucsYn}
+			, #{errCtn}
+		)
+	</insert>
+
+	<!-- 배치 결과 수정 -->
+	<update id="updateBatchResult" parameterType="com.lj.core.common.batch.vo.TBCmmBatchResultVO">
+        /* com.lj.core.common.batch.CmmBatchMapper.updateBatchResult */
+        UPDATE TB_CMM_BATCH_RSLT
+        SET
+        END_DTTM = #{endDttm}
+        , SUCS_YN = #{sucsYn}
+        , ERR_CTN = #{errCtn}
+        WHERE BATCH_RSLT_NO = #{batchRsltNo}
+    </update>
+</mapper>

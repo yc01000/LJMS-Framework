@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"[
+	<!ENTITY INTEGRATION "https://iflyrestest.ibsgen.com:5120">
+	<!ENTITY UAT "http://10.196.20.76:5205">
+	<!ENTITY STAGE "http://10.196.20.76:7105">
+	<!ENTITY PRODUCTION "http://10.196.21.203:7010">
+]>
+<properties>
+	<comment>IBS WSDL 4.4 base - CHECKIN</comment>
+
+	<entry key="checkin.checkin.endpoint">&PRODUCTION;/iRes_CheckIn_WS/services/CheckinPort</entry>
+	<entry key="checkin.checkinUtility.endpoint">&PRODUCTION;/iRes_CheckIn_WS/services/CheckinUtilityPort</entry>
+	<entry key="checkin.reports.endpoint">&PRODUCTION;/iRes_CheckIn_WS/services/ReportsPort</entry>
+
+
+	<entry key="checkin.checkin.collectApis">urn:#collectApis</entry>
+	<entry key="checkin.checkin.showSeatMap">urn:#showSeatMap</entry>
+	<entry key="checkin.checkin.changeSeats">urn:#changeSeats</entry>
+	<entry key="checkin.checkin.searchGuest">urn:#searchGuest</entry>
+	<entry key="checkin.checkin.checkinGuest">urn:#checkinGuest</entry>
+	<entry key="checkin.checkin.printBoardingPass">urn:#printBoardingPass</entry>
+	<entry key="checkin.checkin.getCheckReturnCheckIn">urn:#getCheckReturnCheckIn</entry>
+	<entry key="checkin.checkin.printItinerary">urn:#printItinerary</entry>
+	<entry key="checkin.checkin.processPayment">urn:#processPayment</entry>
+	<entry key="checkin.checkin.printBagTag">urn:#printBagTag</entry>
+	<entry key="checkin.checkin.updateBagStatusAfterPrint">urn:#updateBagStatusAfterPrint</entry>
+	<entry key="checkin.checkin.uncheckGuest">urn:#uncheckGuest</entry>
+	<entry key="checkin.checkin.getApis">urn:#getApis</entry>
+	<entry key="checkin.checkin.addGuestBaggage">urn:#addGuestBaggage</entry>
+	<entry key="checkin.checkin.assignSeatsForMultipleGuests">urn:#assignSeatsForMultipleGuests</entry>
+	<entry key="checkin.checkin.upgradeCabinClass">urn:#upgradeCabinClass</entry>
+	<entry key="checkin.checkin.updateFFPDetails">urn:#updateFFPDetails</entry>
+	<entry key="checkin.checkin.revertBaggageAddition">urn:#revertBaggageAddition</entry>
+	<entry key="checkin.checkin.reportStandbyGuest">urn:#reportStandbyGuest</entry>
+	<entry key="checkin.checkin.irregularFlight">urn:#irregularFlight</entry>
+	<entry key="checkin.checkin.releaseSeat">urn:#releaseSeat</entry>
+	<entry key="checkin.checkin.quickCheckinGuest">urn:#quickCheckinGuest</entry>
+	<entry key="checkin.checkin.flightInfoDisplay">urn:#flightInfoDisplay</entry>
+	<entry key="checkin.checkin.printVoucherDetails">urn:#printVoucherDetails</entry>
+	<entry key="checkin.checkin.updateVoucherStatus">urn:#updateVoucherStatus</entry>
+	<entry key="checkin.checkin.getPnrPaymentBalance">urn:#getPnrPaymentBalance</entry>
+	<entry key="checkin.checkin.retrieveApisConfiguration">urn:#retrieveApisConfiguration</entry>
+	<entry key="checkin.checkin.sendBoardingPass">urn:#sendBoardingPass</entry>
+	<entry key="checkin.checkin.collectNok">urn:#collectNok</entry>
+
+	<entry key="checkin.reports.getEZFWDetails">urn:#getEZFWDetails</entry>
+	<entry key="checkin.reports.loadAndTrim">urn:#loadAndTrim</entry>
+	<entry key="checkin.reports.getcheckinReportInfo">urn:#getcheckinReportInfo</entry>
+	<entry key="checkin.reports.weightAndBalance">urn:#weightAndBalance</entry>
+	<entry key="checkin.reports.getCustomerManifestInfo">urn:#getCustomerManifestInfo</entry>
+
+	<entry key="checkin.checkinUtility.getLocalCityDateAndTime">urn:#getLocalCityDateAndTime</entry>
+	<entry key="checkin.checkinUtility.retrieveChannels">urn:#retrieveChannels</entry>
+	<entry key="checkin.checkinUtility.retrieveParameters">urn:#retrieveParameters</entry>
+	<entry key="checkin.checkinUtility.routeWeightAndBalanceMessages">urn:#routeWeightAndBalanceMessages</entry>
+</properties>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>dev environment properties</comment>
+	<entry key="LJ.SystemType">DEVELOPMENT</entry>	
+
+	<entry key="cmm.msg.valid.require">[{0}] is required.</entry>
+	<entry key="cmm.msg.valid.minlength">Please enter at least {1} characters for [{0}].</entry>
+	<entry key="cmm.msg.valid.maxlength">Please enter no more than {1} characters for [{0}].</entry>
+	<entry key="cmm.msg.valid.notcorrect">[{0}] is not a valid format.</entry>
+	<entry key="cmm.msg.valid.date">Please enter a valid date.</entry>
+	<entry key="cmm.msg.valid.duringdate">Start date is later than end date.</entry>
+	<entry key="cmm.msg.valid.id">The ID is 6 ~ 20 characters in alphabet or alphanumeric characters.</entry>
+	<entry key="cmm.msg.valid.equal">[{0}] and [{1}] do not match.</entry>
+	<entry key="cmm.msg.valid.select">Please select [{0}].</entry>
+	<entry key="cmm.msg.alert.capson">Caps Lock is On.</entry>
+
+	<entry key="cmm.msg.alert.notexist">[{0}] does not exist.</entry>
+	<entry key="cmm.msg.alert.saveok">The [{0}] has been successfully saved.</entry>
+	<entry key="cmm.msg.alert.exist">This [{0}] already exists.</entry>
+	<entry key="cmm.msg.alert.error">Server error occurred.</entry>
+	<entry key="cmm.msg.alert.unuseok">Unused.</entry>
+	<entry key="cmm.msg.alert.deleteok">[{0}] is deleted.</entry>
+	<entry key="cmm.msg.alert.goportal">Personal configuration setting can only be processed on the portal main screen.</entry>
+
+	<entry key="cmm.msg.confirm.cancel">Do you want to cancel?</entry>
+	<entry key="cmm.msg.confirm.unuse">The [{0}] will not be deleted but will be unused.&#10;Do you want to continue?</entry>
+	<entry key="cmm.msg.confirm.useUnuse">The [{0}] will be used/unused.&#10;Do you wish to continue?</entry>
+	<entry key="cmm.msg.confirm.delete">Do you want to delete?</entry>
+
+	<entry key="cmm.msg.btn.search">Search</entry>
+	<entry key="cmm.msg.btn.read">Read</entry>
+	<entry key="cmm.msg.btn.write">Write</entry>
+	<entry key="cmm.msg.btn.regist">Register</entry>
+	<entry key="cmm.msg.btn.modify">Modification</entry>
+	<entry key="cmm.msg.btn.update">Update</entry>
+	<entry key="cmm.msg.btn.add">Addition</entry>
+	<entry key="cmm.msg.btn.delete">Deletion</entry>
+	<entry key="cmm.msg.btn.save">Save</entry>
+	<entry key="cmm.msg.btn.cancel">Cancel</entry>
+	<entry key="cmm.msg.btn.close">Close</entry>
+	<entry key="cmm.msg.btn.confirm">Confirm</entry>
+	<entry key="cmm.msg.btn.yes">Yes</entry>
+	<entry key="cmm.msg.btn.no">No</entry>
+	<entry key="cmm.msg.btn.login">Log In</entry>
+	<entry key="cmm.msg.btn.logout">Log Out</entry>
+	<entry key="cmm.msg.btn.prev">Previous</entry>
+	<entry key="cmm.msg.btn.next">Next</entry>
+	<entry key="cmm.msg.btn.resetPwd">Reset Password</entry>
+	<entry key="cmm.msg.btn.detail">Detail</entry>
+	<entry key="cmm.msg.btn.main">Main</entry>
+	<entry key="cmm.msg.btn.findpw">Find Password</entry>
+	<entry key="cmm.msg.btn.dupcheck">Verify Duplicate</entry>
+	<entry key="cmm.msg.btn.post">Search Zip-code</entry>
+	<entry key="cmm.msg.btn.join">Join</entry>
+	<entry key="cmm.msg.btn.approval">Approval</entry>
+	<entry key="cmm.msg.btn.refusal">Refusal</entry>
+	<entry key="cmm.msg.btn.secession">Secession</entry>
+	<entry key="cmm.msg.btn.reserve">Reservation</entry>
+	<entry key="cmm.msg.btn.homepage">Homepage</entry>
+	<entry key="cmm.msg.btn.directGo">Click</entry>
+	<entry key="cmm.msg.btn.download">Download</entry>
+	<entry key="cmm.msg.btn.downloadPdf">PDF Download</entry>
+	<entry key="cmm.msg.btn.downloadExcel">Excel Download</entry>
+	<entry key="cmm.msg.btn.payment">Payment</entry>
+	<entry key="cmm.msg.btn.pwchange">Change Password</entry>
+	<entry key="cmm.msg.btn.reset">Reset</entry>
+	<entry key="cmm.msg.btn.chkdelete">Delete selected</entry>
+	<entry key="cmm.msg.btn.list">List</entry>
+	<entry key="cmm.msg.btn.print">Print</entry>
+	<entry key="cmm.msg.btn.send">Send</entry>
+	<entry key="cmm.msg.btn.submit">Submit</entry>
+	<entry key="cmm.msg.btn.change">Change</entry>
+	<entry key="cmm.msg.btn.set">Set</entry>
+	<entry key="cmm.msg.btn.moreEvent">See More Offers</entry>
+
+	<entry key="cmm.msg.lbl.all">All</entry>
+	<entry key="cmm.msg.lbl.select">Select</entry>
+	<entry key="cmm.msg.lbl.system">System</entry>
+	<entry key="cmm.msg.lbl.screen">Screen</entry>
+	<entry key="cmm.msg.lbl.useYn">Use</entry>
+	<entry key="cmm.msg.lbl.stSeq">Sort Order</entry>
+	<entry key="cmm.msg.lbl.pageFirst">First page</entry>
+	<entry key="cmm.msg.lbl.pagePrev">Previous {0} page</entry>
+	<entry key="cmm.msg.lbl.page">{0} Page</entry>
+	<entry key="cmm.msg.lbl.pageNext">Next {0} page</entry>
+	<entry key="cmm.msg.lbl.pageLast">Last page</entry>
+	<entry key="cmm.msg.lbl.no">No.</entry>
+	<entry key="cmm.msg.lbl.seq">Sequence</entry>
+	<entry key="cmm.msg.lbl.regUsr">Created By</entry>
+	<entry key="cmm.msg.lbl.regDtm">Created Date</entry>
+	<entry key="cmm.msg.lbl.atchFile">Attached file</entry>
+	<entry key="cmm.msg.lbl.fileAtch">File attachment</entry>
+	<entry key="cmm.msg.lbl.imageFile">Photo File</entry>
+	<entry key="cmm.msg.lbl.copy">Copy</entry>
+	<entry key="cmm.msg.lbl.copyCtn">Contents copy</entry>
+	<entry key="cmm.msg.lbl.alert">Alert</entry>
+	<entry key="cmm.msg.lbl.required">Required</entry>
+	<entry key="cmm.msg.lbl.activeProfile"><![CDATA[
+		<span style="font-size: 20px;color:red;"><b>{0} 환경에서 사용중입니다.</b></span>
+	]]></entry>
+	
+	<entry key="cmm.msg.upload.dragDropStr"><![CDATA[
+		<span style="font-size: 20px; padding-left: 20px;"><b>Drag &amp; Drop Files.</b></span>
+	]]></entry>
+	<entry key="cmm.msg.upload.dragDropCountStr"><![CDATA[
+		<span style="font-size: 20px; padding-left: 20px;"><b>Drag &amp; Drop Files. &nbsp; (Max file count : {0})</b></span>
+	]]></entry>
+	<entry key="cmm.msg.upload.countStr"><![CDATA[
+		<span style="font-size: 20px; padding-left: 20px;"><b>Max file count : {0}</b></span>
+	]]></entry>
+	<entry key="cmm.msg.upload.uploadStr">Find files...</entry>
+	<entry key="cmm.msg.upload.abortStr">Abort</entry>
+	<entry key="cmm.msg.upload.cancelStr">Cancel</entry>
+	<entry key="cmm.msg.upload.deleteStr">Delete</entry>
+	<entry key="cmm.msg.upload.doneStr">Done</entry>
+	<entry key="cmm.msg.upload.multiDragErrorStr">Multiple File Drag &amp; Drop is not allowed.</entry>
+	<entry key="cmm.msg.upload.extErrorStr"><![CDATA[is not allowed.<br/>Allowed extensions : ]]></entry>
+	<entry key="cmm.msg.upload.duplicateErrorStr"><![CDATA[is not allowed.<br/>File already exists.]]></entry>
+	<entry key="cmm.msg.upload.sizeErrorStr"><![CDATA[is not allowed.<br/>Allowed Max size : ]]></entry>
+	<entry key="cmm.msg.upload.uploadErrorStr">Upload is not allowed.</entry>
+	<entry key="cmm.msg.upload.maxFileCountErrorStr"><![CDATA[is not allowed.<br/>Maximum allowed files are : ]]></entry>
+	<entry key="cmm.msg.upload.downloadStr">Download</entry>
+	<entry key="cmm.msg.file.imageUpload">Photo Upload</entry>
+	<entry key="cmm.msg.file.fileUpload">File Upload</entry>
+
+	<entry key="cmm.msg.error.pageNotFound">Sorry, Page not found.</entry>
+	<entry key="cmm.msg.error.systemError"><![CDATA[
+		Sorry, An system error has occurred.
+	]]></entry>
+	<entry key="cmm.msg.error.badRequest">Sorry, Bad request or wrong access.</entry>
+	<entry key="cmm.msg.error.contact"><![CDATA[
+		서비스 이용에 불편을 드려 죄송합니다.<br/>
+		궁금한 사항이 있으시면 언제든지
+		 <a href="mailto:selbpx@jinair.com" style="vertical-align: initial;">
+		진에어 IT전략팀 (selbpx@jinair.com)</a>으로<br/>
+		문의하시기 바랍니다. &nbsp;감사합니다.
+	]]></entry>
+	<entry key="cmm.msg.error.goMain">Go main</entry>
+	<entry key="cmm.msg.error.goPrev">Go previous page</entry>
+	
+	<entry key="cmm.msg.error.sessionTimeout">The session has expired.</entry>
+	<entry key="cmm.msg.lbl.logoutConfirm"><![CDATA[Signing out also logs you out of the SSO Portal.<br/> Do you want to proceed?]]></entry>
+	
+	<entry key="cmm.msg.lbl.snsCancelConfirm"><![CDATA[Are you sure you want to cancel the SNS connection?]]></entry>
+</properties>

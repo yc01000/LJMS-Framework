@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>IBS WSDL 4.4 base - GENERAL</comment>
+
+	<entry key="general.airline.code">LJ</entry>
+	<!-- PRD -->
+	<!-- <entry key="general.airline.user">jinairprd</entry>
+	<entry key="general.airline.bmno">jinatiflyprodapi</entry>
+	<entry key="general.airline.certificationfile">certification/prd/</entry> -->
+
+	<!-- INTEGRATION/UAT/STG -->
+	<entry key="general.airline.user">jinair</entry>
+	<entry key="general.airline.bmno">jinatiflyapi</entry>
+	<entry key="general.airline.certificationfile">certification/dev/</entry>
+	
+	<!-- INTEGRATION for LJ DEV-->
+	<entry key="ibs.soap.endpoint">http://10.196.20.76</entry>
+	<entry key="ibs.soap.port">7105</entry> 
+	
+	<!-- UAT for LJ STG-->
+	<!-- <entry key="ibs.soap.endpoint">http://10.196.20.76</entry>
+	<entry key="ibs.soap.port">5205</entry> -->
+	
+	<!-- STAGE for LJ STG-->
+	<!-- <entry key="ibs.soap.endpoint">http://10.196.20.76</entry>
+	<entry key="ibs.soap.port">7105</entry> -->
+	
+	<!-- PRODUCTION for LJ PRD-->
+	<!-- <entry key="ibs.soap.endpoint">http://10.196.21.203</entry>
+	<entry key="ibs.soap.port">7010</entry> -->
+	
+</properties>

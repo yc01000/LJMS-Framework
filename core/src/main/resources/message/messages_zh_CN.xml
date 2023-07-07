@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>dev environment properties</comment>
+	<entry key="LJ.SystemType">DEVELOPMENT</entry>	
+
+	<entry key="cmm.msg.valid.require">请输入[{0}]。</entry>
+	<entry key="cmm.msg.valid.minlength">[{0}]可以输入最少{1}个字以上。</entry>
+	<entry key="cmm.msg.valid.maxlength">[{0}]可以输入最多{1}个字以上。</entry>
+	<entry key="cmm.msg.valid.notcorrect">[{0}] 为不是有效的格式。 </entry>
+	<entry key="cmm.msg.valid.date">请输入有效的日期。</entry>
+	<entry key="cmm.msg.valid.duringdate">出发日期比返回日期晚。</entry>
+	<entry key="cmm.msg.valid.id">用户名由6~20位英文或数字组成。</entry>
+	<entry key="cmm.msg.valid.equal">[{0}]和[{1}]不一致。</entry>
+	<entry key="cmm.msg.valid.select">请选择[{0}]。</entry>
+	<entry key="cmm.msg.alert.capson">Caps Lock开着。</entry>
+
+	<entry key="cmm.msg.alert.notexist">[{0}]不存在。</entry>
+	<entry key="cmm.msg.alert.saveok">[{0}]已保存成功。</entry>
+	<entry key="cmm.msg.alert.exist">[{0}]已存在。</entry>
+	<entry key="cmm.msg.alert.error">服务器出现差错。</entry>
+	<entry key="cmm.msg.alert.unuseok">未使用。</entry>
+	<entry key="cmm.msg.alert.deleteok">[{0}]被删除。</entry>
+	<entry key="cmm.msg.alert.goportal">只能在主页上处理个人配置设置。</entry>
+
+	<entry key="cmm.msg.confirm.cancel">您想取消吗？</entry>
+	<entry key="cmm.msg.confirm.unuse">[{0}]将不会被删除，也不会被使用。&#10;想继续吗？</entry>
+	<entry key="cmm.msg.confirm.useUnuse">[{0}]设置为可使用/不可使用状态。&#10;是否继续？</entry>
+	<entry key="cmm.msg.confirm.delete">想删除吗？</entry>
+
+	<entry key="cmm.msg.btn.search">搜索</entry>
+	<entry key="cmm.msg.btn.read">搜索 </entry>
+	<entry key="cmm.msg.btn.write">阅读</entry>
+	<entry key="cmm.msg.btn.regist">备注</entry>
+	<entry key="cmm.msg.btn.modify">编辑</entry>
+	<entry key="cmm.msg.btn.update">编辑</entry>
+	<entry key="cmm.msg.btn.add">添加</entry>
+	<entry key="cmm.msg.btn.delete">删除</entry>
+	<entry key="cmm.msg.btn.save">保存</entry>
+	<entry key="cmm.msg.btn.cancel">取消</entry>
+	<entry key="cmm.msg.btn.close">关闭</entry>
+	<entry key="cmm.msg.btn.confirm">确认</entry>
+	<entry key="cmm.msg.btn.yes">是</entry>
+	<entry key="cmm.msg.btn.no">不是</entry>
+	<entry key="cmm.msg.btn.login">登录</entry>
+	<entry key="cmm.msg.btn.logout">退出</entry>
+	<entry key="cmm.msg.btn.prev">以往</entry>
+	<entry key="cmm.msg.btn.next">下一步</entry>
+		<entry key="cmm.msg.btn.resetPwd">重新设置密码</entry>
+	<entry key="cmm.msg.btn.detail">详情</entry>
+	<entry key="cmm.msg.btn.main">返回首页</entry>
+	<entry key="cmm.msg.btn.findpw">查找密码</entry>
+	<entry key="cmm.msg.btn.dupcheck">重复确认</entry>
+	<entry key="cmm.msg.btn.post">搜索邮政编码</entry>
+	<entry key="cmm.msg.btn.join">会员注册</entry>
+	<entry key="cmm.msg.btn.approval">承认</entry>
+	<entry key="cmm.msg.btn.refusal">拒绝</entry>
+	<entry key="cmm.msg.btn.secession">退出</entry>
+	<entry key="cmm.msg.btn.reserve">现在预订</entry>
+	<entry key="cmm.msg.btn.homepage">网址</entry>
+	<entry key="cmm.msg.btn.directGo">现在预订</entry>
+	<entry key="cmm.msg.btn.download">下载</entry>
+	<entry key="cmm.msg.btn.downloadPdf">下载 PDF</entry>
+	<entry key="cmm.msg.btn.downloadExcel">下载 Excel</entry>
+	<entry key="cmm.msg.btn.payment">支付</entry>
+	<entry key="cmm.msg.btn.pwchange">修改密码</entry>
+	<entry key="cmm.msg.btn.reset">重置</entry>
+	<entry key="cmm.msg.btn.chkdelete">删除选择</entry>
+	<entry key="cmm.msg.btn.list">目录</entry>
+	<entry key="cmm.msg.btn.print">打印</entry>
+	<entry key="cmm.msg.btn.send">发送</entry>
+	<entry key="cmm.msg.btn.submit">提交</entry>
+	<entry key="cmm.msg.btn.change">变更</entry>
+	<entry key="cmm.msg.btn.set">设置</entry>
+	<entry key="cmm.msg.btn.moreEvent">浏览最新优惠</entry>
+
+	<entry key="cmm.msg.lbl.all">全部</entry>
+	<entry key="cmm.msg.lbl.select">选择</entry>
+	<entry key="cmm.msg.lbl.system">系统</entry>
+	<entry key="cmm.msg.lbl.screen">屏幕</entry>
+	<entry key="cmm.msg.lbl.useYn">是否使用</entry>
+	<entry key="cmm.msg.lbl.pageFirst">首页</entry>
+	<entry key="cmm.msg.lbl.stSeq">排序</entry>
+	<entry key="cmm.msg.lbl.pagePrev">返回第{0}页</entry>
+	<entry key="cmm.msg.lbl.page">第{0}页</entry>
+	<entry key="cmm.msg.lbl.pageNext">移到第{0}页</entry>
+	<entry key="cmm.msg.lbl.pageLast">最后一页</entry>
+	<entry key="cmm.msg.lbl.no">编号</entry>
+	<entry key="cmm.msg.lbl.seq">次序</entry>
+	<entry key="cmm.msg.lbl.regUsr">创造者</entry>
+	<entry key="cmm.msg.lbl.regDtm">建立时间</entry>
+	<entry key="cmm.msg.lbl.atchFile">附件</entry>
+	<entry key="cmm.msg.lbl.fileAtch">文件附件</entry>
+	<entry key="cmm.msg.lbl.imageFile">图片</entry>
+	<entry key="cmm.msg.lbl.copy">复制</entry>
+	<entry key="cmm.msg.lbl.copyCtn">复制内容</entry>
+	<entry key="cmm.msg.lbl.alert">警报</entry>
+	<entry key="cmm.msg.lbl.required">Required</entry>
+	
+	<entry key="cmm.msg.lbl.activeProfile"><![CDATA[
+		<span style="font-size: 20px;color:red;"><b>{0} 환경에서 사용중입니다.</b></span>
+	]]></entry>
+	
+	<entry key="cmm.msg.upload.dragDropStr">
+		<![CDATA[
+			<span style="font-size: 20px; padding-left: 20px;"><b>请将文件拖动到此。</b></span>
+		]]></entry>
+	<entry key="cmm.msg.upload.dragDropCountStr">
+		<![CDATA[
+			<span style="font-size: 20px; padding-left: 20px;"><b>请将文件拖动到此。 &nbsp; (最大文件数 : {0})</b></span>
+		]]></entry>
+	<entry key="cmm.msg.upload.countStr">
+		<![CDATA[<span style="font-size: 20px; padding-left: 20px;"><b>最大文件数 : {0}</b></span>
+		]]></entry>
+	<entry key="cmm.msg.upload.uploadStr">搜索文件</entry>
+	<entry key="cmm.msg.upload.abortStr">停止</entry>
+	<entry key="cmm.msg.upload.cancelStr">取消</entry>
+	<entry key="cmm.msg.upload.deleteStr">删除</entry>
+	<entry key="cmm.msg.upload.doneStr">完毕</entry>
+	<entry key="cmm.msg.upload.multiDragErrorStr">不允许拖拽诸多文件。</entry>
+	<entry key="cmm.msg.upload.extErrorStr"><![CDATA[不允许使用文件扩展名。<br/>可上传的扩展名：]]></entry>
+	<entry key="cmm.msg.upload.duplicateErrorStr"><![CDATA[不允许上传文件。<br/>有相同名字的文件。]]></entry>
+	<entry key="cmm.msg.upload.sizeErrorStr"><![CDATA[不允许上传文件。<br/>文件上传最大限制：]]></entry>
+	<entry key="cmm.msg.upload.uploadErrorStr">不允许上传文件。</entry>
+	<entry key="cmm.msg.upload.maxFileCountErrorStr"><![CDATA[不允许上传文件。<br/>文件上传个数限制：]]></entry>
+	<entry key="cmm.msg.upload.downloadStr">下载</entry>
+	<entry key="cmm.msg.file.imageUpload">上传图片</entry>
+	<entry key="cmm.msg.file.fileUpload">上传文件</entry>
+
+	<entry key="cmm.msg.error.pageNotFound">无法找到该网页</entry>
+	<entry key="cmm.msg.error.systemError"><![CDATA[
+		抱歉， <br>系统出现异常。
+	]]></entry>
+	<entry key="cmm.msg.error.badRequest">您的访问出错了。</entry>
+	<entry key="cmm.msg.error.contact"><![CDATA[
+		非常抱歉给您带来麻烦。<br/>
+		请随时与 <a href="mailto:selbpx@jinair.com" style="vertical-align: initial;">
+		真航空IT部门(selbpx@jinair.com)</a>
+		<br/>联系。 &nbsp;谢谢。
+	]]></entry>
+	<entry key="cmm.msg.error.goMain">返回主页</entry>
+	<entry key="cmm.msg.error.goPrev">返回上一页</entry>
+	<entry key="cmm.msg.error.sessionTimeout">세션이 만료되었습니다</entry>
+	
+	<entry key="cmm.msg.lbl.snsCancelConfirm"><![CDATA[确定要取消SNS联动吗?]]></entry>
+</properties>

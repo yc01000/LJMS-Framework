@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>dev environment properties</comment>
+	<entry key="LJ.SystemType">DEVELOPMENT</entry>	
+
+	<entry key="cmm.msg.valid.require">[{0}] を入力してください</entry>
+	<entry key="cmm.msg.valid.minlength">[{0}] は最小限1文字以上入力可能です</entry>
+	<entry key="cmm.msg.valid.maxlength">[{0}] は最大1文字まで入力可能です</entry>
+	<entry key="cmm.msg.valid.notcorrect">[{0}] が正しい形式ではありません</entry>
+	<entry key="cmm.msg.valid.date">正しい日にちを入力してください</entry>
+	<entry key="cmm.msg.valid.duringdate">出発日が帰国日より遅れています</entry>
+	<entry key="cmm.msg.valid.id">IDは英文または数字混用で6-20文字です</entry>
+	<entry key="cmm.msg.valid.equal">[{0}]と[{1}]が一致しません</entry>
+	<entry key="cmm.msg.valid.select">[{0}]を選択してください</entry>
+	<entry key="cmm.msg.alert.capson">Caps Lock がオンになっています</entry>
+
+	<entry key="cmm.msg.alert.notexist">[{0}]が存在しません</entry>
+	<entry key="cmm.msg.alert.saveok">[{0}]を正常的にセーブしました</entry>
+	<entry key="cmm.msg.alert.exist">すでに存在する[{0}]です</entry>
+	<entry key="cmm.msg.alert.error">サーバーエラー</entry>
+	<entry key="cmm.msg.alert.unuseok">未使用処理となりました</entry>
+	<entry key="cmm.msg.alert.deleteok">[{0}]を削除しました</entry>
+	<entry key="cmm.msg.alert.goportal">個人環境設定はポータルサイトメイン画面で処理可能です</entry>
+
+	<entry key="cmm.msg.confirm.cancel">キャンセルしますか</entry>
+	<entry key="cmm.msg.confirm.unuse">[{0}]は削除されず未使用処理となります。&#10;続けますか</entry>
+	<entry key="cmm.msg.confirm.useUnuse">[{0}]使用/未使用処理となります。&#10;続けますか</entry>
+	<entry key="cmm.msg.confirm.delete">削除しますか</entry>
+
+	<entry key="cmm.msg.btn.search">検索</entry>
+	<entry key="cmm.msg.btn.read">読む</entry>
+	<entry key="cmm.msg.btn.write">書く</entry>
+	<entry key="cmm.msg.btn.regist">コメント</entry>
+	<entry key="cmm.msg.btn.modify">編集</entry>
+	<entry key="cmm.msg.btn.update">修正</entry>
+	<entry key="cmm.msg.btn.add">追加</entry>
+	<entry key="cmm.msg.btn.delete">削除</entry>
+	<entry key="cmm.msg.btn.save">保存</entry>
+	<entry key="cmm.msg.btn.cancel">キャンセル</entry>
+	<entry key="cmm.msg.btn.close">閉じる</entry>
+	<entry key="cmm.msg.btn.confirm">確認</entry>
+	<entry key="cmm.msg.btn.yes">はい</entry>
+	<entry key="cmm.msg.btn.no">いいえ</entry>
+	<entry key="cmm.msg.btn.login">ログイン</entry>
+	<entry key="cmm.msg.btn.logout">ログアウト</entry>
+	<entry key="cmm.msg.btn.prev">以前</entry>
+	<entry key="cmm.msg.btn.next">次へ</entry>
+	<entry key="cmm.msg.btn.resetPwd">パスワード再発行</entry>
+	<entry key="cmm.msg.btn.detail">詳細</entry>
+	<entry key="cmm.msg.btn.main">メイン</entry>
+	<entry key="cmm.msg.btn.findpw">パスワードを検索</entry>
+	<entry key="cmm.msg.btn.dupcheck">重複確認</entry>
+	<entry key="cmm.msg.btn.join">会員登録</entry>
+	<entry key="cmm.msg.btn.post">郵便番号検索</entry>
+	<entry key="cmm.msg.btn.approval">承認</entry>
+	<entry key="cmm.msg.btn.refusal">拒絶</entry>
+	<entry key="cmm.msg.btn.secession">脱退</entry>
+	<entry key="cmm.msg.btn.reserve">今すぐ予約</entry>
+	<entry key="cmm.msg.btn.homepage">Webサイト</entry>
+	<entry key="cmm.msg.btn.directGo">今すぐ予約</entry>
+	<entry key="cmm.msg.btn.download">ダウンロード</entry>
+	<entry key="cmm.msg.btn.downloadPdf">PDFをダウンロード</entry>
+	<entry key="cmm.msg.btn.downloadExcel">EXCELダウンロード</entry>
+	<entry key="cmm.msg.btn.payment">お支払い</entry>
+	<entry key="cmm.msg.btn.pwchange">パスワード変更</entry>
+	<entry key="cmm.msg.btn.reset">リセット</entry>
+	<entry key="cmm.msg.btn.chkdelete">選択削除</entry>
+	<entry key="cmm.msg.btn.list">リスト</entry>
+	<entry key="cmm.msg.btn.print">印刷</entry>
+	<entry key="cmm.msg.btn.send">発送</entry>
+	<entry key="cmm.msg.btn.submit">提出</entry>
+	<entry key="cmm.msg.btn.change">変更</entry>
+	<entry key="cmm.msg.btn.set">設定</entry>
+	<entry key="cmm.msg.btn.moreEvent">イベントをもっと見る</entry>
+
+	<entry key="cmm.msg.lbl.all">全体</entry>
+	<entry key="cmm.msg.lbl.select">選択</entry>
+	<entry key="cmm.msg.lbl.system">システム</entry>
+	<entry key="cmm.msg.lbl.screen">画面</entry>
+	<entry key="cmm.msg.lbl.useYn">使用</entry>
+	<entry key="cmm.msg.lbl.pageFirst">初ページ</entry>
+	<entry key="cmm.msg.lbl.stSeq">種類順番</entry>
+	<entry key="cmm.msg.lbl.pagePrev">以前ページ</entry>
+	<entry key="cmm.msg.lbl.page">{0}ページ</entry>
+	<entry key="cmm.msg.lbl.pageNext">次の{0}ページ</entry>
+	<entry key="cmm.msg.lbl.pageLast">最後のページ</entry>
+	<entry key="cmm.msg.lbl.no">番号</entry>
+	<entry key="cmm.msg.lbl.seq">順番</entry>
+	<entry key="cmm.msg.lbl.regUsr">作成者</entry>
+	<entry key="cmm.msg.lbl.regDtm">作成日時</entry>
+	<entry key="cmm.msg.lbl.atchFile">添付ファイル</entry>
+	<entry key="cmm.msg.lbl.fileAtch">ファイル添付</entry>
+	<entry key="cmm.msg.lbl.imageFile">写真ファイル</entry>
+	<entry key="cmm.msg.lbl.copy">コピー</entry>
+	<entry key="cmm.msg.lbl.copyCtn">内容コピー</entry>
+	<entry key="cmm.msg.lbl.alert">お知らせ</entry>
+	<entry key="cmm.msg.lbl.required">Required</entry>
+
+	<entry key="cmm.msg.lbl.activeProfile"><![CDATA[
+		<span style="font-size: 20px;color:red;"><b>{0} 환경에서 사용중입니다.</b></span>
+	]]></entry>
+	
+	<entry key="cmm.msg.upload.dragDropStr"><![CDATA[
+		<span style="font-size: 20px; padding-left: 20px;"><b>こちらにファイルを添付してください。</b></span>
+	]]></entry>
+	<entry key="cmm.msg.upload.dragDropCountStr"><![CDATA[
+		<span style="font-size: 20px; padding-left: 20px;"><b>こちらにファイルを添付してください。&nbsp; (最大添付数 : {0})</b></span>
+	]]></entry>
+	<entry key="cmm.msg.upload.countStr"><![CDATA[
+		<span style="font-size: 20px; padding-left: 20px;"><b>最大添付数 : {0}</b></span>
+	]]></entry>
+	<entry key="cmm.msg.upload.uploadStr">ファイルを探す…</entry>
+	<entry key="cmm.msg.upload.abortStr">中止</entry>
+	<entry key="cmm.msg.upload.cancelStr">キャンセル</entry>
+	<entry key="cmm.msg.upload.deleteStr">削除</entry>
+	<entry key="cmm.msg.upload.doneStr">完了</entry>
+	<entry key="cmm.msg.upload.multiDragErrorStr">多数の入るの指定 &amp; ドロップはできません</entry>
+	<entry key="cmm.msg.upload.extErrorStr"><![CDATA[処理できません<br/>アップロード可能な権限を確認してください:]]></entry>
+	<entry key="cmm.msg.upload.duplicateErrorStr"><![CDATA[処理できません<br/>同一なファイルがあります.]]></entry>
+	<entry key="cmm.msg.upload.sizeErrorStr"><![CDATA[処理できません.<br/>アップロード可能なファイルの最大容量 :]]></entry>
+	<entry key="cmm.msg.upload.uploadErrorStr">ファイルのアップロードはできません。</entry>
+	<entry key="cmm.msg.upload.maxFileCountErrorStr"><![CDATA[ファイルのアップロードはできません。<br/>アップロード可能なファイルの個数 : ]]></entry>
+	<entry key="cmm.msg.upload.downloadStr">ダウンロード</entry>
+	<entry key="cmm.msg.file.imageUpload">写真アップロード</entry>
+	<entry key="cmm.msg.file.fileUpload">ファイルアップロード</entry>
+
+	<entry key="cmm.msg.error.pageNotFound">ページを見つかりません。</entry>
+	<entry key="cmm.msg.error.systemError"><![CDATA[
+		申し訳ありません。<br/>システムエラーです。
+	]]></entry>
+	<entry key="cmm.msg.error.badRequest">間違ったアクセスです</entry>
+	<entry key="cmm.msg.error.contact"><![CDATA[
+		申し訳ありません。<br/>
+		お問い合わせは
+		<a href="mailto:selbpx@jinair.com" style="vertical-align: initial;">
+		ジンエアーIT戦略チーム (selbpx@jinair.com)</a>に<br/>
+		お問合せください &nbsp;ありがとうございます
+	]]></entry>
+	<entry key="cmm.msg.error.goMain">メイン画面に移動</entry>
+	<entry key="cmm.msg.error.goPrev">以前画面に移動</entry>
+	<entry key="cmm.msg.error.sessionTimeout">세션이 만료되었습니다</entry>
+	
+	<entry key="cmm.msg.lbl.snsCancelConfirm"><![CDATA[SNS連動をキャンセルしますか?]]></entry>
+</properties>

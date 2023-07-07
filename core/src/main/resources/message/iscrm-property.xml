@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>DEV ISCRM SERVER URL</comment>
+	<entry key="ISCRM.URL.DSS">http://dssstg.jinair.com/apiType/LJISCRM/system/{0}</entry>	
+	<entry key="ISCRM.URL.GPS">http://gpsstg.jinair.com/apiType/LJISCRM/system/{0}</entry>
+	<entry key="ISCRM.URL.HOM">http://stgwww.jinair.com/apiType/LJISCRM/system/{0}</entry>
+	<entry key="ISCRM.URL.PNS">http://pnsstg.jinair.com/apiType/LJISCRM/system/{0}</entry>
+</properties>
