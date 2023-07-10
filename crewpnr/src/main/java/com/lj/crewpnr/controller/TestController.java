@@ -1,6 +1,5 @@
-package com.lj.core.controller;
+package com.lj.crewpnr.controller;
 
-import com.google.gson.Gson;
 import com.lj.core.integration.soap.ibs.IbsSoapProperty;
 import com.lj.core.integration.soap.ibs.api.booking.RetrieveBooking;
 import com.lj.core.integration.soap.ibs.domain.booking.BookingChannelType;
@@ -22,7 +21,7 @@ public class TestController {
     private RetrieveBooking retrieveBooking;
 
     @RequestMapping("/test")
-    public String reservationList(String pnrNo) {
+    public String test(String pnrNo) {
         BookingChannelType channel = new BookingChannelType();
         channel.setChannelType("API");
         channel.setChannel("CWI");
