@@ -5,3 +5,13 @@ spring:
 logging:
   level:
     root: info
+
+aws:
+  s3:
+    bucketName:
+      image: pssstg-public
+      file: pssstg-private
+      public: files.jinair.com
+    regionName: ap-northeast-2
+    serviceEndPoint: https://s3.ap-northeast-2.amazonaws.com
+    folderStage: stg

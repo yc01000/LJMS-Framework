@@ -6,22 +6,32 @@ import com.lj.core.integration.soap.ibs.domain.booking.BookingChannelType;
 import com.lj.core.integration.soap.ibs.domain.booking.RetrieveBookingRQ;
 import com.lj.core.integration.soap.ibs.domain.booking.RetrieveBookingRS;
 import com.lj.core.util.WebUtils;
-import jakarta.annotation.Resource;
+import com.lj.crewpnr.mapper.emsdb.EMSDBSampleMapper;
+import com.lj.crewpnr.mapper.pssdb.PSSDBSampleMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.SQLException;
+
 @RestController
-public class TestController {
+public class SampleController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SampleController.class);
 
-    @Resource(name="RetrieveBooking")
+    @Autowired
     private RetrieveBooking retrieveBooking;
 
-    @RequestMapping("/test")
-    public String test(String pnrNo) {
+    @Autowired
+    private PSSDBSampleMapper pssdbSampleMapper;
+
+    @Autowired
+    private EMSDBSampleMapper emsdbSampleMapper;
+
+    @RequestMapping("/sample/ibs")
+    public String test(String pnrNo) throws SQLException {
         BookingChannelType channel = new BookingChannelType();
         channel.setChannelType("API");
         channel.setChannel("CWI");
@@ -37,5 +47,15 @@ public class TestController {
         retrieveBookingRQ.setPnrNumber(pnrNo);
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
         return WebUtils.toJson(retrieveBookingRS);
+    }
+
+    @RequestMapping("/sample/pssdb")
+    public String testPSSDB(String id) throws SQLException {
+        return WebUtils.toJson(pssdbSampleMapper.select(id));
+    }
+
+    @RequestMapping("/sample/emsdb")
+    public String testEMSDB(String id) throws SQLException {
+        return WebUtils.toJson(emsdbSampleMapper.select(id));
     }
 }
