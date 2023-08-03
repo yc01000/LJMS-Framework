@@ -4,8 +4,6 @@
 	<comment>Amazon Properties</comment>	
 
 	<!-- for local -->
-	<entry key="aws.sso.kms.accessKey"></entry>
-	<entry key="aws.sso.kms.secretKey"></entry>
 	<entry key="aws.sso.kms.alias.name">LJAppKey</entry>
 	<entry key="aws.sso.kms.tag.name">PSS</entry>
 	<entry key="aws.sso.kms.tag.value">PSSTAG</entry>
