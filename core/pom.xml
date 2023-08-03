@@ -21,6 +21,40 @@
 		<com.amazonaws.sdk-version>1.11.261</com.amazonaws.sdk-version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>http://10.32.31.21:8090/nexus/content/groups/public</url>
+			<releases><enabled>true</enabled></releases>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+
+		<repository>
+			<id>thirdparty</id>
+			<url>http://10.32.31.21:8090/nexus/content/repositories/thirdparty</url>
+			<releases><enabled>true</enabled></releases>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+
+		<repository>
+			<id>LJDomain.Snapshots</id>
+			<url>http://10.32.31.21:8090/nexus/content/repositories/snapshots/</url>
+			<releases><enabled>false</enabled></releases>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>Releases</id>
+			<url>http://10.32.31.21:8090/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>Snapshots</id>
+			<url>http://10.32.31.21:8090/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
