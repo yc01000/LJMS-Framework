@@ -18,7 +18,7 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<com.amazonaws.sdk-version>1.11.261</com.amazonaws.sdk-version>
+		<com.amazonaws.sdk-version>1.12.520</com.amazonaws.sdk-version>
 	</properties>
 
 	<repositories>
@@ -63,6 +63,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.lj.sso</groupId>
+			<artifactId>ssocore</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter</artifactId>
 			<version>3.0.2</version>
@@ -84,6 +90,13 @@
 			<groupId>com.oracle.database.jdbc</groupId>
 			<artifactId>ojdbc11</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.3</version>
 		</dependency>
 	</dependencies>
 
@@ -107,8 +120,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.0</version>
 				<configuration>
-					<source>17</source>
-					<target>17</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>

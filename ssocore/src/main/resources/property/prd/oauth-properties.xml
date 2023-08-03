@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Spring Security Properties for Single-Log-On</comment>	
+
+	<!-- OAuth 2.0 설정 -->
+	<entry key="oauth.client.accessTokenUri">https://sso.jinair.com/oauth/access_token</entry>
+	<entry key="oauth.client.userAuthorizationUri">https://sso.jinair.com/oauth/authorize</entry>
+	<entry key="oauth.client.checkToken">https://sso.jinair.com/oauth/check_token</entry>
+	
+	<entry key="oauth.client.tokenName">access_token</entry>
+	<entry key="oauth.client.authenticationScheme">query</entry>
+	<entry key="oauth.client.clientAuthenticationScheme">form</entry>
+
+	<entry key="oauth.client.token">https://sso.jinair.com/oauth/token</entry>
+	<entry key="oauth.client.logout">https://sso.jinair.com/logout</entry>
+	<entry key="oauth.server.uri">https://sso.jinair.com</entry>
+	
+	<entry key="oauth.resource.userInfoUri">https://sso.jinair.com/oauth/userinfo</entry>
+</properties>

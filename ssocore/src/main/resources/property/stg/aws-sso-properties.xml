@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Amazon Properties</comment>	
+
+	<!-- for stg -->
+	<entry key="aws.sso.kms.accessKey"></entry>
+	<entry key="aws.sso.kms.secretKey"></entry>
+	<entry key="aws.sso.kms.alias.name">LJAppKey</entry>
+	<entry key="aws.sso.kms.tag.name">PSS</entry>
+	<entry key="aws.sso.kms.tag.value">PSSTAG</entry>
+	<entry key="aws.sso.kms.region.name">ap-northeast-2</entry>
+	<entry key="aws.sso.kms.key.id">e4303df7-fd91-4c6b-a9a5-1413343bac0e</entry>
+	<entry key="aws.pss.kms.key.id">fec144ba-b42f-4c0d-800d-afb5a5d6662a</entry>
+</properties>
