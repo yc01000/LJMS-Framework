@@ -29,17 +29,4 @@ public class JointConfigurationPRD {
 		bean.setLocations(new ClassPathResource("property/prd/integration-properties.xml"));
 		return bean;
 	}
-
-	/**
-	 * jhbang (2017. 9. 15. 오후 3:17:47)<br/>
-	 * desc   :  첨부파일 확장자 설정
-	 * 
-	 * @return
-	 */
-	@Bean(name="FileExtensionProperties")
-	public PropertiesFactoryBean fileExtensionConfig() {
-		PropertiesFactoryBean	bean	= new PropertiesFactoryBean();
-		bean.setLocations(new ClassPathResource("property/prd/file-properties.xml"));
-		return bean;
-	}
 }

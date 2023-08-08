@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lj.core.mail.mapper.EMSDBSampleMapper">
+
+	<!-- 메일 발송 등록 (URL 방식) -->
+	<insert id="insert" parameterType="com.lj.core.mail.vo.MailInfoVO">
+		/* com.lj.crewpnr.mapper.emsdb.EMSDBSampleMapper.insert */
+		<selectKey resultType="long" keyProperty="mailId" order="BEFORE">
+			SELECT MAILQUEUE_SEC_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO MAILQUEUE_SEC (
+		MID
+		, TID
+		, EMAIL
+		, NAME
+		, TITLE
+		, CONTENTS
+		, CDATE
+		, PNR
+		, EID
+		, URLID
+		, ATTACH01
+		, ATTACH02
+		, ATTACH03
+		, ATTACH04
+		, ATTACH05
+		, SEMAIL
+		, SNAME
+		, TARGET_YN
+		, TARGET_DATE
+		, MBR_NO
+		) VALUES (
+		#{mailId}
+		, #{taskId}
+		, #{receiverEmail}
+		, #{receiverName}
+		, #{mailTitle}
+		, #{mailContents}
+		, TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		, NULL
+		, NULL
+		, NULL
+		, NULL
+		, NULL
+		, NULL
+		, NULL
+		, NULL
+		, #{senderEmail}
+		, #{senderName}
+		, 'N'
+		, NULL
+		, #{receiverId}
+		)
+	</insert>
+</mapper>

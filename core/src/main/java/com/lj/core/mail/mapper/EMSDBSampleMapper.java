@@ -1,10 +1,12 @@
-package com.lj.crewpnr.mapper.emsdb;
+package com.lj.core.mail.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
+import com.lj.core.mail.vo.MailInfoVO;
 
 import java.util.Map;
 
 public interface EMSDBSampleMapper {
 
     Map<String, Object> select(String id);
+
+    int insert(MailInfoVO entity);
 }
