@@ -36,11 +36,13 @@ public class SampleController {
         return "Hello crewpnr";
     }
 
+    // http://localhost:8080/sample/ibs?pnrNo=X2E9W7
     @RequestMapping("/sample/ibs")
     public String test(String pnrNo) throws SQLException {
         return bookingService.retrieve(pnrNo);
     }
 
+    // http://localhost:8080/sample/pssdb?id=LAEVUS124
     @RequestMapping("/sample/pssdb")
     public String testPSSDB(String id) throws SQLException {
         return WebUtils.toJson(pssdbSampleMapper.select(id));
