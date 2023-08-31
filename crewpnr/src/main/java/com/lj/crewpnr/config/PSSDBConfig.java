@@ -31,6 +31,7 @@ public class PSSDBConfig {
     public SqlSessionFactory sqlSessionFactoryPSSDB(@Qualifier("datasourcePSSDB") DataSource datasourcePSSDB) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(datasourcePSSDB);
+        bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:config/mybatis-config.xml"));
         bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mappers/pssdb/*.xml"));
         return bean.getObject();
     }

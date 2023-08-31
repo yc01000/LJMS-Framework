@@ -4,6 +4,7 @@ import com.lj.core.mail.service.MailService;
 import com.lj.core.mail.vo.MailInfoVO;
 import com.lj.core.util.WebUtils;
 import com.lj.crewpnr.mapper.pssdb.PSSDBSampleMapper;
+import com.lj.crewpnr.model.TBIndvMbr;
 import com.lj.crewpnr.service.BookingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
