@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 
 // PSSDB 연결 설정
 @Configuration
-@MapperScan(value="com.lj.crewpnr.mapper.pssdb", sqlSessionTemplateRef="sqlSessionTemplatePSSDB")
+@MapperScan(value={"com.lj.crewpnr.mapper.pssdb", "com.lj.core.commoncode.mapper"}, sqlSessionTemplateRef="sqlSessionTemplatePSSDB")
 public class PSSDBConfig {
 
     @Primary
@@ -32,7 +32,7 @@ public class PSSDBConfig {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(datasourcePSSDB);
         bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:config/mybatis-config.xml"));
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mappers/pssdb/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:mappers/pssdb/*.xml"));
         return bean.getObject();
     }
 

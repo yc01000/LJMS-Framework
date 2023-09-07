@@ -1,15 +1,18 @@
 package com.lj.crewpnr.controller;
 
+import com.lj.core.commoncode.handler.CityAirportHandler;
+import com.lj.core.commoncode.handler.CodeHandler;
+import com.lj.core.commoncode.handler.RegionHandler;
 import com.lj.core.mail.service.MailService;
 import com.lj.core.mail.vo.MailInfoVO;
 import com.lj.core.util.WebUtils;
 import com.lj.crewpnr.mapper.pssdb.PSSDBSampleMapper;
-import com.lj.crewpnr.model.TBIndvMbr;
 import com.lj.crewpnr.service.BookingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -30,6 +33,15 @@ public class SampleController {
 
     @Autowired
     private PSSDBSampleMapper pssdbSampleMapper;
+
+    @Autowired
+    private CodeHandler codeHandler;
+
+    @Autowired
+    private RegionHandler regionHandler;
+
+    @Autowired
+    private CityAirportHandler cityAirportHandler;
 
     @RequestMapping("/")
     @ResponseBody
@@ -63,7 +75,24 @@ public class SampleController {
         mailService.send(mail);
     }
 
-    // 파일 업로드 샘플
+    // http://localhost:8080/sample/commoncode/codes/AGT001/01
+    @RequestMapping("/sample/commoncode/codes/{categoryCode}/{detailCode}")
+    @ResponseBody
+    public String code(@PathVariable String categoryCode, @PathVariable String detailCode) {
+        return WebUtils.toJson(codeHandler.getCodeInfo(categoryCode, detailCode));
+    }
 
+    // http://localhost:8080/sample/commoncode/regions/NEA
+    @RequestMapping("/sample/commoncode/regions/{regionCode}")
+    @ResponseBody
+    public String region(@PathVariable String regionCode) {
+        return WebUtils.toJson(regionHandler.getRegionInfo(regionCode));
+    }
 
+    // http://localhost:8080/sample/commoncode/airports/ICN
+    @RequestMapping("/sample/commoncode/airports/{airportCode}")
+    @ResponseBody
+    public String airport(@PathVariable String airportCode) {
+        return WebUtils.toJson(cityAirportHandler.getCityAirportInfo(airportCode));
+    }
 }

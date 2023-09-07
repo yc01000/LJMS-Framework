@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lj.core.commoncode.mapper.CmmCodeMapper">
+
+	<!-- 코드 전체 목록 조회 -->
+	<select id="selectCodeListForCodeHandler" parameterType="com.lj.core.commoncode.vo.CodeInfoVO" resultType="com.lj.core.commoncode.vo.CodeInfoVO">
+		/* com.lj.core.commoncode.CodeMapper.selectCodeListForCodeHandler */
+		SELECT
+				  MST.CTGR_CD
+				, MST.CD_NM		AS CTGR_CD_NM
+				, MST.USE_YN	AS CTGR_USE_YN
+				, DTL.DTL_CD
+				, CNM.LANG_CD
+				, CNM.CD_NM		AS DTL_CD_NM
+				, DTL.USE_YN	AS DTL_USE_YN
+				, DTL.CD_XPLN
+				, DTL.ERP_STRD_CD
+				, DTL.ADD_INFO1
+				, DTL.ADD_INFO2
+				, DTL.ADD_INFO3
+				, DTL.ST_SEQ
+		  FROM TB_CMM_CD_MST MST
+		       JOIN TB_CMM_CD_DTL DTL ON MST.CTGR_CD = DTL.CTGR_CD
+		       LEFT OUTER JOIN TB_CMM_CD_DTL_NM CNM ON DTL.CTGR_CD = CNM.CTGR_CD AND DTL.DTL_CD = CNM.DTL_CD
+		<where>
+			<if test='null != ctgrCd and !"".equals(ctgrCd)'>
+				MST.CTGR_CD = #{ctgrCd}
+			</if>
+		</where>
+		 ORDER BY MST.CTGR_CD ASC, DTL.ST_SEQ ASC, DTL.DTL_CD ASC
+	</select>
+
+	<!-- 지역 코드 전체 목록 조회 -->
+	<select id="selectRegionListForRegionHandler" resultType="com.lj.core.commoncode.vo.RegionInfoVO">
+		/* com.lj.core.commoncode.CodeMapper.selectRegionListForRegionHandler */
+		SELECT
+				  RGN.RGN_CD
+				, RGN.OPRT_YN
+				, RGN.MLT_CTY_YN
+				, RGN.USE_YN
+				, RNM.LANG_CD
+				, RNM.RGN_NM
+		  FROM TB_RGN RGN
+		       JOIN TB_RGN_NM RNM ON RGN.RGN_CD = RNM.RGN_CD
+		       LEFT JOIN TB_CMM_CD_DTL CD ON CD.CTGR_CD = 'CMM001' AND RNM.LANG_CD = CD.DTL_CD
+		 ORDER BY RGN.ST_SEQ ASC, CD.ST_SEQ ASC
+	</select>
+
+	<!-- 국가 코드 전체 목록 조회 -->
+	<select id="selectCountryListForCountryHandler" resultType="com.lj.core.commoncode.vo.CountryInfoVO">
+		/* com.lj.core.commoncode.CodeMapper.selectCountryListForCountryHandler */
+		SELECT
+				  CTR.IATA_COUNTRY_CODE			AS CTR_CD
+				, CTR.RGN_CD
+				, CTR.ISO_2_LETTER_COUNTRY_CODE	AS CTR_CD_2_LTR
+				, CTR.IBS_POP_CD
+				, CTR.CRNC_CD
+				, CTR.CTR_NO
+				, CTR.GMT_VLU
+				, CTR.OPRT_YN
+				, CTR.USE_YN
+				, CNM.LANG_CD
+				, CNM.CTR_NM
+		  FROM TB_CTR CTR
+		       JOIN TB_CTR_NM CNM ON CTR.IATA_COUNTRY_CODE = CNM.IATA_COUNTRY_CODE
+		       LEFT JOIN TB_CMM_CD_DTL CD ON CD.CTGR_CD = 'CMM001' AND CNM.LANG_CD = CD.DTL_CD
+		       LEFT JOIN TB_RGN RGN ON CTR.RGN_CD = RGN.RGN_CD
+		 ORDER BY RGN.ST_SEQ ASC, CTR.IATA_COUNTRY_CODE ASC, CD.ST_SEQ ASC
+	</select>
+
+	<!-- 국가별 사용 언어 전체 목록 조회 -->
+	<select id="selectCountryLanguageListForCountryHandler" resultType="com.lj.core.commoncode.vo.CountryInfoVO">
+		/* com.lj.core.commoncode.CodeMapper.selectCountryLanguageListForCountryHandler */
+		SELECT
+				  CTR.IATA_COUNTRY_CODE AS CTR_CD
+				, CLN.LANG_CD
+		  FROM TB_CTR CTR
+		       JOIN TB_CTR_LANG CLN ON CTR.IATA_COUNTRY_CODE = CLN.IATA_COUNTRY_CODE
+		       JOIN TB_CMM_CD_DTL CD ON CD.CTGR_CD = 'CMM001' AND CLN.LANG_CD = CD.DTL_CD
+		 ORDER BY CTR.IATA_COUNTRY_CODE ASC, CD.ST_SEQ ASC
+	</select>
+
+	<!-- 도시/공항 코드 전체 목록 조회 -->
+	<select id="selectCityAirportListForCityAirportHandler" resultType="com.lj.core.commoncode.vo.CityAirportInfoVO">
+		/* com.lj.core.commoncode.CodeMapper.selectCityAirportListForCityAirportHandler */
+		SELECT
+				  APO.IATA_CTY_APO_CD   AS APO_CD
+				, APO.RGN_CD
+				, APO.IATA_COUNTRY_CODE AS CTR_CD
+				, APO.DRCT_FLT_YN
+				, APO.MLT_CTY_YN
+				, APO.USE_YN
+				, ANM.LANG_CD
+				, ANM.APO_NM
+		  FROM TB_CTY_APO APO
+		       JOIN TB_APO_NM ANM ON APO.IATA_CTY_APO_CD = ANM.IATA_CTY_APO_CD
+		       LEFT JOIN TB_CMM_CD_DTL CD ON CD.CTGR_CD = 'CMM001' AND ANM.LANG_CD = CD.DTL_CD
+		       LEFT JOIN TB_RGN RGN ON APO.RGN_CD = RGN.RGN_CD
+		 ORDER BY RGN.ST_SEQ ASC, APO.IATA_CTY_APO_CD ASC, CD.ST_SEQ ASC
+	</select>
+
+	<!-- 도시/공항 코드 전체 목록 조회 -->
+	<select id="selectCityAirportListByDeparture" resultType="com.lj.core.commoncode.vo.CityAirportInfoVO">
+		/* com.lj.core.commoncode.CodeMapper.selectCityAirportListByDeparture */
+		SELECT
+				  APO.IATA_CTY_APO_CD   AS APO_CD
+				, APO.RGN_CD
+				, APO.IATA_COUNTRY_CODE AS CTR_CD
+				, APO.DRCT_FLT_YN
+				, APO.MLT_CTY_YN
+				, APO.USE_YN
+				, ANM.LANG_CD
+				, ANM.APO_NM
+		  FROM TB_CTY_APO APO
+			   JOIN TB_APO_NM ANM ON APO.IATA_CTY_APO_CD = ANM.IATA_CTY_APO_CD
+			   LEFT JOIN TB_CMM_CD_DTL CD ON CD.CTGR_CD = 'CMM001' AND ANM.LANG_CD = CD.DTL_CD
+			   LEFT JOIN TB_RGN RGN ON APO.RGN_CD = RGN.RGN_CD
+			   LEFT JOIN TB_DEP_APO DEP ON APO.IATA_CTY_APO_CD = DEP.DEPARTURE_APO_IATA_CTY_APO_CD
+		 ORDER BY RGN.ST_SEQ ASC, DEP.DEP_APO_SEQ ASC, CD.ST_SEQ ASC
+	</select>
+
+	<!-- 출발 공항 코드 전체 목록 조회 -->
+	<select id="selectDepartureAirportList" resultType="com.lj.core.commoncode.vo.DepartureAndArrivalAirportInfoVO">
+		/* com.lj.core.commoncode.CodeMapper.selectDepartureAirportList */
+		SELECT
+				  DEP.DEP_APO_SEQ
+				, APO.RGN_CD
+				, APO.IATA_COUNTRY_CODE AS CTR_CD
+				, APO.IATA_CTY_APO_CD AS APO_CD
+				, ANM.LANG_CD
+				, ANM.APO_NM
+				, DEP.USE_YN
+				, DEP.ST_SEQ
+		  FROM  TB_DEP_APO  DEP
+				LEFT OUTER JOIN TB_CTY_APO APO ON DEP.DEPARTURE_APO_IATA_CTY_APO_CD = APO.IATA_CTY_APO_CD
+				LEFT OUTER JOIN TB_APO_NM  ANM ON APO.IATA_CTY_APO_CD = ANM.IATA_CTY_APO_CD
+		 WHERE DEP.USE_YN = 'Y'
+		   AND DEP.APCT_STRT_DT <![CDATA[<=]]> TO_CHAR(SYSDATE, 'YYYYMMDD')
+		   AND DEP.APCT_END_DT <![CDATA[>=]]> TO_CHAR(SYSDATE, 'YYYYMMDD')
+		 ORDER BY DEP.ST_SEQ ASC
+	</select>
+
+	<!-- 도착 공항 코드 전체 목록 조회 -->
+	<select id="selectArrivalAirportList" resultType="com.lj.core.commoncode.vo.DepartureAndArrivalAirportInfoVO">
+		/* com.lj.core.commoncode.CodeMapper.selectArrivalAirportList */
+		SELECT
+				  ARV.DEP_APO_SEQ
+				, APO.RGN_CD
+				, APO.IATA_COUNTRY_CODE AS CTR_CD
+				, APO.IATA_CTY_APO_CD AS APO_CD
+				, ANM.LANG_CD
+				, ANM.APO_NM
+				, SEQ.ST_SEQ
+		  FROM	TB_DEP_APO  DEP
+				JOIN TB_ARVL_APO ARV ON DEP.DEP_APO_SEQ = ARV.DEP_APO_SEQ
+				JOIN TB_DEP_APO  SEQ ON ARV.ARRIVAL_APO_IATA_CTY_APO_CD = SEQ.DEPARTURE_APO_IATA_CTY_APO_CD
+				LEFT OUTER JOIN TB_CTY_APO APO ON ARV.ARRIVAL_APO_IATA_CTY_APO_CD = APO.IATA_CTY_APO_CD
+				LEFT OUTER JOIN TB_APO_NM  ANM ON APO.IATA_CTY_APO_CD = ANM.IATA_CTY_APO_CD
+		 WHERE DEP.USE_YN = 'Y'
+		 ORDER BY DEP.ST_SEQ ASC, SEQ.ST_SEQ ASC
+	</select>
+
+	<!-- 공통 메시지 전체 목록 조회 -->
+	<select id="selectMessageListForMessageHandler" resultType="com.lj.core.commoncode.vo.MessageInfoVO">
+		/* com.lj.core.commoncode.CodeMapper.selectMessageListForMessageHandler */
+		SELECT
+				  MSG.MSG_CD
+				, DTL.LANG_CD
+				, MSG.USE_YN
+				, DTL.ERR_NM  AS MSG_NM
+				, DTL.ERR_MSG AS MSG_CTN
+		  FROM TB_CMM_MSG MSG
+			   JOIN TB_CMM_MSG_DTL DTL ON MSG.MSG_CD = DTL.MSG_CD
+		 ORDER BY MSG.MSG_CD ASC, DTL.LANG_CD ASC
+	</select>
+	
+	<!-- 공휴일 조회 -->
+	<select id="selectHolidaytForCodeHandler" resultType="com.lj.core.commoncode.vo.HolidayVO">
+		/* com.lj.core.commoncode.CodeMapper.selectHolidaytForCodeHandler */
+		SELECT COUNTRY, YMD, YMD_NAME, COLOR
+		FROM TB_CMM_HOLIDAY
+		WHERE YMD <![CDATA[>=]]> TO_CHAR(SYSDATE, 'YYYYMMDD')
+		ORDER BY YMD
+	</select>
+</mapper>
