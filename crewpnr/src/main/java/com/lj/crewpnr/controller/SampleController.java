@@ -2,6 +2,7 @@ package com.lj.crewpnr.controller;
 
 import com.lj.core.commoncode.handler.CityAirportHandler;
 import com.lj.core.commoncode.handler.CodeHandler;
+import com.lj.core.commoncode.handler.CountryHandler;
 import com.lj.core.commoncode.handler.RegionHandler;
 import com.lj.core.mail.service.MailService;
 import com.lj.core.mail.vo.MailInfoVO;
@@ -39,6 +40,9 @@ public class SampleController {
 
     @Autowired
     private RegionHandler regionHandler;
+
+    @Autowired
+    private CountryHandler countryHandler;
 
     @Autowired
     private CityAirportHandler cityAirportHandler;
@@ -87,6 +91,13 @@ public class SampleController {
     @ResponseBody
     public String region(@PathVariable String regionCode) {
         return WebUtils.toJson(regionHandler.getRegionInfo(regionCode));
+    }
+
+    // http://localhost:8080/sample/commoncode/countries/TWN
+    @RequestMapping("/sample/commoncode/countries/{countryCode}")
+    @ResponseBody
+    public String country(@PathVariable String countryCode) {
+        return WebUtils.toJson(countryHandler.getCountryInfo(countryCode));
     }
 
     // http://localhost:8080/sample/commoncode/airports/ICN

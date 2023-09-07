@@ -113,7 +113,7 @@ public class CommonService {
                 tmpCityAirportInfo	= new CityAirportInfoVO();
                 apoNmMap		= new HashMap<String, String>();
 
-                BeanUtils.copyProperties(tmpCityAirportInfo, apoInfo);
+                BeanUtils.copyProperties(apoInfo, tmpCityAirportInfo);
 
                 if (StringUtils.isNotEmpty(apoInfo.getLangCd())
                         && StringUtils.isNotEmpty(apoInfo.getApoNm())) {
