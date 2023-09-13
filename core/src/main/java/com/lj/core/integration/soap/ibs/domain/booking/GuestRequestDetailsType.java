@@ -617,7 +617,7 @@ public class GuestRequestDetailsType
      *     {@link GenderDetailsType }
      *     
      */
-    public GenderDetailsType getGender() {
+    public GenderDetailsType getGender(String m) {
         return gender;
     }
 
