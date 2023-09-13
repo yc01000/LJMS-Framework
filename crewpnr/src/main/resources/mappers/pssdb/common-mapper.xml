@@ -4,8 +4,8 @@
 <mapper namespace="com.lj.crewpnr.mapper.pssdb.CommonMapper">
 
     <!-- 도시/공항 코드 전체 목록 조회 -->
-    <select id="selectCityAirportListForCityAirport" resultType="com.lj.crewpnr.vo.CityAirportInfoVO">
-        /* com.lj.crewpnr.mapper.pssdb.CommonMapper.selectCityAirportListForCityAirport */
+    <select id="selectCityAirportListForCityAirportHandler" resultType="com.lj.crewpnr.common.vo.CityAirportInfoVO">
+        /* com.lj.crewpnr.mapper.pssdb.CommonMapper.selectCityAirportListForCityAirportHandler */
         SELECT
         APO.IATA_CTY_APO_CD AS APO_CD
         , APO.RGN_CD

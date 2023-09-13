@@ -1,4 +1,4 @@
-package com.lj.crewpnr.vo;
+package com.lj.crewpnr.common.vo;
 
 import com.lj.core.common.util.CodeConstants.YNCode;
 import com.lj.crewpnr.common.util.ToString;
