@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.sql.SQLException;
 
 @RestController
@@ -105,5 +106,12 @@ public class SampleController {
     @ResponseBody
     public String airport(@PathVariable String airportCode) {
         return WebUtils.toJson(cityAirportHandler.getCityAirportInfo(airportCode));
+    }
+
+    // http://localhost:8080/sample/principal
+    @RequestMapping("/sample/principal")
+    @ResponseBody
+    public String principal(Principal principal) {
+        return WebUtils.toJson(principal);
     }
 }
