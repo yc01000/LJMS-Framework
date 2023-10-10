@@ -13,16 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.sql.SQLException;
 
-@RestController
+@Controller
 public class SampleController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SampleController.class);
@@ -49,24 +49,26 @@ public class SampleController {
     private CityAirportHandler cityAirportHandler;
 
     @RequestMapping("/")
-    @ResponseBody
     public String index() throws SQLException {
-        return "Hello crewpnr";
+        return "redirect:/index.html";
     }
 
     // http://localhost:8080/sample/ibs?pnrNo=X2E9W7
     @RequestMapping("/sample/ibs")
+    @ResponseBody
     public String test(String pnrNo) throws SQLException {
         return bookingService.retrieve(pnrNo);
     }
 
     // http://localhost:8080/sample/pssdb?id=LAEVUS124
     @RequestMapping("/sample/pssdb")
+    @ResponseBody
     public String testPSSDB(String id) throws SQLException {
         return WebUtils.toJson(pssdbSampleMapper.select(id));
     }
 
     @RequestMapping("/sample/email")
+    @ResponseBody
     @ResponseStatus(value= HttpStatus.NO_CONTENT)
     public void sampleEmail(String email) {
         MailInfoVO mail = new MailInfoVO();

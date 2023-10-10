@@ -89,7 +89,7 @@ a.btn_moveup:after{position:absolute; top:9px; left:12px;display:block;content:"
 a.btn_movedown:after{position:absolute; top:9px; left:12px;display:block;content:"";width:7px;height:10px;background:url('../../images/bo/icon.png') no-repeat -74px -116px;}
 /*컴포넌트*/
 .fieldBox {display:inline-block; margin-right:20px;}
-input[type=text] {width:220px; height:30px; background:#fff; line-height:30px; box-sizing:border-box;-webkit-box-sizing:border-box; padding:0 10px; border:1px solid #cfcfcf;vertical-align: middle}
+input[type=text] {width:160px; height:30px; background:#fff; line-height:30px; box-sizing:border-box;-webkit-box-sizing:border-box; padding:0 10px; border:1px solid #cfcfcf;vertical-align: middle}
 input[type=password] {width:220px; height:30px; background:#fff; line-height:30px; box-sizing:border-box;-webkit-box-sizing:border-box; padding:0 10px; border:1px solid #cfcfcf;}
 input[type=text]:disabled,input[type=password]:disabled {color:#999;background-color:#f7f7f6 !important;}
 input::-webkit-input-placeholder { color:#999 }
@@ -113,6 +113,10 @@ select option {line-height:40px; vertical-align:middle;}
 select::-ms-expand, input[type=radio]::-ms-expand, input[type=checkbox]::-ms-expand {display:none;}
 textarea {position:relative; padding:3px 4px; border:1px solid #cfcfcf; font-family:"notokr-regular",'notokr-thin','notokr-bold'; font-size:12px; width:100%; height:70px;resize:none;box-sizing:border-box;}
 
+input[type="text"].inputPort {
+  
+    text-transform: uppercase;
+}
 
 
 .inbox_date {position:relative; width:130px; height:40px; line-height:40px;box-sizing:border-box;-webkit-box-sizing:border-box;color:#555; display:inline-block;}
@@ -290,7 +294,7 @@ input+label{margin:0 15px 0 7px;display:inline-block;}
 #popCont .sf_type_area textarea {resize:none; vertical-align:middle;}
 #popCont .btn_wrap {text-align:center;margin-top:20px;}
 #popCont .btn_wrap.right {text-align:right;}
-#popCont .wrap_bg{padding:0;}
+#popCont .wrap_bg {padding: 0;text-align: center;}
 /* 탈퇴 팝업 */
 #popCont .withdrawal h2+table{margin-top:10px;}
 #popCont .withdrawal table{margin-bottom:20px;}
@@ -377,3 +381,11 @@ div[class^='filter'] input[type="text"].btn_calendar {height:40px;}
 /* 버튼 New */
 .btn_add{display:inline-block;width:35px;height:35px;margin:0 3px;vertical-align:middle;background:url('../../images/bo/btn_add.gif') no-repeat 0 -35px;text-indent:-9999px;}
 .btn_del{display:inline-block;width:35px;height:35px;margin:0 3px;vertical-align:middle;background:url('../../images/bo/btn_sub.gif') no-repeat 0 -35px;text-indent:-9999px;}
+
+.filter.schdule li:nth-child(-n+2) {height: 70px;}
+.filter.schdule li:nth-child(n+3) {height: 40px;}
+
+
+.myCheckbox {
+    text-align: center;
+}
