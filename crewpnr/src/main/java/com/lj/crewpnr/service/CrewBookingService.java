@@ -1,13 +1,9 @@
 package com.lj.crewpnr.service;
 
-import com.lj.core.common.util.BinderUtils;
 import com.lj.core.integration.soap.ibs.IbsSoapProperty;
-import com.lj.core.integration.soap.ibs.api.booking.GetAirAvailability;
-import com.lj.core.integration.soap.ibs.api.booking.RetrieveReservationSummary;
-import com.lj.core.integration.soap.ibs.api.booking.SaveCreateBooking;
+import com.lj.core.integration.soap.ibs.api.booking.*;
 import com.lj.core.integration.soap.ibs.domain.booking.*;
 import com.lj.core.util.LoggerUtils;
-import com.lj.core.util.WebUtils;
 import com.lj.crewpnr.common.Constants;
 import com.lj.crewpnr.common.Constants.ERROR_CODE;
 import com.lj.crewpnr.common.IBSDomainUtils;
@@ -17,17 +13,19 @@ import com.lj.crewpnr.vo.*;
 import com.lj.crewpnr.vo.availability.AvailabilityCriteriaVO;
 import com.lj.crewpnr.vo.availability.AvailabilitySearchVO;
 import com.lj.crewpnr.vo.availability.PaxCountVO;
+import com.lj.crewpnr.vo.booking.ReservationSummaryCriteriaVO;
+import com.lj.crewpnr.vo.booking.ReservationSummaryVO;
+import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
+import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,7 +33,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -50,6 +47,15 @@ public class CrewBookingService {
     private SaveCreateBooking saveCreateBooking;
     @Autowired
     private RetrieveReservationSummary retrieveReservationSummaryRequest;
+
+    @Autowired
+    private SplitReservation splitReservation;
+    @Autowired
+    private CancelBooking cancelBooking;
+    @Autowired
+    private SaveModifyBooking saveModifyBooking;
+    @Autowired
+    private RetrieveBooking retrieveBooking;
 
     @Autowired
     private CrewBookingMapper crewBookingMapper;
@@ -86,16 +92,16 @@ public class CrewBookingService {
                 availabilitySearch.setFlightNumber(excelVO.getFltNumber());
                 availabilitySearch.setDepartureDate(excelVO.getFlightDate());
 
-                boolean fromKorea = IBSDomainUtils.isDomestic(excelVO.getBoardPoint());
+                boolean fromKorea = IBSDomainUtils.isDomestic(excelVO.getBoardPoint(), excelVO.getOffPoint());
 
                 if (fromKorea) {
-                    if (StringUtils.equals(criteria.getFareClass(), "PE")) {  //Premium Economy
+                    if (StringUtils.equals(excelVO.getFareClass(), "PE")) {  //Premium Economy
                         fareClass = "U0";
                     } else {
                         fareClass = "U1";                  //Economy
                     }
                 } else {
-                    if (StringUtils.equals(criteria.getFareClass(), "PE")) {
+                    if (StringUtils.equals(excelVO.getFareClass(), "PE")) {
                         fareClass = "C";
                     } else {
                         fareClass = "U3";
@@ -210,7 +216,7 @@ public class CrewBookingService {
                     guest.setGuestSubType("CREW");
                     guest.setDateOfBirth(DateUtils.xmlGregorianCalendar("1900-01-01", "yyyy-MM-dd"));
                     guest.setNamePrefix(NameTitleType.valueOf(excelVO.getNamePrefix()));
-                    guest.getGender("M");
+//                    guest.getGender("M");
                     tempguestDetailList.add(guest);
                 }
                 guestDetailList.addAll(tempguestDetailList);
@@ -330,17 +336,17 @@ public class CrewBookingService {
             newSearch.setOrigin(firstSearch.getDestination());
             newSearch.setDestination(firstSearch.getOrigin());
 
-            boolean fromKorea = IBSDomainUtils.isDomestic(newSearch.getOrigin());
-            Date travelDateOfFirstSearch = DateUtils.date(firstSearch.getTravelDate());
-            if(!criteria.isDomestic() && fromKorea) {//해외출발
-                XMLGregorianCalendar travelDate = DateUtils.xmlGregorianCalendar(DateUtils.max(DateUtils.addDate(travelDateOfFirstSearch, -3), new Date()));
-                newSearch.setTravelDate(travelDate);
-                anAvailabilityRQ.getAvailabilitySearches().add(0, newSearch);
-            } else {//국내출발
-                XMLGregorianCalendar travelDate = DateUtils.xmlGregorianCalendar(DateUtils.addDate(travelDateOfFirstSearch, 3));
-                newSearch.setTravelDate(travelDate);
-                anAvailabilityRQ.getAvailabilitySearches().add(newSearch);
-            }
+//            boolean fromKorea = IBSDomainUtils.isDomestic(newSearch.getOrigin());
+//            Date travelDateOfFirstSearch = DateUtils.date(firstSearch.getTravelDate());
+//            if(!criteria.isDomestic() && fromKorea) {//해외출발
+//                XMLGregorianCalendar travelDate = DateUtils.xmlGregorianCalendar(DateUtils.max(DateUtils.addDate(travelDateOfFirstSearch, -3), new Date()));
+//                newSearch.setTravelDate(travelDate);
+//                anAvailabilityRQ.getAvailabilitySearches().add(0, newSearch);
+//            } else {//국내출발
+//                XMLGregorianCalendar travelDate = DateUtils.xmlGregorianCalendar(DateUtils.addDate(travelDateOfFirstSearch, 3));
+//                newSearch.setTravelDate(travelDate);
+//                anAvailabilityRQ.getAvailabilitySearches().add(newSearch);
+//            }
 
             AirAvailabilityRS availabilityRS = airAvailability.request(anAvailabilityRQ, property);//Sessions.csid())
             String errors = errors(availabilityRS);
@@ -491,6 +497,108 @@ public class CrewBookingService {
         return result;
     }
 
+    public ResultMapVO cancelReservation(String pnrNumber) {
+        if (StringUtils.isBlank(pnrNumber)) {
+            return ResultMapVO.simpleErrorCode("PNR null");
+        }
+
+        IbsSoapProperty property = new IbsSoapProperty("TEST");
+        property.setUsername("jinair");
+        property.setPassword("jinatiflyapi");
+
+        BookingChannelType bookingChannelType = new BookingChannelType();
+        bookingChannelType.setChannel("PWC");
+        bookingChannelType.setChannelType("API");
+        bookingChannelType.setLocale("en_US");
+
+        CancelBookingRQ cancelBookingRQ = new CancelBookingRQ();
+        cancelBookingRQ.setBookingChannel(bookingChannelType);
+        cancelBookingRQ.setAirlineCode(airlineCode);
+        cancelBookingRQ.setPnrNumber(pnrNumber);
+
+        CancelBookingRS cancelBookingRS = cancelBooking.request(cancelBookingRQ, property);
+        String errors = errors(cancelBookingRS);
+        if (StringUtils.isNotBlank(errors)) {
+            return ResultMapVO.simpleErrorCode(errors);
+        }
+
+        String agencyCode = cancelBookingRS.getAgencyCode();
+
+        SaveModifyBookingRQ saveModifyBookingRQ = new SaveModifyBookingRQ();
+        saveModifyBookingRQ.setAirlineCode(cancelBookingRQ.getAirlineCode());
+        saveModifyBookingRQ.setBookingChannel(cancelBookingRQ.getBookingChannel());
+        saveModifyBookingRQ.setBookerDetails(cancelBookingRS.getBookerDetails());
+        saveModifyBookingRQ.setPnrNumber(cancelBookingRQ.getPnrNumber());
+        saveModifyBookingRQ.setIsCancelPnr(true);
+        saveModifyBookingRQ.setAgencyCode(agencyCode);
+        saveModifyBookingRQ.setOriginalAgentID(agencyCode);
+        saveModifyBookingRQ.setCurrentAgentID(agencyCode);
+        SaveModifyBookingRS saveModifyBookingRS = saveModifyBooking.request(saveModifyBookingRQ, property);
+        errors = errors(saveModifyBookingRS);
+        if (StringUtils.isNotBlank(errors)) {
+            return ResultMapVO.simpleErrorCode(errors);
+        }
+
+        return ResultMapVO.simpleResult("message", "SUCCESS");
+    }
+
+    public ResultMapVO retrieveBooking(String pnrNumber){
+        ResultMapVO result = new ResultMapVO();
+
+        BookingChannelType channel = new BookingChannelType();
+        channel.setChannelType("API");
+        channel.setChannel("PWC");
+        channel.setLocale("en_US");
+
+        IbsSoapProperty property = new IbsSoapProperty("TEST");
+        property.setUsername("jinair");
+        property.setPassword("jinatiflyapi");
+
+        RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
+        retrieveBookingRQ.setAirlineCode(airlineCode);
+        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setPnrNumber(pnrNumber);
+        RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
+
+        String errors = errors(retrieveBookingRS);
+        if (StringUtils.isNotBlank(errors)) {
+            return ResultMapVO.simpleErrorCode(errors);
+        }
+
+        result.put("getGuestDetails", retrieveBookingRS.getGuestDetails());
+
+        return result;
+    }
+
+    public ResultMapVO splitPnr(RetrieveChangeGateVO retrieveChangeGateVO){
+        ResultMapVO result = new ResultMapVO();
+        SplitPnrRQ splitPnrRQ = new SplitPnrRQ();
+
+        IbsSoapProperty property = new IbsSoapProperty("TEST");
+        property.setUsername("jinair");
+        property.setPassword("jinatiflyapi");
+
+        BookingChannelKeyType bookingChannelKeyType = new BookingChannelKeyType();
+        bookingChannelKeyType.setChannel("PWC");
+        bookingChannelKeyType.setChannelType("API");
+        bookingChannelKeyType.setLocale("en_US");
+
+        splitPnrRQ.setBookingChannel((bookingChannelKeyType));
+        splitPnrRQ.setAirlineCode(airlineCode);
+        splitPnrRQ.setPNRNumber(retrieveChangeGateVO.getPnrNumber());
+        splitPnrRQ.getPaxIds().addAll(retrieveChangeGateVO.getGuestId());
+
+        SplitPnrRS splitPnrRS = splitReservation.request(splitPnrRQ, property);
+        String errors = errors(splitPnrRS);
+        if (StringUtils.isNotBlank(errors)) {
+            return ResultMapVO.simpleErrorCode(errors);
+        }
+        result.put("parentPNR", splitPnrRS.getParentPNR());
+        result.put("childPNR", splitPnrRS.getChildPNR());
+
+        return result;
+    }
+
     public ResultMapVO getReservationSummary(ReservationSummaryCriteriaVO criteriaVO) {
 
         ResultMapVO resultMapVO = new ResultMapVO();
@@ -536,11 +644,22 @@ public class CrewBookingService {
 
             for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
                 reservationSummaryVO.setFltnum(fltSegment.getAirlineCode()+ fltSegment.getFlightNumber());
-                reservationSummaryVO.setDepDate(fltSegment.getFlightDate());
+
+                String depTime = DateUtils.string(fltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd(E)");
+
+                reservationSummaryVO.setDepDate(depTime);
                 reservationSummaryVO.setStnfrCode(fltSegment.getBoardPoint());
                 reservationSummaryVO.setStntoCode(fltSegment.getOffPoint());
-                reservationSummaryVO.setDepartureDateTime((fltSegment.getScheduledDepartureDateTime().toString()));
-                reservationSummaryVO.setArrivalDateTime((fltSegment.getScheduledArrivalDateTime().toString()));
+
+                XMLGregorianCalendar depDateUtc = fltSegment.getScheduledDepartureDateTime();
+                XMLGregorianCalendar arrDateUtc = fltSegment.getScheduledArrivalDateTime();
+
+                String depDateTime = depDateUtc.getHour() + ":" + String.format("%02d", depDateUtc.getMinute());
+                String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d",arrDateUtc.getMinute());
+
+                reservationSummaryVO.setDepartureDateTime(depDateTime);
+
+                reservationSummaryVO.setArrivalDateTime(arrDateTime);
                 reservationSummaryVO.setFareClass(fltSegment.getFareBasis().substring(0, 2));
                 reservationSummaryVO.setSegmentStatus(fltSegment.getSegmentStatus());
             }
@@ -555,7 +674,7 @@ public class CrewBookingService {
             reservationSummaryVOList.add(reservationSummaryVO);
         }
 
-        resultMapVO.put("result", reservationSummaryVOList);
+        resultMapVO.put("summaryResult", reservationSummaryVOList);
         return resultMapVO;
     }
 

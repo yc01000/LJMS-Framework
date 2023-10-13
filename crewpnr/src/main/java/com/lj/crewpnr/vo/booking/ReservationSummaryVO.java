@@ -1,4 +1,4 @@
-package com.lj.crewpnr.vo;
+package com.lj.crewpnr.vo.booking;
 
 public class ReservationSummaryVO {
     private String fltnum;
