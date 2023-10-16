@@ -1,4 +1,4 @@
-package com.lj.crewpnr.vo;
+package com.lj.crewpnr.vo.excel;
 
 public class CrewPNRExcelVO {
     private String fltNumber;

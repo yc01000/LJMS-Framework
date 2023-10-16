@@ -3,14 +3,12 @@ package com.lj.crewpnr.common;
 import com.lj.core.common.util.CodeConstants.AccessChannelCode;
 import com.lj.core.commoncode.handler.CityAirportHandler;
 import com.lj.core.commoncode.handler.CountryHandler;
+import com.lj.core.commoncode.vo.CityAirportInfoVO;
 import com.lj.core.commoncode.vo.CountryInfoVO;
 import com.lj.core.integration.soap.ibs.IbsChannel;
 import com.lj.core.integration.soap.ibs.IbsChannel.DomIntType;
 import com.lj.core.integration.soap.ibs.domain.booking.*;
 import com.lj.crewpnr.common.Constants.ERROR_CODE;
-import com.lj.crewpnr.service.CommonService;
-//import com.lj.crewpnr.vo.CityAirportInfoVO;
-import com.lj.crewpnr.vo.CityAirportInfoVO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Component;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * IBS 도메인 모델 유틸
@@ -38,9 +35,6 @@ import java.util.Map;
 public class IBSDomainUtils {
 
 	private static CityAirportHandler cityAirportHandler;
-	@Autowired
-	private static CommonService cmmService;
-	private static Map<String, CityAirportInfoVO> apoMap;
 
 	private static CountryHandler countryHandler;
 
@@ -119,24 +113,12 @@ public class IBSDomainUtils {
 	}
 
 	public static boolean isDomestic(String airportCode) {
-		CityAirportInfoVO airport = cmmService.getCityAirportInfo(airportCode);
+		CityAirportInfoVO airport = cityAirportHandler.getCityAirportInfo(airportCode);
 		if(airport == null || !StringUtils.equals(airport.getCtrCd(), "KOR")) {
 			return false;
 		}
 
 		return true;
-	}
-
-	public static CityAirportInfoVO getCityAirportInfo(String apoCd) {
-		if (StringUtils.isEmpty(apoCd)) {
-			return null;
-		}
-
-		if (null != apoMap) {
-			return apoMap.get(apoCd);
-		}
-
-		return null;
 	}
 
 	public static List<GuestRequestDetailsType> toGuestRequests(List<GuestReponseDetailsType> guestResponses) {
@@ -197,28 +179,28 @@ public class IBSDomainUtils {
 		}
 
 		switch(currency) {
-		case "KRW":
-			return "KR";
-		case "CNY":
-			return "CN";
-		case "JPY":
-			return "JP";
-		case "USD":
-			return "US";
-		case "AUD":
-			return "AU";
-		case "HKD":
-			return "HK";
-		case "MOP":
-			return "MO";
-		case "TWD":
-			return "TW";
-		case "MYR":
-			return "MY";
-		case "THB":
-			return "TH";
-		default:
-			return null;
+			case "KRW":
+				return "KR";
+			case "CNY":
+				return "CN";
+			case "JPY":
+				return "JP";
+			case "USD":
+				return "US";
+			case "AUD":
+				return "AU";
+			case "HKD":
+				return "HK";
+			case "MOP":
+				return "MO";
+			case "TWD":
+				return "TW";
+			case "MYR":
+				return "MY";
+			case "THB":
+				return "TH";
+			default:
+				return null;
 		}
 	}
 
@@ -233,30 +215,30 @@ public class IBSDomainUtils {
 		}
 
 		switch(targetCountryCode) {
-		case "KR":
-			return "KRW";
-		case "CN":
-			return "CNY";
-		case "JP":
-			return "JPY";
-		case "US":
-			return "USD";
-		case "AU":
-			return "AUD";
-		case "HK":
-			return "HKD";
-		case "MO":
-			return "MOP";
-		case "TW":
-			return "TWD";
-		case "MY":
-			return "MYR";
-		case "TH":
-			return "THB";
-		case "VN":
-			return "USD";
-		default:
-			return null;
+			case "KR":
+				return "KRW";
+			case "CN":
+				return "CNY";
+			case "JP":
+				return "JPY";
+			case "US":
+				return "USD";
+			case "AU":
+				return "AUD";
+			case "HK":
+				return "HKD";
+			case "MO":
+				return "MOP";
+			case "TW":
+				return "TWD";
+			case "MY":
+				return "MYR";
+			case "TH":
+				return "THB";
+			case "VN":
+				return "USD";
+			default:
+				return null;
 		}
 	}
 
@@ -513,7 +495,7 @@ public class IBSDomainUtils {
 		flightSegment.setFareClass(fareClass);
 		return flightSegment;
 	}
-//
+	//
 	public static FareDetailsForGuestType toFareForGuest(long segmentId, long fareComponentId, int pricingUnitID, PricingComponentInfoType pricingComponent, PaxPricingInfoType paxPricing) {
 		String fareLevel = pricingComponent.getFareLevel();
 		String fareType = pricingComponent.getFareType();
@@ -522,12 +504,12 @@ public class IBSDomainUtils {
 //		String fareComponentID = "" + pricingComponent.getPricingComponentIndex();
 		PaxDetailsType guestType = PaxDetailsType.ADULT;
 		switch(paxPricing.getPaxType()) {
-		case "CHILD":
-			guestType = PaxDetailsType.CHILD;
-			break;
-		case "INFANT":
-			guestType = PaxDetailsType.INFANT;
-			break;
+			case "CHILD":
+				guestType = PaxDetailsType.CHILD;
+				break;
+			case "INFANT":
+				guestType = PaxDetailsType.INFANT;
+				break;
 		}
 		double baseFare = paxPricing.getAppliedFare().getAmount();
 		String currency = paxPricing.getAppliedFare().getCurrencyCode();
@@ -574,15 +556,15 @@ public class IBSDomainUtils {
 
 			PaxDetailsType guestType = null;
 			switch(paxPricing.getPaxType()) {
-			case "ADULT":
-				guestType = PaxDetailsType.ADULT;
-				break;
-			case "CHILD":
-				guestType = PaxDetailsType.CHILD;
-				break;
-			case "INFANT":
-				guestType = PaxDetailsType.INFANT;
-				break;
+				case "ADULT":
+					guestType = PaxDetailsType.ADULT;
+					break;
+				case "CHILD":
+					guestType = PaxDetailsType.CHILD;
+					break;
+				case "INFANT":
+					guestType = PaxDetailsType.INFANT;
+					break;
 			}
 			fareForGuest.setGuestType(guestType);
 

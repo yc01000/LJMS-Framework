@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lj.crewpnr.mapper.pssdb.CrewBookingMapper">
+
+    <!-- createBooking error value 저장 -->
+    <insert id="insertCrewPnrLog" parameterType="com.lj.crewpnr.vo.CrewPnrLogVO">
+        /* com.lj.crewpnr.mapper.pssdb.CrewBookingMapper.insertCrewPnrLog */
+
+        <selectKey order="BEFORE" resultType="int" keyProperty="seq">
+            SELECT NVL(MAX(SEQ), 0) + 1 AS seq FROM TB_CREW_PNR_LOG
+        </selectKey>
+
+       INSERT INTO TB_CREW_PNR_LOG(
+              SEQ
+            , DEP_DATE
+            , FLT_NUM
+            , STNFR_CODE
+            , STNTO_CODE
+            , FARE_CLASS
+            , PAX_CNT
+            , ERROR_VALUE
+            ,RGST_DTTM
+        )
+       VALUES(
+              #{seq}
+            , #{depDate}
+            , #{fltNum}
+            , #{stnfrCode}
+            , #{stntoCode}
+            , #{fareClass}
+            , #{paxCnt}
+            , #{errorValue}
+            , SYSDATE
+        )
+    </insert>
+
+    <select id="getCreateBookingFailLog" resultType="com.lj.crewpnr.vo.CrewPnrLogVO">
+        /* com.lj.crewpnr.mapper.pssdb.CrewBookingMapper.getCreateBookingFailLog */
+        SELECT
+            DEP_DATE,
+            FLT_NUM,
+            STNFR_CODE,
+            STNTO_CODE,
+            FARE_CLASS,
+            PAX_CNT,
+            ERROR_VALUE,
+            RGST_DTTM
+        FROM TB_CREW_PNR_LOG
+        WHERE  STNFR_CODE = #{stnfrCode}
+        AND STNTO_CODE = #{stntoCode}
+        AND DEP_DATE BETWEEN #{brdStrtDt} AND #{brdEndDt}
+        <if test='null != fareClass and !"".equals(fareClass)' >
+            AND FARE_CLASS = #{fareClass}
+        </if>
+        <if test='null != paxCount and !"".equals(paxCount)'>
+            AND PAX_CNT = #{paxCount}
+        </if>
+        ORDER BY RGST_DTTM DESC
+    </select>
+</mapper>

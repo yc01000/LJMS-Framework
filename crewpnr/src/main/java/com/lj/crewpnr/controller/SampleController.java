@@ -7,6 +7,7 @@ import com.lj.core.commoncode.handler.RegionHandler;
 import com.lj.core.mail.service.MailService;
 import com.lj.core.mail.vo.MailInfoVO;
 import com.lj.core.util.WebUtils;
+import com.lj.crewpnr.common.IBSDomainUtils;
 import com.lj.crewpnr.mapper.pssdb.PSSDBSampleMapper;
 import com.lj.crewpnr.service.BookingService;
 import org.slf4j.Logger;
@@ -115,5 +116,12 @@ public class SampleController {
     @ResponseBody
     public String principal(Principal principal) {
         return WebUtils.toJson(principal);
+    }
+
+    // http://localhost:8080/sample/utils/isDomestic/ICN
+    @RequestMapping("/sample/utils/isDomestic/{airportCode}")
+    @ResponseBody
+    public String isDomestic(@PathVariable String airportCode) {
+        return "" + IBSDomainUtils.isDomestic(airportCode);
     }
 }

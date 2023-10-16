@@ -393,9 +393,9 @@ public class Constants {
         public static final String FAILURE = "F";
     }
 
-    public static class IBS_CHANNLE {
+    public static class IBS_CHANNEL {
         public static final String CHANNEL_TYPE = "API";
-        public static final String CHANNEL      = "Guest EN";
+        public static final String CHANNEL      = "PWC";
         public static final String LOCALE       = "en_US";
     }
 
