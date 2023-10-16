@@ -41,7 +41,8 @@ public class CrewPNRController {
 
     @RequestMapping("/crew/createBookings")
     public String createBookings(@RequestParam("file") MultipartFile file) throws Exception {
-        ResultMapVO resultMapVO = crewBookingService.createBookings(file);
+        ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(file);
+//        ResultMapVO resultMapVO = crewBookingService.createBookings(file);
         return WebUtils.toJson(resultMapVO);
     }
 

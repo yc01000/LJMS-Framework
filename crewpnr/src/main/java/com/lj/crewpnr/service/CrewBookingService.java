@@ -1,5 +1,6 @@
 package com.lj.crewpnr.service;
 
+import com.lj.core.common.util.RandomUtils;
 import com.lj.core.integration.soap.ibs.IbsSoapProperty;
 import com.lj.core.integration.soap.ibs.api.booking.*;
 import com.lj.core.integration.soap.ibs.domain.booking.*;
@@ -59,6 +60,19 @@ public class CrewBookingService {
 
     @Autowired
     private CrewBookingMapper crewBookingMapper;
+
+    public ResultMapVO createBookingsAsync(MultipartFile file) {
+        String service = "CREATE_BOOKINGS";
+        String key = RandomUtils.generate(10);
+
+        final MultipartFile fileFinalized = file;
+        new Thread(() -> createBookings(fileFinalized)).start();
+
+        ResultMapVO result = new ResultMapVO();
+        result.put("service", service);
+        result.put("key", key);
+        return result;
+    }
 
     public ResultMapVO createBookings(MultipartFile file){
 
