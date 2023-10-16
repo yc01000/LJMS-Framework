@@ -2,6 +2,7 @@
 <included>
 	<property name="LOGS_APP_NAME" value="crewpnr"/>
 	<property name="DATADOG_LOG_PATH" value="/data/psslog/CREWPNR_LOG" />
+	<property name="LOGFILE_PATH" value="/data/ljmicroservices/logs/crewpnr" />
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -28,8 +29,44 @@
 		</encoder>
 	</appender>
 
+	<!-- DataDog Log Appender -->
+	<appender name="appenderLogfileIBS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGFILE_PATH}/ibs-${spring.profiles.active}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGFILE_PATH}/ibs-${spring.profiles.active}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>1</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<includeTags>true</includeTags>
+			<customFields>{"host":"${HOSTNAME}", "service":"${dd.service}", "ddsource":"java", "ddtags":"env:${dd.env}"}</customFields>
+		</encoder>
+	</appender>
+
+	<!-- DataDog Log Appender -->
+	<appender name="appenderLogfileGeneral" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGFILE_PATH}/general-${spring.profiles.active}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGFILE_PATH}/general-${spring.profiles.active}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>1</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<includeTags>true</includeTags>
+			<customFields>{"host":"${HOSTNAME}", "service":"${dd.service}", "ddsource":"java", "ddtags":"env:${dd.env}"}</customFields>
+		</encoder>
+	</appender>
+
 	<!-- 통합 IBS Log Appender -->
-	<appender name="JOINTIBSAPILOG" class="com.j256.cloudwatchlogbackappender.CloudWatchAppender">
+	<appender name="JOINTIBSAPILOG" class="ch.qos.logback.core.ConsoleAppender">
 		<region>ap-northeast-2</region>
 		<logGroup>STG</logGroup>
 		<logStream>${LOGS_APP_NAME}_transactions</logStream>
@@ -45,7 +82,7 @@
 	</appender>
 	
 	<!-- Home Biz Log Appendeer -->
-	<appender name="CREWPNR_BIZ_LOG" class="com.j256.cloudwatchlogbackappender.CloudWatchAppender">
+	<appender name="CREWPNR_BIZ_LOG" class="ch.qos.logback.core.ConsoleAppender">
 		<region>ap-northeast-2</region>
 		<logGroup>STG</logGroup>
 		<logStream>${LOGS_APP_NAME}_general_log</logStream>
@@ -61,19 +98,20 @@
 	</appender>
 
 	<!-- IBS 웹서비스 로그 -->
-	<logger name="com.lj.support.integration.soap.interceptor.LogClientSoapInterceptor" additivity="true" level="info">
-		<appender-ref ref="JOINTIBSAPILOG" />
+	<logger name="com.lj.core.integration.soap.interceptor.LogClientSoapInterceptor" additivity="true" level="info">
+<!--		<appender-ref ref="JOINTIBSAPILOG" />-->
 		<appender-ref ref="DATADOG_LOG" />
+		<appender-ref ref="appenderLogfileIBS" />
 	</logger>
 
 	<!-- 3rdparty Loggers -->
-	<logger name="org.springframework.core" level="info" additivity="true" />
-	<logger name="org.springframework.beans" level="info" additivity="true" />
-	<logger name="org.springframework.context" level="info" additivity="true" />
-	<logger name="org.springframework.web" level="info" additivity="true" />
+	<logger name="org.springframework.core" level="debug" additivity="true" />
+	<logger name="org.springframework.beans" level="debug" additivity="true" />
+	<logger name="org.springframework.context" level="debug" additivity="true" />
+	<logger name="org.springframework.web" level="debug" additivity="true" />
 
-	<logger name="org.apache.commons.dbcp2" level="info" additivity="false" />
-	<logger name="org.apache.commons.beanutils" level="info" additivity="false" />
+	<logger name="org.apache.commons.dbcp2" level="debug" additivity="false" />
+	<logger name="org.apache.commons.beanutils" level="debug" additivity="false" />
 
 	<logger name="org.apache.http" level="error" additivity="false"/>
 
@@ -84,8 +122,8 @@
 	<logger name="jdbc.resultset" level="error"/>
 
 	<!-- application logger -->
-	<logger name="com.lj.crewpnr" additivity="true" level="info">
-		<appender-ref ref="CREWPNR_BIZ_LOG" />
+	<logger name="com.lj.crewpnr" additivity="true" level="debug">
+		<appender-ref ref="appenderLogfileGeneral" />
 		<appender-ref ref="DATADOG_LOG" />
 	</logger>
 
