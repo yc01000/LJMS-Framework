@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: local-crewpnr
   datasource:
     pssdb:
       jdbc-url: jdbc:oracle:thin:@jindev.cybtexbvxkgj.ap-northeast-2.rds.amazonaws.com:1521:orcl

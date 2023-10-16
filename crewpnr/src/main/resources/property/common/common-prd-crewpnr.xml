@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<entry key="comm.currentstage">prd</entry>
+
+	<entry key="cookie.domain">.jinair.com</entry>
+
+	<!-- 서버 정보 -->
+	<entry key="server.protocol">https</entry>
+	<entry key="server.host">www.jinair.com</entry>
+	<entry key="server.port">80</entry>
+	<entry key="server.host.ssl">www.jinair.com</entry>
+	<entry key="server.port.ssl">443</entry>
+	<entry key="path.js">/js/hom</entry>
+
+	<!-- 이미지 서버 -->
+	<entry key="image.server.host">images.jinair.com</entry>
+	<entry key="image.server.port">80</entry>
+	<entry key="path.image">/images</entry>
+	<entry key="path.css">/css</entry>
+
+	<!--  files.jinair.com (public) -->
+	<entry key="file.public.uri">//files.jinair.com</entry>
+
+	<!-- 지니스토어 -->
+	<entry key="jinistore.scheme">https</entry>
+	<entry key="jinistore.host">jinistore.jinair.com</entry>
+
+	<!-- 대리점 홈페이지 -->
+	<entry key="agent.server.scheme">https</entry>
+	<entry key="agent.server.host">agent.jinair.com</entry>
+
+	<!-- 진에어 외부 API -->
+	<entry key="extapi.uri.scheme">https</entry>
+	<entry key="extapi.uri.host">extapi.jinair.com</entry>
+	<entry key="extapi.uri.path.generate-swallet-uri">/swallet/generateCardData</entry>
+	<entry key="extapi.uri.path.register-smartpass-uri">/smartpass/register</entry>
+
+	<!-- 한국모바일인증(KMC) -->
+	<entry key="mobile.auth.url">https://www.kmcert.com/kmcis/web/kmcisReq.jsp</entry>
+	<entry key="mobile.auth.cpId">JINM1001</entry>
+	<entry key="mobile.auth.urlCode.join">002008</entry>
+	<entry key="mobile.auth.urlCode.child">002009</entry>
+	<entry key="mobile.auth.urlCode.idPassword">002010</entry>
+	<entry key="mobile.auth.urlCode.greenwings">002011</entry>
+	<entry key="mobile.auth.urlCode.refresh">002012</entry>
+	<entry key="mobile.auth.extendVar">0000000000000000</entry>
+
+	<!-- I-PIN -->
+	<entry key="ipin.auth.url">https://ipin.siren24.com/i-PIN/jsp/ipin_j10.jsp</entry>
+	<entry key="ipin.auth.id">HAIR002</entry>
+	<entry key="ipin.auth.srvNo.join">005009</entry>
+	<entry key="ipin.auth.srvNo.child">005010</entry>
+	<entry key="ipin.auth.srvNo.idPassword">005011</entry>
+	<entry key="ipin.auth.srvNo.greenwings">005012</entry>
+	<entry key="ipin.auth.extendVar">0000000000000000</entry>
+
+	<!-- 도로명 주소(우편번호) 검색 -->
+	<entry key="juso.search.api.url">http://www.juso.go.kr/addrlink/addrLinkApi.do</entry>
+	<entry key="juso.search.api.confmKey">bnVsbDIwMTQxMDE1MTc0OTM3</entry>
+
+	<!-- ODS/JinMart FTP -->
+	<entry key="ods.ftp.host">10.35.12.36</entry>
+	<entry key="ods.ftp.port">22</entry>
+	<entry key="ods.ftp.user">pssftpusr</entry>
+	<entry key="ods.ftp.pw">pssftpusr#1</entry>
+	<entry key="ods.ftp.path">/exdata/PSSFTP</entry>
+	<entry key="ods.ftp.path.to">/exdata/PSSFTP/PSS_ODS_RECEIVE</entry>
+	<entry key="ods.ftp.path.from">/exdata/PSSFTP/PSS_ODS_SEND</entry>
+	<entry key="ods.ftp.path.system">HOM</entry>
+	<entry key="ods.ftp.path.backup">BACKUP</entry>
+
+	<!-- SNS/Facebook -->
+	<entry key="sns.facebook.client.id">256288011480510</entry>
+	<entry key="sns.facebook.client.secret">663804e39454ae3ec8be6e6b12800792</entry>
+	<entry key="sns.facebook.reply.client.id">1605502683065090</entry>
+	<entry key="sns.facebook.reply.client.secret">c6e489ec2451ab0ea54ca5387220ebd3</entry>
+	<entry key="sns.facebook.sdk.url">https://connect.facebook.net/ko_KR/sdk.js</entry>
+	<entry key="sns.facebook.share.url">http://www.facebook.com/sharer.php?u=</entry>
+
+	<!-- SNS/네이버 -->
+	<entry key="sns.naver.client.id">g6221zBJBwhp9_WJQ9eX</entry>
+	<entry key="sns.naver.client.secret">vRMmSFiVMy</entry>
+	<entry key="sns.naver.auth.url">https://nid.naver.com/oauth2.0</entry>
+	<entry key="sns.naver.me.url">https://openapi.naver.com/v1/nid/me</entry>
+
+	<entry key="sns.naver.shorturl.client.id">yhEl0OXQtj1V6pgX3l7E</entry>
+	<entry key="sns.naver.shorturl.client.secret">CmEfsSvveW</entry>
+	<entry key="sns.naver.shorturl.url">https://openapi.naver.com/v1/util/shorturl</entry>
+
+	<!-- SNS/카카오 -->
+	<entry key="sns.kakao.client.id">17d648ba7c5b43de00d599333e8f5722</entry>
+	<entry key="sns.kakao.auth.url">https://kauth.kakao.com/oauth</entry>
+	<entry key="sns.kakao.me.url">https://kapi.kakao.com/v2/user/me</entry>
+	<entry key="sns.kakao.unlink.url">https://kapi.kakao.com/v1/user/unlink</entry>
+
+	<!-- SNS/몰인몰 -->
+	<entry key="sns.mnm.client.id">ktm20X2dDZX0Tz3Y7eVImGYz3Lh21u</entry>
+	
+	<!-- SNS/Google -->
+	<entry key="sns.google.client.id">313991584718-7a4r8ujon8090n7qqllb1bflm2p5o23b.apps.googleusercontent.com</entry>
+	<entry key="sns.google.client.secret">Vouwwud_LJxuVNDUFPlKPinU</entry>
+
+	<entry key="sns.google.code.url">https://accounts.google.com/o/oauth2/v2/auth</entry>
+	<entry key="sns.google.scope.url">https://www.googleapis.com/auth/userinfo.profile</entry>
+	<entry key="sns.google.auth.url">https://www.googleapis.com/oauth2/v4/token</entry>
+	<entry key="sns.google.me.url">https://www.googleapis.com/oauth2/v1/userinfo?alt=json</entry>
+	<entry key="sns.google.revoke.url">https://accounts.google.com/o/oauth2/revoke</entry>
+
+	<!-- SNS/LinkedIn -->
+	<entry key="sns.linkedin.client.id">81btinfblja9q2</entry>
+	<entry key="sns.linkedin.client.secret">9XaoEQ0SuJ4g1uEq</entry>
+	<entry key="sns.linkedin.auth.url">https://www.linkedin.com/oauth/v2</entry>
+	<entry key="sns.linkedin.me.url">https://api.linkedin.com/v2/me</entry>
+	<entry key="sns.linkedin.revoke.url">https://api.linkedin.com/uas/oauth/invalidateToken</entry>
+
+	<!-- SNS/Twitter -->
+	<entry key="sns.twitter.client.id">a003hoe6WdE0Sczt63RxSQ</entry>
+	<entry key="sns.twitter.client.secret">LLCtVUesu4RUA86FAybOpEzYjueBJbcpCC4a4VAWF4</entry>
+	<entry key="sns.twitter.reqtkn.url">https://api.twitter.com/oauth/request_token</entry>
+	<entry key="sns.twitter.auth.url">https://api.twitter.com/oauth/authenticate</entry>
+	<entry key="sns.twitter.acstkn.url">https://api.twitter.com/oauth/access_token</entry>
+	<entry key="sns.twitter.post.url">https://api.twitter.com/1.1/statuses/update.json</entry>
+	<entry key="sns.twitter.share.url">http://twitter.com/share?url=</entry>
+
+	<!-- bit.ly URL -->
+	<entry key="sns.bitly.url">//bit.ly/javascript-api.js</entry>
+
+	<!-- 환율정보 제공 URI -->
+	<entry key="cas.exchange.rates.uri">https://jincas.jinair.com/xml/exchangeRates</entry>
+
+	<!-- 롯데멤버스 (그린윙스 멤버십) -->
+	<entry key="grwings.lotte.server.ip">10.41.2.26</entry>
+	<entry key="grwings.lotte.server.port">32101,32102</entry>
+
+	<!-- 마케팅 담당자 이메일 -->
+	<entry key="marketing.email.name">Marketing</entry>
+	<entry key="marketing.email.addr">marketing@jinair.com</entry>
+
+	<!-- specialAssistance 이메일 -->
+	<entry key="specialAssistance.email.name">helpsvc@jinair.com</entry>
+	<entry key="specialAssistance.email.addr">helpsvc@jinair.com</entry>
+
+	<!-- payment 정보  관련 암호화 시(웹서비스 전송시 필요) 암호화 키 -->
+	<entry key="payment.encrypt.key">Payment</entry>
+
+	<!-- 보너스 항공권/경품 보너스 항공권/나비포인트 쿠폰 API -->
+	<entry key="agent.coupon.event.url">http://sales.jinair.com/bo/eventCoupon/issueCoupons</entry>
+	<entry key="agent.coupon.event.recall.url">http://sales.jinair.com/bo/eventCoupon/recallIssuedCoupons</entry>
+	<entry key="agent.coupon.bonus.url">http://sales.jinair.com/bo/auth/issueAuthCoupon</entry>
+	<entry key="agent.coupon.bonus.cancel.url">http://sales.jinair.com/bo/auth/cancelAuthCoupon</entry>
+	<entry key="agent.coupon.event.use.url">http://sales.jinair.com/bo/eventCoupon/useCoupon</entry>
+	<entry key="agent.coupon.bonus.use.url">http://sales.jinair.com/bo/auth/useAuthCoupon</entry>
+	<entry key="agent.coupon.event.canUse.url">http://sales.jinair.com/bo/eventCoupon/cancelUsedCoupon</entry>
+	<entry key="agent.coupon.bonus.canUse.url">http://sales.jinair.com/bo/auth/cancelUsedAuthCoupon</entry>
+	<entry key="agent.coupon.event.firstcome.url">http://sales.jinair.com/bo/eventCoupon/issueFirstComeCoupons</entry>
+
+	<!-- 챗봇 URL -->
+	<entry key="chatbot.url">https://jinairbot.azurewebsites.net/chatbot/index.html</entry>
+
+	<!-- [IBE] 버튼 제어용.
+		- true  : 제어하는 버튼을 화면에 보이도록 처리
+		- false : 제어하는 버튼을 화면에 안 보이도록 처리 -->
+	<entry key="ibe.btn.visible">true</entry>
+	<!-- 결제 PG 팝업에서 실제 가격 표출 사용 유무 -->
+	<entry key="payment.actual.amount">true</entry>
+
+	<!-- GPS 웹서비스 호출 시 user 정보 -->
+	<entry key="payment.gps.user">HOM</entry>
+	<entry key="payment.gps.credential">rEs#gb8g</entry>
+
+	<entry key="loyalty.payment.gps.user">LOYALTY</entry>
+	<entry key="loyalty.payment.gps.credential">zAwkWveKa</entry>
+	<!-- 넷퍼넬 기능 적용 유무
+	- true  : 넷퍼넬 기능 사용
+	- false : 넷퍼넬 기능 미사용 -->
+	<entry key="netfunnel.visible">true</entry>
+
+	<!-- 넷퍼넬 booking/index 접근 허용 -->
+	<entry key="netfunnel.index">false</entry>
+
+	<!-- 넷퍼넬 config uri -->
+	<entry key="netfunnel.config.uri">https://files.jinair.com/netfunnel/config.json</entry>
+
+	<!-- DD -->
+	<entry key="dd.script.endpoint">https://www.datadoghq-browser-agent.com/datadog-rum-v4.js</entry>
+	<entry key="dd.script.client-token">pub425bbe36868a0f9ad87ebaf21e596f7a</entry>
+	<entry key="dd.script.application-id">2d16c825-294d-4cc2-8758-5f3bef1eacbd</entry>
+	<entry key="dd.script.site">datadoghq.com</entry>
+	<entry key="dd.script.service">b2c_prd</entry>
+	<entry key="dd.script.env">PRD</entry>
+	<entry key="dd.script.allowed.tracing.urls.domain">https://www.jinair.com</entry>
+
+	<!-- 하나은행 API Endpoint -->
+	<entry key="hana.exchange.wallet.app.key">lj0717013125063003P0001</entry>
+	<entry key="hana.exchange.wallet.app.secret">44AuU4jntHlYKRXgTWXj5xZm4z845PSu</entry>
+	<entry key="hana.openapi.request.token.url">https://api.kebhana.com/kebhnb/fxw/v1/transaction/usrCertInfoReg</entry>
+	<entry key="hana.exchange.wallet.service.url">https://m.kebhana.com/exr/oneGate.do</entry>
+	<entry key="webapp.remote.ip">13.125.63.3</entry>
+
+	<!-- PNS API Endpoint -->
+	<entry key="pns.api.protocol">https</entry>
+	<entry key="pns.api.host">pns.jinair.com</entry>
+	<entry key="pns.api.sendmessage.path">/message/sendmessage</entry>
+
+	<entry key="ga.script.url">https://www.google-analytics.com/analytics.js</entry>
+	<entry key="gtag.script.url">https://www.googletagmanager.com/gtag/js</entry>
+	<entry key="fb.events.script.url">https://connect.facebook.net/en_US/fbevents.js</entry>
+	<entry key="fb.tr.script.url">https://www.facebook.com/tr</entry>
+	<entry key="aa.launch.script.url">https://assets.adobedtm.com/9f7767d312ae/4a1737c07e51/launch-19b1f4fcc423.min.js</entry>
+
+	<!-- Infobip API Endpoint -->
+	<entry key="infobip.api.url">https://9n5pr.api.infobip.com/omni/1/advanced</entry>
+	<entry key="infobip.api.access.token">amluYWlyX0tSOkFuZGVsYW5kMTI0Xg==</entry>
+	<entry key="infobip.api.scenario.key">3065ABDF94A3BC5871326A086DC3280F</entry>
+
+	<entry key="milkwallet.code">0101</entry>
+	<entry key="milkwallet.app.key">p9VLezmVAbvHDRqd</entry>
+	<entry key="milkwallet.app.secret">4LSMvcmcLvHaMnQbrCfuAg5ZmwkQ7uU4ssKZWmzstkQJBdfUyzTX9K2YFWJzp4Uy</entry>
+
+	<entry key="app.key.MLK">p9VLezmVAbvHDRqd</entry>
+	<entry key="app.secret.MLK">4LSMvcmcLvHaMnQbrCfuAg5ZmwkQ7uU4ssKZWmzstkQJBdfUyzTX9K2YFWJzp4Uy</entry>
+
+	<entry key="jinistore.code">0102</entry>
+	<entry key="jinistore.app.key">dDgCp8StSyGE1Uvh</entry>
+	<entry key="jinistore.app.secret">2kyScDA2WyJXO5k6pzxhoLPHtemLvb0mqYYSN5m6EM6UzdwTj5WkaroQK6GXWtpT</entry>
+
+	<!-- 밀크 API -->
+	<entry key="milk.api.endpoint.connect">https://jinair.mps.milkprotocol.io/v2/auth/connect/ci</entry>
+	<entry key="milk.api.endpoint.info">https://jinair.mps.milkprotocol.io/v2/auth/info</entry>
+	<entry key="milk.api.endpoint.disconnect">https://jinair.mps.milkprotocol.io/v2/auth/disconnect</entry>
+	<entry key="milk.api.key">5718e716-a5f3-442c-9ab9-873d1cd7563e</entry>
+
+	<!--  OTA API -->
+	<entry key="ota.api.isreacirop.endpoint">https://otauat.jinair.com/isreacirop</entry>
+	<entry key="ota.api.isreacirop.key">pLVveh5uXj4C8r5EKOWyB92EUF891Ljh53XPQIQ6</entry>
+
+	<!-- ZENDESK SSO 로그인 -->
+	<entry key="zendesk.sso.domain">jinairsupport</entry>
+	<entry key="zendesk.sso.key">exCEJlEeYKKSG3RlXfEs6ZEPbE6iVOT0EooziuvWhD1FqJaJ</entry>
+	<entry key="zendesk.api.key">RpnzBU4p2p4svVNrhnPclzA3XIv0HhMdoEHqQvMw</entry>
+	<entry key="zendesk.admin.user">jhuncho@jinair.com</entry>
+
+	<!-- ACE API -->
+	<entry key="ace.api.header.resource">3711200a-5f30-4ead-85fc-517f5446d13c</entry>
+	<entry key="ace.api.header.app-id">785d7e10-9197-4bc1-807a-4103ba62e588</entry>
+	<entry key="ace.api.header.app-key">uCd.525hFYWKR0kI._JVFPk6_75.3bmg3B</entry>
+	<entry key="ace.api.header.api-version">1</entry>
+	<entry key="ace.api.header.ocp-apim-subscription-key">c5adc885267e4e7b97b547e6eabdaa98</entry>
+	<entry key="ace.api.header.source-system">JINAIR</entry>
+	<entry key="ace.api.header.source-system-environment">PRD</entry>
+	<entry key="ace.api.header.login-user-id">A2072924</entry>
+	<entry key="ace.api.accesstoken.endpoint">https://korea.digitalgateway.chubb.com/digital.operations.token</entry>
+	<entry key="ace.api.ota-0001.endpoint">https://korea.digitalgateway.chubb.com/sales.korah-soa/quote/jinair/quoteData</entry>
+	<entry key="ace.api.ota-0002.endpoint">https://korea.digitalgateway.chubb.com/sales.korah-soa/quote/jinair/quoteCreation</entry>
+	<entry key="ace.api.ota-0003.endpoint">https://korea.digitalgateway.chubb.com/sales.korah-soa/policy/jinair/policyStatus</entry>
+	<entry key="ace.api.ota-0004.endpoint">https://korea.digitalgateway.chubb.com/sales.korah-soa/policy/jinair/policyDetail</entry>
+	<entry key="ace.api.ota-0005.endpoint">https://korea.digitalgateway.chubb.com/sales.korah-soa/policy/jinair/cancelPolicy</entry>
+	<entry key="ace.api.ota-0006.endpoint">https://korea.digitalgateway.chubb.com/sales.korah-soa/policy/jinair/coverageDetail</entry>
+	<entry key="ace.api.ota-0007.endpoint">https://korea.digitalgateway.chubb.com/sales.korah-soa/quote/jinair/restrictCountry</entry>
+	<entry key="ace.api.param.sponsor-code">701241JAIR</entry>
+</properties>

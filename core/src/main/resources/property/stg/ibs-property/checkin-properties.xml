@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"[
-	<!ENTITY INTEGRATION "https://iflyrestest.ibsgen.com:5120">	
-	<!ENTITY UAT "http://10.196.20.76:5205">
-	<!ENTITY STAGE "http://10.196.20.76:7105">
-	<!ENTITY PRODUCTION "http://10.196.21.203:7010">
-]>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 	<comment>IBS WSDL 4.4 base - CHECKIN</comment>
 
-	<entry key="checkin.checkin.endpoint">&STAGE;/iRes_CheckIn_WS/services/CheckinPort</entry>
-	<entry key="checkin.checkinUtility.endpoint">&STAGE;/iRes_CheckIn_WS/services/CheckinUtilityPort</entry>
-	<entry key="checkin.reports.endpoint">&STAGE;/iRes_CheckIn_WS/services/ReportsPort</entry>
+	<entry key="checkin.checkin.endpoint">http://10.196.20.76:7105/iRes_CheckIn_WS/services/CheckinPort</entry>
+	<entry key="checkin.checkinUtility.endpoint">http://10.196.20.76:7105/iRes_CheckIn_WS/services/CheckinUtilityPort</entry>
+	<entry key="checkin.reports.endpoint">http://10.196.20.76:7105/iRes_CheckIn_WS/services/ReportsPort</entry>
 	
 	
 	<entry key="checkin.checkin.collectApis">urn:#collectApis</entry>

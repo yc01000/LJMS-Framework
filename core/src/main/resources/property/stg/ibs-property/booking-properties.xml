@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"[
-	<!ENTITY INTEGRATION "https://iflyrestest.ibsgen.com:5120">	
-	<!ENTITY UAT "http://10.196.20.76:5205">
-	<!ENTITY STAGE "http://10.196.20.76:7105">
-	<!ENTITY PRODUCTION "http://10.196.21.203:7010">
-]>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 	<comment>IBS WSDL 4.4 base - BOOKING</comment>
 	
-	<entry key="booking.bookingUtility.endpoint">&STAGE;/iRes_Booking_WS/services/BookingUtilityPort</entry>
-	<entry key="booking.reservations.endpoint">&STAGE;/iRes_Booking_WS/services/ReservationsPort</entry>
-	<entry key="booking.price.endpoint">&STAGE;/iRes_Booking_WS/services/PricePort</entry>	
-	<entry key="booking.AuthenticatorService.endpoint">&STAGE;/iRes_Booking_WS/services/AuthenticatorPort</entry>
-	<entry key="booking.ancillary.endpoint">&STAGE;/iRes_Booking_WS/services/AncillaryPort</entry>
-	<entry key="booking.airlineQueue.endpoint">&STAGE;/iRes_Booking_WS/services/AirlineQueuePort</entry>
-	<entry key="booking.agency.endpoint">&STAGE;/iRes_Booking_WS/services/AgencyPort</entry>
-	<entry key="booking.giftVoucher.endpoint">&STAGE;/iRes_Booking_WS/services/GiftVoucherPort</entry>
-	<entry key="booking.payment.endpoint">&STAGE;/iRes_Booking_WS/services/PaymentPort</entry>
-	<entry key="booking.reports.endpoint">&STAGE;/iRes_Booking_WS/services/ReportsPort</entry>	
-	<entry key="booking.customerProfile.endpoint">&STAGE;/iRes_Booking_WS/services/CustomerProfilePort</entry>	
-	<entry key="booking.availability.endpoint">&STAGE;/iRes_Booking_WS/services/AvailabilityPort</entry>	
-	<entry key="booking.flight.endpoint">&STAGE;/iRes_Booking_WS/services//FlightPort</entry>	
-	<entry key="booking.flightInventory.endpoint">&STAGE;/iRes_Booking_WS/services//FlightInventoryPort</entry>
+	<entry key="booking.bookingUtility.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/BookingUtilityPort</entry>
+	<entry key="booking.reservations.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/ReservationsPort</entry>
+	<entry key="booking.price.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/PricePort</entry>
+	<entry key="booking.AuthenticatorService.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/AuthenticatorPort</entry>
+	<entry key="booking.ancillary.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/AncillaryPort</entry>
+	<entry key="booking.airlineQueue.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/AirlineQueuePort</entry>
+	<entry key="booking.agency.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/AgencyPort</entry>
+	<entry key="booking.giftVoucher.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/GiftVoucherPort</entry>
+	<entry key="booking.payment.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/PaymentPort</entry>
+	<entry key="booking.reports.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/ReportsPort</entry>
+	<entry key="booking.customerProfile.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/CustomerProfilePort</entry>
+	<entry key="booking.availability.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services/AvailabilityPort</entry>
+	<entry key="booking.flight.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services//FlightPort</entry>
+	<entry key="booking.flightInventory.endpoint">http://10.196.20.76:7105/iRes_Booking_WS/services//FlightInventoryPort</entry>
 	
 	<entry key="booking.bookingUtility.currencyConvertor">urn:#currencyConvertor</entry>
 	<entry key="booking.bookingUtility.retrieveAirlineRegion">urn:#retrieveAirlineRegion</entry>
