@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
-	<include resource="property/logs/log-${spring.profiles.active}.xml" />
+	<include resource="property/log/log-${spring.profiles.active}.xml" />
 </configuration>

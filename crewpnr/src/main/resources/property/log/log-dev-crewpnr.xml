@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+	<property name="LOGS_APP_NAME" value="crewpnr"/>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>logback %d{HH:mm:ss.SSS} [%thread] %-5level [%-36logger{36}] - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 통합 IBS Log Appender -->
+	<appender name="JOINTIBSAPILOG" class="com.j256.cloudwatchlogbackappender.CloudWatchAppender">
+		<region>ap-northeast-2</region>
+		<logGroup>DEV</logGroup>
+		<logStream>${LOGS_APP_NAME}_transactions</logStream>
+		<layout>
+			<pattern>{
+				"T"		: "%d{yyyy-MM-dd HH:mm:ss.SSS}",
+				"stage"	: "${spring.profiles.active}",
+				"level"	: "%level",
+				"msg"	: %msg,
+				"thread": "[%thread]"
+			}</pattern>
+		</layout>
+	</appender>
+
+	<!-- Crewpnr Biz Log Appendeer -->
+	<appender name="CREWPNR_BIZ_LOG" class="com.j256.cloudwatchlogbackappender.CloudWatchAppender">
+		<region>ap-northeast-2</region>
+		<logGroup>DEV</logGroup>
+		<logStream>${LOGS_APP_NAME}_general_log</logStream>
+		<layout>
+			<pattern>{
+				"T"		: "%d{yyyy-MM-dd HH:mm:ss.SSS}",
+				"stage"	: "${spring.profiles.active}",
+				"level"	: "%level",
+				"msg"	: %msg,
+				"thread": "[%thread]"
+			}</pattern>
+		</layout>
+	</appender>
+
+	<!-- IBS 웹서비스 로그 -->
+	<logger name="com.lj.support.integration.soap.interceptor.LogClientSoapInterceptor" additivity="true" level="info">
+		<appender-ref ref="JOINTIBSAPILOG"/>
+	</logger>
+
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core" level="info" additivity="true" />
+	<logger name="org.springframework.beans" level="info" additivity="true" />
+	<logger name="org.springframework.context" level="info" additivity="true" />
+	<logger name="org.springframework.web" level="info" additivity="true" />
+
+	<logger name="org.apache.commons.dbcp2" level="info" additivity="false" />
+	<logger name="org.apache.commons.beanutils" level="info" additivity="false" />
+
+	<logger name="org.apache.http" level="error" additivity="false"/>
+
+	<logger name="java.sql" level="error"/>
+	<logger name="jdbc.sqlonly" level="debug"/>
+	<logger name="jdbc.sqltiming" level="debug"/>
+	<logger name="jdbc.audit" level="error"/>
+	<logger name="jdbc.resultset" level="error"/>
+
+	<!-- application logger -->
+	<logger name="com.lj.crewpnr" additivity="true" level="info" >
+		<appender-ref ref="CREWPNR_BIZ_LOG"/>
+	</logger>
+
+	<root level="debug">
+		<appender-ref ref="STDOUT"/>
+	</root>
+</included>
