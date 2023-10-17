@@ -51,7 +51,8 @@ public class SampleController {
 
     @RequestMapping("/")
     public String index() throws SQLException {
-        return "redirect:/index.html";
+        final String SERVER_NAME = "https://stg-crewpnr.jinair.com";
+        return "redirect:" + SERVER_NAME + "/index.html";
     }
 
     // http://localhost:8080/sample/ibs?pnrNo=X2E9W7
