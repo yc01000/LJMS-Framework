@@ -93,10 +93,21 @@ export default {
 
   methods: {
     search() {
-      fetch('https://jsonplaceholder.typicode.com/todos')
+      fetch('https://stg-crewpnr.jinair.com/crew/getReservationSummary', {
+        method: 'POST',
+        headers: new Headers({
+          'Content-Type': 'application/json;charset=UTF-8'
+        }),
+        body: JSON.stringify({
+            "depStartDate":"2023-10-01",
+            "depEndDate":"2023-10-30",
+            "stnfrCode":"GMP",
+            "stntoCode":"CJU"
+        })
+      })
         .then((response) => response.json())
         .then((data) => {
-          this.items = data;
+          console.log(data);
         })
         .catch((error) => {
           console.error('데이터를 불러오는 중 오류가 발생했습니다.', error);
