@@ -77,12 +77,12 @@ public class CrewPNRController {
     @RequestMapping("/crew/getCreateBookingFailLog")
     public String getCreatePNRHistory(@RequestBody CrewPNRLogCriteriaVO criteriaVO) throws Exception {
 
-        criteriaVO.setStnfrCode("GMP");
-        criteriaVO.setStntoCode("CJU");
-        criteriaVO.setBrdStrtDt("20230904");
-        criteriaVO.setBrdEndDt("20230904");
-        criteriaVO.setFareClass("U1");
-        criteriaVO.setPaxCount(5);
+//        criteriaVO.setStnfrCode("GMP");
+//        criteriaVO.setStntoCode("CJU");
+//        criteriaVO.setBrdStrtDt("20230904");
+//        criteriaVO.setBrdEndDt("20230904");
+//        criteriaVO.setFareClass("U1");
+//        criteriaVO.setPaxCount(5);
 
         return WebUtils.toJson(crewBookingMapper.getCreateBookingFailLog(criteriaVO));
     }
