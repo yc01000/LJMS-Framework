@@ -7,7 +7,7 @@ public class CrewPNRLogCriteriaVO {
     private String brdStrtDt;
     private String brdEndDt;
     private String fareClass;
-    private int paxCount;
+    private String paxCount;
 
     public String getStnfrCode() {
         return stnfrCode;
@@ -49,11 +49,11 @@ public class CrewPNRLogCriteriaVO {
         this.fareClass = fareClass;
     }
 
-    public int getPaxCount() {
+    public String getPaxCount() {
         return paxCount;
     }
 
-    public void setPaxCount(int paxCount) {
+    public void setPaxCount(String paxCount) {
         this.paxCount = paxCount;
     }
 }
