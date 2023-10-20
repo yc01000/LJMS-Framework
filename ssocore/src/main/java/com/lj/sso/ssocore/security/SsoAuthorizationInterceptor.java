@@ -31,8 +31,7 @@ public class SsoAuthorizationInterceptor extends WebRequestHandlerInterceptorAda
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		UserInfoVO	userInfoVO	= getLoginUserInfo(request);
 		String			requestUri	= (null == request) ? "" : BinderUtils.chompString(request.getRequestURI());
 		String			queryStr	= (null == request) ? "" : BinderUtils.chompString(request.getQueryString());
@@ -45,39 +44,8 @@ public class SsoAuthorizationInterceptor extends WebRequestHandlerInterceptorAda
 
 		if (null == userInfoVO) {
 			LOGGER.debug("User Information is null and redirect ModelAndViewDefiningException");
-			// 접근 정보 이력 남김
-//			if (0 >= authorityHandler.addSystemAccessHistory(null, null, requestUri, "No Login User", sysNo)) {
-//				if (LOGGER.isDebugEnabled()) {
-//					LOGGER.debug("[Add System Access History Fail]");
-//				}
-//			}
-//
-//			if (LOGGER.isDebugEnabled()) {
-//				LOGGER.debug("[No Login User]");
-//				LOGGER.debug("[SsoAuthorizationInterceptor Finish] ====================");
-//			}
-//
-////			throw new ModelAndViewDefiningException(new ModelAndView("redirect:"));	
-//			String oauthUri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&state=%s", 
-//					userAuthorizationUri, clientId, redirectUri, scope);
-//			
-//			SsoRedirection.redirectConfirmLogin(request, response, oauthUri, null);
-//			
-//			return true;
-			
 			throw new ModelAndViewDefiningException(new ModelAndView("redirect:/"));
 		} 
-		
-//		String	requestWith	= (null == request) ? "" : BinderUtils.chompString(request.getHeader("x-requested-with"));
-//
-//		if (!isAccessable(request, userInfoVO, requestUri, queryStr, requestWith)) {
-//			if (LOGGER.isDebugEnabled()) {
-//				LOGGER.debug("[No Authorization]");
-//				LOGGER.debug("[SsoAuthorizationInterceptor Finish] ====================");
-//			}
-//
-//			throw new ModelAndViewDefiningException(new ModelAndView("redirect:/error/badRequest"));	
-//		}
 
 		return super.preHandle(request, response, handler);
 	}

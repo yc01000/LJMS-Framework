@@ -51,12 +51,13 @@ import com.lj.sso.ssocore.service.SsoOAuthService;
  *  @desc    : 페이지 접근시마다 인증 여부를 확인
  */
 public class SsoLoginCallbackFilter extends OncePerRequestFilter {
+
 	private final static Logger	LOGGER	= LoggerFactory.getLogger(SsoLoginCallbackFilter.class);
 
 	private final static RedirectStrategy	REDIRECT_STRATEGY	= new DefaultRedirectStrategy();
 
 	@Resource
-	private ConfigurableWebApplicationContext	appContext;
+	private ConfigurableWebApplicationContext appContext;
 
 	@Resource(name="SsoOAuthService")
 	private SsoOAuthService ssoOAuthService;
@@ -103,7 +104,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 					
 			if(StringUtils.isNotEmpty(code) && StringUtils.isNotEmpty(state)) {
 				
-				String tokenResponse = requestUri.endsWith("/callback") ? ssoOAuthService.requestAccessToken(code) : ssoOAuthService.requestAccessToken(code, requestUri);
+				String tokenResponse = ssoOAuthService.requestAccessToken(code);
 				
 				if(StringUtils.isEmpty(tokenResponse)) {
 					LOGGER.info("Access token 생성 실패", code, state);
@@ -127,9 +128,9 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 					ErrorResponseVO errorResponse = new ErrorResponseVO();
 //					errorResponse = JsonUtil.getObjectFromJsonString(userToken, ErrorResponseVO.class);
 					errorResponse = new Gson().fromJson(userToken, ErrorResponseVO.class);
-					
-					if(errorResponse.getError().equals("invalid_token")) {
-						if(errorResponse.getError_description().contains("Access token expired")) {
+
+					if (errorResponse.getError().equals("invalid_token")) {
+						if (errorResponse.getError_description().contains("Access token expired")) {
 							// request refresh token
 							accessTokenVO = ssoOAuthService.requestRefreshToken(accessTokenVO);
 						} else {
@@ -138,15 +139,15 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 							filterChain.doFilter(request, response);
 							return;
 						}
-					} 
-	
+					}
+
 					// token 검증
-					if(null == accessTokenVO || StringUtils.isEmpty(accessTokenVO.getAccess_token())) {
+					if (null == accessTokenVO || StringUtils.isEmpty(accessTokenVO.getAccess_token())) {
 						filterChain.doFilter(request, response);
 						return;
 					}
 				}
-							
+
 				// 정상처리
 				if (null == session) {
 					session	= request.getSession(true);
@@ -282,5 +283,4 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 
 		return remoteAddr;
 	}
-
 }

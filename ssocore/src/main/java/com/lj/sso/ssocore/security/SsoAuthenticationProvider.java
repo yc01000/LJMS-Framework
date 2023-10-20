@@ -24,10 +24,7 @@ public class SsoAuthenticationProvider implements AuthenticationProvider {
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Authentication is [{}]", BinderUtils.chompString(authentication));
-		}
-
+		LOGGER.info("Authentication is [{}]", BinderUtils.chompString(authentication));
 		return authentication;
 	}
 
