@@ -7,7 +7,7 @@ public class ReservationSummaryCriteriaVO {
     private String stntoCode;
     private String SegmentStatus;
     private String fareClass;
-    private int paxCount;
+    private String paxCount;
     private String agencyCode;
 
     public String getDepStartDate() {
@@ -58,11 +58,11 @@ public class ReservationSummaryCriteriaVO {
         this.fareClass = fareClass;
     }
 
-    public int getPaxCount() {
+    public String getPaxCount() {
         return paxCount;
     }
 
-    public void setPaxCount(int paxCount) {
+    public void setPaxCount(String paxCount) {
         this.paxCount = paxCount;
     }
 

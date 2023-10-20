@@ -46,6 +46,13 @@ public class CrewPNRController {
         return WebUtils.toJson(resultMapVO);
     }
 
+//    @RequestMapping("/crew/createBookingsForGUM")
+//    public String createBookingsForGUM(@RequestParam("file") MultipartFile file) throws Exception {
+//        //ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(file);
+//        ResultMapVO resultMapVO = crewBookingService.createBookingsForGum(file);
+//        return WebUtils.toJson(resultMapVO);
+//    }
+
     @RequestMapping("/crew/getReservationSummary")
     public String getReservationSummary(@RequestBody ReservationSummaryCriteriaVO criteriaVO) throws Exception {
 //        criteriaVO.setDepStartDate("2023-09-05");
@@ -88,7 +95,7 @@ public class CrewPNRController {
     }
 
     @RequestMapping("/crew/getSummaryListExcel")
-    public void retrieveSummaryListExcelDown(HttpServletRequest request, HttpServletResponse response, ReservationSummaryCriteriaVO criteriaVO) throws Exception{
+    public void retrieveSummaryListExcelDown(HttpServletRequest request, HttpServletResponse response, @RequestBody ReservationSummaryCriteriaVO criteriaVO) throws Exception{
 
         //Workbook workbook = new XSSFWorkbook();
 //        criteriaVO.setDepStartDate("2023-09-05");
@@ -98,7 +105,7 @@ public class CrewPNRController {
 
         ExcelInfoVO excelInfoVO = new ExcelInfoVO();
         String nowDateStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmmss"));
-        String fileName = "retrieveSummaryList" + "(" + nowDateStr + ")";
+        String fileName = "retrieveSummaryList_" + nowDateStr;
 
         ResultMapVO summaryResult = crewBookingService.getReservationSummary(criteriaVO);
         List<ReservationSummaryVO> summaryList = summaryResult.get("summaryResult", List.class);
@@ -114,7 +121,7 @@ public class CrewPNRController {
         headerNames.add("좌석수");
         headerNames.add("PNR");
         headerNames.add("SEGMENT STS");
-        headerNames.add("예약상태");
+//        headerNames.add("예약상태");
         excelInfoVO.setHeaderNames(headerNames);
 
 
@@ -158,16 +165,17 @@ public class CrewPNRController {
         // 내용 생성
         for (int j = 0; j < summaryList.size(); j++) {
             Row dataRow = sheet.createRow(j + 1);
-            dataRow.createCell(0).setCellValue(summaryList.get(j).getFltnum());
-            dataRow.createCell(1).setCellValue(summaryList.get(j).getDepDate());
-            dataRow.createCell(2).setCellValue(summaryList.get(j).getStnfrCode());
-            dataRow.createCell(3).setCellValue(summaryList.get(j).getStntoCode());
-            dataRow.createCell(4).setCellValue(summaryList.get(j).getDepartureDateTime());
-            dataRow.createCell(5).setCellValue(summaryList.get(j).getArrivalDateTime());
-            dataRow.createCell(6).setCellValue(summaryList.get(j).getFareClass());
-            dataRow.createCell(7).setCellValue(summaryList.get(j).getPaxCount());
-            dataRow.createCell(8).setCellValue(summaryList.get(j).getPNRNumber());
-            dataRow.createCell(9).setCellValue(summaryList.get(j).getSegmentStatus());
+            dataRow.createCell(0).setCellValue(j+1);
+            dataRow.createCell(1).setCellValue(summaryList.get(j).getFltnum());
+            dataRow.createCell(2).setCellValue(summaryList.get(j).getDepDate());
+            dataRow.createCell(3).setCellValue(summaryList.get(j).getStnfrCode());
+            dataRow.createCell(4).setCellValue(summaryList.get(j).getStntoCode());
+            dataRow.createCell(5).setCellValue(summaryList.get(j).getDepartureDateTime());
+            dataRow.createCell(6).setCellValue(summaryList.get(j).getArrivalDateTime());
+            dataRow.createCell(7).setCellValue(summaryList.get(j).getFareClass());
+            dataRow.createCell(8).setCellValue(summaryList.get(j).getPaxCount());
+            dataRow.createCell(9).setCellValue(summaryList.get(j).getPNRNumber());
+            dataRow.createCell(10).setCellValue(summaryList.get(j).getSegmentStatus());
         }
 
         // Making size of column auto resize to fit with data
