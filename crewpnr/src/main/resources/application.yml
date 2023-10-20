@@ -12,3 +12,22 @@ spring:
       username: JINAIR
       password: AIRJIN
       driver-class-name: oracle.jdbc.driver.OracleDriver
+
+server:
+  name: local-crewpnr.jinair.com
+
+# SSO 클라이언트에서 정의해줘야 하는 sso 관련 properties
+sso:
+  oauth:
+    endpoint:
+      authorize: https://ssostg.jinair.com/oauth/authorize
+      token: https://ssostg.jinair.com/oauth/token
+      userinfo: https://ssostg.jinair.com/oauth/userinfo
+    client-id: local-crewpnr
+    client-secret: a76858d3-7500-475d-9e57-cef18fdf2e36
+    scope: ReadProfile,ReadAll,WriteProfile
+    redirect-uri: https://local-crewpnr.jinair.com/sso/callback
+  aws:
+    s3:
+      region: ap-northeast-2
+      key-id: e4303df7-fd91-4c6b-a9a5-1413343bac0e

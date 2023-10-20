@@ -30,16 +30,16 @@ public class SsoAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	private final static RedirectStrategy REDIRECT_STRATEGY = new DefaultRedirectStrategy();
 
-	@Value(("${sso.endpoint.authorize}"))
+	@Value(("${sso.oauth.endpoint.authorize}"))
 	private String authorizeUri;
 
-	@Value(("${sso.client-id}"))
+	@Value(("${sso.oauth.client-id}"))
 	private String clientId;
 
-	@Value(("${sso.redirect-uri}"))
+	@Value(("${sso.oauth.redirect-uri}"))
 	private String redirectUri;
 
-	@Value(("${sso.scope}"))
+	@Value(("${sso.oauth.scope}"))
 	private String scope;
 
 	@Override

@@ -13,30 +13,32 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 
+@Service("SsoOAuthService")
 public class SsoOAuthService {
 
 	private static final Logger LOGGER	= LoggerFactory.getLogger(SsoOAuthService.class);
 
-	@Value(("${sso.endpoint.token}"))
+	@Value(("${sso.oauth.endpoint.token}"))
 	private String tokenUri;
 
-	@Value(("${sso.endpoint.userinfo}"))
+	@Value(("${sso.oauth.endpoint.userinfo}"))
 	private String userinfoUri;
 
-	@Value(("${sso.client-id}"))
+	@Value(("${sso.oauth.client-id}"))
 	private String clientId;
 
-	@Value(("${sso.client-secret}"))
+	@Value(("${sso.oauth.client-secret}"))
 	private String clientSecret;
 
-	@Value(("${sso.scope}"))
+	@Value(("${sso.oauth.scope}"))
 	private String scope;
 
-	@Value(("${sso.redirect-uri}"))
+	@Value(("${sso.oauth.redirect-uri}"))
 	private String redirectUri;
 
 	/**
