@@ -13,6 +13,7 @@ import com.lj.crewpnr.service.BookingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,10 +50,12 @@ public class SampleController {
     @Autowired
     private CityAirportHandler cityAirportHandler;
 
+    @Value("${server.scheme}://${server.name}")
+    String serverEndpoint;
+
     @RequestMapping("/")
     public String index() throws SQLException {
-        final String SERVER_NAME = "https://stg-crewpnr.jinair.com";
-        return "redirect:" + SERVER_NAME + "/index.html";
+        return "redirect:" + serverEndpoint + "/index.html";
     }
 
     // http://localhost:8080/sample/ibs?pnrNo=X2E9W7
