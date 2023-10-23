@@ -32,6 +32,8 @@
 			<sec:frame-options policy="SAMEORIGIN"/>
 		</sec:headers>
 
+		<sec:csrf disabled="true" />
+
 		<sec:intercept-url pattern="/**" access="hasRole('ROLE_USER')" />
 
 		<sec:custom-filter ref="ssoLoginCallbackFilter" before="FIRST" />

@@ -18,6 +18,8 @@ import com.lj.crewpnr.vo.booking.ReservationSummaryCriteriaVO;
 import com.lj.crewpnr.vo.booking.ReservationSummaryVO;
 import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
+import com.lj.sso.ssocore.security.SsoAuthenticationToken;
+import com.lj.sso.ssocore.security.vo.UserInfoVO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -615,6 +619,15 @@ public class CrewBookingService {
 
     public ResultMapVO getReservationSummary(ReservationSummaryCriteriaVO criteriaVO) {
 
+        // 로그인 유저 정보 취득
+        UserInfoVO loginUser = (UserInfoVO) (((SsoAuthenticationToken) ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getUserPrincipal()).getPrincipal());
+
+        // 로그인 유저의 부서 확인 후 대응하는 대리점 코드 세팅
+        String agencyCode = null;
+        if(StringUtils.equals(loginUser.getDepartment(), "1118")) {
+            agencyCode = "20024620";
+        }
+
         ResultMapVO resultMapVO = new ResultMapVO();
 
         IbsSoapProperty property = new IbsSoapProperty("TEST");
@@ -635,7 +648,7 @@ public class CrewBookingService {
         req.setAirlineCode(airlineCode);
         req.setBoardPoint(criteriaVO.getStnfrCode());
         req.setOffPoint(criteriaVO.getStntoCode());
-        req.setAgencyCode("20024620");
+        req.setAgencyCode(agencyCode);
 
         req.setPnrType(PNRType.NORMAL);
         req.setBookingChannel(bookingChannelKeyType);

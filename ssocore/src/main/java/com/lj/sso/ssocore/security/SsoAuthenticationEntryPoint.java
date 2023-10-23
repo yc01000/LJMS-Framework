@@ -1,5 +1,6 @@
 package com.lj.sso.ssocore.security;
 
+import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -11,6 +12,9 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -47,6 +51,13 @@ public class SsoAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		LOGGER.info("request url is: {}", request.getRequestURI());
 		String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&state=%s", authorizeUri, clientId, redirectUri, scope);
 		LOGGER.info("move to sso: {}", uri);
-		REDIRECT_STRATEGY.sendRedirect(request, response, uri);
+
+		Map<String, Object> results = new HashMap<>();
+		results.put("error", "not signed in");
+		results.put("error_description", "redirect to 'redirect_uri' to sign");
+		results.put("redirect_uri", uri);
+		response.getOutputStream().write(new Gson().toJson(results).getBytes(StandardCharsets.UTF_8));
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.addHeader("Content-Type", "application/json;charset=UTF-8");
 	}
 }

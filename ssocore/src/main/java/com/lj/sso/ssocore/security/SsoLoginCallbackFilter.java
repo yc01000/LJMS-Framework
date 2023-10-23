@@ -67,6 +67,12 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 		String query = BinderUtils.chompString(request.getQueryString());
 		LOGGER.info("+|{}|remote ip: {}, query: {}", uuid, remoteIp, query);
 
+		String returnUrl = BinderUtils.chompString(request.getParameter("returnUrl"));
+		if(StringUtils.isBlank(returnUrl)) {
+			returnUrl = defaultReturnUri;
+			LOGGER.info("{}|return url is replaced with default return url: {}", uuid, returnUrl);
+		}
+
 		// /sso/callback으로 접근했지만, 이미 principal이 있을 경우 리턴
 		HttpSession session = request.getSession(false);
 		if(session != null) {
@@ -75,7 +81,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 				Authentication authentication = context.getAuthentication();
 				if(authentication != null) {
 					LOGGER.info("-|{}|이미 정상 사용자로 인증되고, 해당 시스템 내 세션에 사용자 정보가 존재하는 경우는 Bypass (정상 사용자 처리)", uuid);
-					filterChain.doFilter(request, response);
+					new DefaultRedirectStrategy().sendRedirect(request, response, returnUrl);
 					return;
 				}
 			}
@@ -151,12 +157,6 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 		session.setAttribute(SsoConstants.USER_ACCESS_TOKEN, token);
 		session.setAttribute(SsoConstants.SPRING_SECURITY_CONTEXT, context);
 		session.setAttribute(SsoConstants.OAUTH_USER_SESSION, authentication.getPrincipal());
-
-		String returnUrl = BinderUtils.chompString(request.getParameter("returnUrl"));
-		if(StringUtils.isBlank(returnUrl)) {
-			returnUrl = defaultReturnUri;
-			LOGGER.info("{}|return url is replaced with default return url: {}", uuid, returnUrl);
-		}
 
 		LOGGER.info("-|{}|sign in complete, returning to : {}", uuid, returnUrl);
 
