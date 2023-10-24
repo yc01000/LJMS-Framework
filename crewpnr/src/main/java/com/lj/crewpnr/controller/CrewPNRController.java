@@ -46,12 +46,12 @@ public class CrewPNRController {
         return WebUtils.toJson(resultMapVO);
     }
 
-//    @RequestMapping("/crew/createBookingsForGUM")
-//    public String createBookingsForGUM(@RequestParam("file") MultipartFile file) throws Exception {
-//        //ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(file);
-//        ResultMapVO resultMapVO = crewBookingService.createBookingsForGum(file);
-//        return WebUtils.toJson(resultMapVO);
-//    }
+    @RequestMapping("/crew/createBookingsForGum")
+    public String createBookingsForGUM(@RequestParam("file") MultipartFile file) throws Exception {
+        ResultMapVO resultMapVO = crewBookingService.createBookingsForGumAsync(file);
+        //ResultMapVO resultMapVO = crewBookingService.createBookingsForGum(file);
+        return WebUtils.toJson(resultMapVO);
+    }
 
     @RequestMapping("/crew/getReservationSummary")
     public String getReservationSummary(@RequestBody ReservationSummaryCriteriaVO criteriaVO) throws Exception {

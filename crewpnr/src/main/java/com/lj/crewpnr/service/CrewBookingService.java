@@ -85,6 +85,19 @@ public class CrewBookingService {
         return result;
     }
 
+    public ResultMapVO createBookingsForGumAsync(MultipartFile file) {
+        String service = "CREATE_BOOKINGS";
+        String key = RandomUtils.generate(10);
+
+        final MultipartFile fileFinalized = file;
+        new Thread(() -> createBookingsForGum(fileFinalized)).start();
+
+        ResultMapVO result = new ResultMapVO();
+        result.put("service", service);
+        result.put("key", key);
+        return result;
+    }
+
     public ResultMapVO createBookings(MultipartFile file){
 
         IbsSoapProperty property = new IbsSoapProperty("TEST");
@@ -95,173 +108,416 @@ public class CrewBookingService {
         List<CrewPNRExcelVO> crewPNRExcelList = null;
         //엑셀파일 읽기
         crewPNRExcelList = this.readExcelFile(file);
-//        for(CrewPNRExcelVO crewPNRExcelVO : crewPNRExcelList){
-//            if(StringUtils.equals(crewPNRExcelVO.getResult(), "N")){
-//                return ResultMapVO.simpleErrorCode(crewPNRExcelVO.getResultMsg());
-//            }
-//        }
+
         AvailabilityCriteriaVO criteria = null;
 
         int failCnt = 0;
         if(crewPNRExcelList != null ) {
             int listCnt = crewPNRExcelList.size();
             for (CrewPNRExcelVO excelVO : crewPNRExcelList) {
-                criteria = new AvailabilityCriteriaVO();
-                List<AvailabilitySearchVO> availabilitySearches = new ArrayList<>();
-                String agencyCd = "";
-                String fareClass = "";
+                try {
 
-                AvailabilitySearchVO availabilitySearch = new AvailabilitySearchVO();
-                availabilitySearch.setOrigin(excelVO.getBoardPoint());
-                availabilitySearch.setDestination(excelVO.getOffPoint());
-                availabilitySearch.setFlightNumber(excelVO.getFltNumber());
-                availabilitySearch.setDepartureDate(excelVO.getFlightDate());
+                    criteria = new AvailabilityCriteriaVO();
+                    List<AvailabilitySearchVO> availabilitySearches = new ArrayList<>();
+                    String agencyCd = "";
+                    String fareClass = "";
 
-                boolean fromKorea = IBSDomainUtils.isDomestic(excelVO.getBoardPoint(), excelVO.getOffPoint());
+                    AvailabilitySearchVO availabilitySearch = new AvailabilitySearchVO();
+                    availabilitySearch.setOrigin(excelVO.getBoardPoint());
+                    availabilitySearch.setDestination(excelVO.getOffPoint());
+                    availabilitySearch.setFlightNumber(excelVO.getFltNumber());
+                    availabilitySearch.setDepartureDate(excelVO.getFlightDate());
 
-                if (fromKorea) {
-                    if (StringUtils.equals(excelVO.getFareClass(), "PE")) {  //Premium Economy
-                        fareClass = "U0";
+                    boolean fromKorea = IBSDomainUtils.isDomestic(excelVO.getBoardPoint(), excelVO.getOffPoint());
+
+                    if (fromKorea) {
+                        if (StringUtils.equals(excelVO.getFareClass(), "PE")) {  //Premium Economy
+                            fareClass = "U0";
+                        } else {
+                            fareClass = "U1";                  //Economy
+                        }
                     } else {
-                        fareClass = "U1";                  //Economy
+                        if (StringUtils.equals(excelVO.getFareClass(), "PE")) {
+                            fareClass = "C";
+                        } else {
+                            fareClass = "U3";
+                        }
                     }
-                } else {
-                    if (StringUtils.equals(excelVO.getFareClass(), "PE")) {
-                        fareClass = "C";
-                    } else {
-                        fareClass = "U3";
+                    criteria.setFareClass((fareClass));
+                    availabilitySearch.setFareClass(fareClass);
+
+                    availabilitySearches.add(availabilitySearch);
+
+                    criteria.setAvailabilitySearches(availabilitySearches);
+
+                    criteria.setPaxCounts(new ArrayList<>());
+                    PaxCountVO paxCount = new PaxCountVO();
+                    paxCount.setType(Constants.PAX_TYPE.ADULT);
+                    paxCount.setSubType("CREW");
+                    paxCount.setCount(excelVO.getPaxCount());
+                    criteria.getPaxCounts().add(paxCount);
+                    criteria.setTripType(Constants.TRIP_TYPE.ONW_WAY);
+                    criteria.setFareLevel("CR");
+
+//                    if (StringUtils.equals(excelVO.getMiddleName(), "OOA"))
+                        agencyCd = "20024620"; //운항
+//                    else if (StringUtils.equals(excelVO.getMiddleName(), "UFA"))
+//                        agencyCd = "20024600"; //객실
+//                    else if (StringUtils.equals(excelVO.getMiddleName(), "MCA"))
+//                        agencyCd = "20024610"; //정비
+
+                    criteria.setAgencyCode(agencyCd);
+                    criteria.setCurrency("KRW");
+                    criteria.setPointOfPurchase("KR");
+
+                    int logSeq = 2;
+                    ResultMapVO availabilityResult = this.searchAvailabilities(criteria);
+
+                    if (ResultMapVO.hasErrors(availabilityResult)) {
+                        String errorValue = availabilityResult.getErrorCode();
+                        LoggerUtils.e(LOGGER, "AvailabilityService.searchAvailabilities:{} {}:errorCode={}",
+                                "", "" + (logSeq++), errorValue);
+
+                        failCnt++;
+                        continue;
                     }
-                }
-                criteria.setFareClass((fareClass));
-                availabilitySearch.setFareClass(fareClass);
 
-                availabilitySearches.add(availabilitySearch);
+                    BookingChannelType bookingChannelType = new BookingChannelType();
+                    bookingChannelType.setChannel("PWC");
+                    bookingChannelType.setChannelType("API");
+                    bookingChannelType.setLocale("en_US");
 
-                criteria.setAvailabilitySearches(availabilitySearches);
+                    List<FlightSegmentDetailsType> flightSegments = availabilityResult.get("flightSegments", List.class);
+                    List<FareDetailsForGuestType> faresForGuest = availabilityResult.get("faresForGuest", List.class);
+                    List<PaxCountType> paxCounts = availabilityResult.get("paxCounts", List.class);
 
-                criteria.setPaxCounts(new ArrayList<>());
-                PaxCountVO paxCount = new PaxCountVO();
-                paxCount.setType(Constants.PAX_TYPE.ADULT);
-                paxCount.setSubType("CREW");
-                paxCount.setCount(excelVO.getPaxCount());
-                criteria.getPaxCounts().add(paxCount);
-                criteria.setTripType(Constants.TRIP_TYPE.ONW_WAY);
-                criteria.setFareLevel("CR");
+                    CreateBookingRQ createBookingRQ = new CreateBookingRQ();
+                    createBookingRQ.setAirlineCode(airlineCode);
+                    createBookingRQ.setPointOfSale("KR");
+                    createBookingRQ.setAgencyCode(agencyCd);
+                    createBookingRQ.setOriginalAgentID(agencyCd);
+                    createBookingRQ.setCurrentAgentID(agencyCd);
+                    createBookingRQ.setBookingChannel(bookingChannelType);
 
-                if (StringUtils.equals(excelVO.getMiddleName(), "OOA"))
-                    agencyCd = "20024620"; //운항
-                else if (StringUtils.equals(excelVO.getMiddleName(), "UFA"))
-                    agencyCd = "20024600"; //객실
-                else if (StringUtils.equals(excelVO.getMiddleName(), "MCA"))
-                    agencyCd = "20024610"; //정비
-
-                criteria.setAgencyCode(agencyCd);
-                criteria.setCurrency("KRW");
-                criteria.setPointOfPurchase("KR");
-
-                int logSeq = 2;
-                ResultMapVO availabilityResult = this.searchAvailabilities(criteria);
-
-                if (ResultMapVO.hasErrors(availabilityResult)) {
-                    String errorValue = availabilityResult.getErrorCode();
-                    LoggerUtils.e(LOGGER, "AvailabilityService.searchAvailabilities:{} {}:errorCode={}",
-                            "", "" + (logSeq++), errorValue);
-
-                    failCnt++;
-                    continue;
-                }
-
-                BookingChannelType bookingChannelType = new BookingChannelType();
-                bookingChannelType.setChannel("PWC");
-                bookingChannelType.setChannelType("API");
-                bookingChannelType.setLocale("en_US");
-
-                List<FlightSegmentDetailsType> flightSegments = availabilityResult.get("flightSegments", List.class);
-                List<FareDetailsForGuestType> faresForGuest = availabilityResult.get("faresForGuest", List.class);
-                List<PaxCountType> paxCounts = availabilityResult.get("paxCounts", List.class);
-
-                CreateBookingRQ createBookingRQ = new CreateBookingRQ();
-                createBookingRQ.setAirlineCode(airlineCode);
-                createBookingRQ.setPointOfSale("KR");
-                createBookingRQ.setAgencyCode(agencyCd);
-                createBookingRQ.setOriginalAgentID(agencyCd);
-                createBookingRQ.setCurrentAgentID(agencyCd);
-                createBookingRQ.setBookingChannel(bookingChannelType);
-
-                BookerDetailsType booker = new BookerDetailsType();
-                booker.setSurName("진");
-                booker.setGivenName("에어");
-                createBookingRQ.setBookerDetails(booker);
+                    BookerDetailsType booker = new BookerDetailsType();
+                    booker.setSurName("진");
+                    booker.setGivenName("에어");
+                    createBookingRQ.setBookerDetails(booker);
 
 
-                PnrContactType pnrContact = new PnrContactType();
-                pnrContact.setSurName("진에어");
-                AddressType address = new AddressType();
-                address.setEmailAddress(excelVO.getEmailAddress());
-                address.setSendItineraryToEmailId(false);
-                address.setCellNumber(StringUtils.replace(excelVO.getCellNumber(), "-", ""));
-                address.setSendItineraryToSMS(false);
-                address.setPhoneNumberCountryCode("+82");
-                pnrContact.setAddress(address);
-                pnrContact.setIsPrefferedContact(true);
-                createBookingRQ.getPnrContact().add(pnrContact);
+                    PnrContactType pnrContact = new PnrContactType();
+                    pnrContact.setSurName("진에어");
+                    AddressType address = new AddressType();
+                    address.setEmailAddress(excelVO.getEmailAddress());
+                    address.setSendItineraryToEmailId(false);
+                    address.setCellNumber(StringUtils.replace(excelVO.getCellNumber(), "-", ""));
+                    address.setSendItineraryToSMS(false);
+                    address.setPhoneNumberCountryCode("+82");
+                    pnrContact.setAddress(address);
+                    pnrContact.setIsPrefferedContact(true);
+                    createBookingRQ.getPnrContact().add(pnrContact);
 
-                createBookingRQ.setPnrType(PNRType.NORMAL.name());
-                createBookingRQ.setNumberOfSeats(excelVO.getPaxCount());
+                    createBookingRQ.setPnrType(PNRType.NORMAL.name());
+                    createBookingRQ.setNumberOfSeats(excelVO.getPaxCount());
 
-                List<PaxCountDetailsType> paxCountDetails = new ArrayList<>();
-                for (PaxCountType paxCountType : paxCounts) {
-                    PaxCountDetailsType paxCountDetail = new PaxCountDetailsType();
-                    paxCountDetail.setPaxType(paxCountType.getPaxType());
-                    paxCountDetail.setPaxSubType(paxCountType.getPaxSubType());
-                    paxCountDetail.setPaxCount(paxCountType.getPaxCount());
-                    paxCountDetails.add(paxCountDetail);
-                }
-                createBookingRQ.getPaxCountDetails().addAll(paxCountDetails);
+                    List<PaxCountDetailsType> paxCountDetails = new ArrayList<>();
+                    for (PaxCountType paxCountType : paxCounts) {
+                        PaxCountDetailsType paxCountDetail = new PaxCountDetailsType();
+                        paxCountDetail.setPaxType(paxCountType.getPaxType());
+                        paxCountDetail.setPaxSubType(paxCountType.getPaxSubType());
+                        paxCountDetail.setPaxCount(paxCountType.getPaxCount());
+                        paxCountDetails.add(paxCountDetail);
+                    }
+                    createBookingRQ.getPaxCountDetails().addAll(paxCountDetails);
 
-                ItineraryDetailsType itin = new ItineraryDetailsType();
-                itin.getFlightSegmentDetails().addAll(flightSegments);
-                createBookingRQ.getItineraryDetails().add(itin);
+                    ItineraryDetailsType itin = new ItineraryDetailsType();
+                    itin.getFlightSegmentDetails().addAll(flightSegments);
+                    createBookingRQ.getItineraryDetails().add(itin);
 
-                FareInfoType fare = new FareInfoType();
-                fare.getFareDetailsForGuestType().addAll(faresForGuest);
-                createBookingRQ.getFareInfo().add(fare);
+                    FareInfoType fare = new FareInfoType();
+                    fare.getFareDetailsForGuestType().addAll(faresForGuest);
+                    createBookingRQ.getFareInfo().add(fare);
 
-                List<GuestRequestDetailsType> guestDetailList = new ArrayList<>();
+                    List<GuestRequestDetailsType> guestDetailList = new ArrayList<>();
 
-                List<GuestRequestDetailsType> tempguestDetailList = new ArrayList<>();
+                    List<GuestRequestDetailsType> tempguestDetailList = new ArrayList<>();
 
-                for (int i = 0; i < paxCount.getCount(); i++) {
-                    GuestRequestDetailsType guest = new GuestRequestDetailsType();
-                    guest.setGuestId(String.valueOf(i + 1));
-                    guest.setGivenName(excelVO.getGivenName());
-                    guest.setSurName(excelVO.getSurName());
-                    guest.setMiddleName(excelVO.getMiddleName());
-                    guest.setGuestType(PaxDetailsType.valueOf("ADULT"));
-                    guest.setGuestSubType("CREW");
-                    guest.setDateOfBirth(DateUtils.xmlGregorianCalendar("1900-01-01", "yyyy-MM-dd"));
-                    guest.setNamePrefix(NameTitleType.valueOf(excelVO.getNamePrefix()));
+                    for (int i = 0; i < paxCount.getCount(); i++) {
+                        GuestRequestDetailsType guest = new GuestRequestDetailsType();
+                        guest.setGuestId(String.valueOf(i + 1));
+                        guest.setGivenName(excelVO.getGivenName());
+                        guest.setSurName(excelVO.getSurName());
+                        guest.setMiddleName(excelVO.getMiddleName());
+                        guest.setGuestType(PaxDetailsType.valueOf("ADULT"));
+                        guest.setGuestSubType("CREW");
+                        guest.setDateOfBirth(DateUtils.xmlGregorianCalendar("1900-01-01", "yyyy-MM-dd"));
+                        guest.setNamePrefix(NameTitleType.valueOf(excelVO.getNamePrefix()));
 //                    guest.getGender("M");
-                    tempguestDetailList.add(guest);
-                }
-                guestDetailList.addAll(tempguestDetailList);
+                        tempguestDetailList.add(guest);
+                    }
+                    guestDetailList.addAll(tempguestDetailList);
 
-                createBookingRQ.getGuestDetails().addAll(guestDetailList);
-                createBookingRQ.setPnrOnHoldIndicator(false);
-                createBookingRQ.setPointOfOrigin("KR");
-                createBookingRQ.setCurrency("KRW");
+                    createBookingRQ.getGuestDetails().addAll(guestDetailList);
+                    createBookingRQ.setPnrOnHoldIndicator(false);
+                    createBookingRQ.setPointOfOrigin("KR");
+                    createBookingRQ.setCurrency("KRW");
 
 
-                CreateBookingRS createBookingRS = saveCreateBooking.request(createBookingRQ, property);
-                String errors = errors(createBookingRS);
-                if (StringUtils.isNotBlank(errors)) {
-                    LoggerUtils.e(LOGGER, "CrewBookingAPI#saveCreateBooking.request: errorCode={}", errors);
-                    //IBE 에러 로그 저장
-                    insertCrewPnrLog(criteria, errors);
+                    CreateBookingRS createBookingRS = saveCreateBooking.request(createBookingRQ, property);
+                    String errors = errors(createBookingRS);
+                    if (StringUtils.isNotBlank(errors)) {
+                        LoggerUtils.e(LOGGER, "CrewBookingAPI#saveCreateBooking.request: errorCode={}", errors);
+                        //IBE 에러 로그 저장
+                        insertCrewPnrLog(criteria, errors);
+                        failCnt++;
+                        continue;
+                    }
+                    LoggerUtils.i(LOGGER, "CrewBookingService.createBookings: {}:1-", "");
+                } catch (Exception e) {
+                    insertCrewPnrLog(criteria, e.toString());
                     failCnt++;
-                    continue;
                 }
-                LoggerUtils.i(LOGGER, "CrewBookingService.createBookings: {}:1-", "");
+            }
+            if(failCnt == 0){
+                resultMapVO.put("result","S");
+            }
+            else{
+                if(listCnt == failCnt){
+                    resultMapVO.put("result","AF");
+                }
+                else{
+                    resultMapVO.put("result","PF");
+                }
+
+            }
+        }
+        return resultMapVO;
+    }
+
+    public ResultMapVO createBookingsForGum(MultipartFile file){
+
+        IbsSoapProperty property = new IbsSoapProperty("TEST");
+        property.setUsername("jinair");
+        property.setPassword("jinatiflyapi");
+
+        ResultMapVO resultMapVO = new ResultMapVO();
+
+
+        //엑셀파일 읽기
+        List<CrewPNRExcelGumVO> crewPNRExcelGumTempList = this.readGumExcelFile(file);
+
+        //엑셀에서 읽은 데이터를 crewPNRExcelGumTempList에 담고 그 중 같은 groupSeq 별로 승객 묶어서 crewPNRExcelGumList 에 add
+        CrewPNRExcelGumVO crewPNRExcelGumVO = new CrewPNRExcelGumVO();
+        List<PaxInfoVO> gumPaxInfoList = new ArrayList<>();
+        List<CrewPNRExcelGumVO> crewPNRExcelGumList = new ArrayList<>();
+
+        int gumListCnt = crewPNRExcelGumTempList.size();
+        int previousSeq = crewPNRExcelGumTempList.get(0).getGroupSeq();
+        for (int i = 0; i < gumListCnt; i++) {
+            PaxInfoVO paxInfoVO = new PaxInfoVO();
+
+            //groupSeq 가 이전과 다를 경우, 새로운 groupSeq 로 간주하여 이전 데이터를 List에 담고 초기화
+            if (previousSeq != crewPNRExcelGumTempList.get(i).getGroupSeq()) {
+
+                crewPNRExcelGumVO.setPaxinfoList(gumPaxInfoList);
+                crewPNRExcelGumList.add(crewPNRExcelGumVO);
+
+                crewPNRExcelGumVO = new CrewPNRExcelGumVO();
+                gumPaxInfoList = new ArrayList<>();
+            }
+
+            previousSeq = crewPNRExcelGumTempList.get(i).getGroupSeq();
+            crewPNRExcelGumVO.setGroupSeq(crewPNRExcelGumTempList.get(i).getGroupSeq());
+            crewPNRExcelGumVO.setFltNumber(crewPNRExcelGumTempList.get(i).getFltNumber());
+            crewPNRExcelGumVO.setBoardPoint(crewPNRExcelGumTempList.get(i).getBoardPoint());
+            crewPNRExcelGumVO.setOffPoint(crewPNRExcelGumTempList.get(i).getOffPoint());
+            crewPNRExcelGumVO.setFlightDate(crewPNRExcelGumTempList.get(i).getFlightDate());
+            crewPNRExcelGumVO.setFareClass(crewPNRExcelGumTempList.get(i).getFareClass());
+
+            paxInfoVO.setMiddleName(crewPNRExcelGumTempList.get(i).getMiddleName());
+            paxInfoVO.setGivenName(crewPNRExcelGumTempList.get(i).getGivenName());
+            paxInfoVO.setSurName(crewPNRExcelGumTempList.get(i).getSurName());
+            paxInfoVO.setNamePrefix(crewPNRExcelGumTempList.get(i).getNamePrefix());
+            paxInfoVO.setGender(crewPNRExcelGumTempList.get(i).getGender());
+            gumPaxInfoList.add(paxInfoVO);
+
+            //마지막 index 일 경우 add 하고 종료
+            if (i == gumListCnt - 1) {
+                crewPNRExcelGumVO.setPaxinfoList(gumPaxInfoList);
+                crewPNRExcelGumList.add(crewPNRExcelGumVO);
+            }
+        }
+
+
+        AvailabilityCriteriaVO criteria = null;
+
+        int failCnt = 0;
+        if(!crewPNRExcelGumList.isEmpty()) {
+            int listCnt = crewPNRExcelGumList.size();
+            for (CrewPNRExcelGumVO excelVO : crewPNRExcelGumList) {
+                try {
+
+
+                    criteria = new AvailabilityCriteriaVO();
+                    List<AvailabilitySearchVO> availabilitySearches = new ArrayList<>();
+                    String agencyCd = "";
+                    String fareClass = "";
+
+                    AvailabilitySearchVO availabilitySearch = new AvailabilitySearchVO();
+                    availabilitySearch.setOrigin(excelVO.getBoardPoint());
+                    availabilitySearch.setDestination(excelVO.getOffPoint());
+                    availabilitySearch.setFlightNumber(excelVO.getFltNumber());
+                    availabilitySearch.setDepartureDate(excelVO.getFlightDate());
+
+                    boolean fromKorea = IBSDomainUtils.isDomestic(excelVO.getBoardPoint(), excelVO.getOffPoint());
+
+                    if (fromKorea) {
+                        if (StringUtils.equals(excelVO.getFareClass(), "PE")) {  //Premium Economy
+                            fareClass = "U0";
+                        } else {
+                            fareClass = "U1";                  //Economy
+                        }
+                    } else {
+                        if (StringUtils.equals(excelVO.getFareClass(), "PE")) {
+                            fareClass = "C";
+                        } else {
+                            fareClass = "U3";
+                        }
+                    }
+                    criteria.setFareClass((fareClass));
+                    availabilitySearch.setFareClass(fareClass);
+
+                    availabilitySearches.add(availabilitySearch);
+
+                    criteria.setAvailabilitySearches(availabilitySearches);
+
+                    criteria.setPaxCounts(new ArrayList<>());
+                    PaxCountVO paxCount = new PaxCountVO();
+                    paxCount.setType(Constants.PAX_TYPE.ADULT);
+                    paxCount.setSubType("CREW");
+                    paxCount.setCount(excelVO.getPaxinfoList().size());
+                    criteria.getPaxCounts().add(paxCount);
+                    criteria.setTripType(Constants.TRIP_TYPE.ONW_WAY);
+                    criteria.setFareLevel("CR");
+
+//                if (StringUtils.equals(excelVO.getMiddleName(), "OOA"))
+                    agencyCd = "20024620"; //운항
+//                else if (StringUtils.equals(excelVO.getMiddleName(), "UFA"))
+//                    agencyCd = "20024600"; //객실
+//                else //StringUtils.equals(excelVO.getMiddleName(), "MCA")
+//                    agencyCd = "20024610"; //정비
+
+                    criteria.setAgencyCode(agencyCd);
+                    criteria.setCurrency("KRW");
+                    criteria.setPointOfPurchase("KR");
+
+                    int logSeq = 2;
+                    ResultMapVO availabilityResult = this.searchAvailabilities(criteria);
+
+                    if (ResultMapVO.hasErrors(availabilityResult)) {
+                        String errorValue = availabilityResult.getErrorCode();
+                        LoggerUtils.e(LOGGER, "AvailabilityService.searchAvailabilities:{} {}:errorCode={}",
+                                "", "" + (logSeq++), errorValue);
+
+                        failCnt++;
+                        continue;
+                    }
+
+                    BookingChannelType bookingChannelType = new BookingChannelType();
+                    bookingChannelType.setChannel("PWC");
+                    bookingChannelType.setChannelType("API");
+                    bookingChannelType.setLocale("en_US");
+
+                    List<FlightSegmentDetailsType> flightSegments = availabilityResult.get("flightSegments", List.class);
+                    List<FareDetailsForGuestType> faresForGuest = availabilityResult.get("faresForGuest", List.class);
+                    List<PaxCountType> paxCounts = availabilityResult.get("paxCounts", List.class);
+
+                    CreateBookingRQ createBookingRQ = new CreateBookingRQ();
+                    createBookingRQ.setAirlineCode(airlineCode);
+                    createBookingRQ.setPointOfSale("KR");
+                    createBookingRQ.setAgencyCode(agencyCd);
+                    createBookingRQ.setOriginalAgentID(agencyCd);
+                    createBookingRQ.setCurrentAgentID(agencyCd);
+                    createBookingRQ.setBookingChannel(bookingChannelType);
+
+                    BookerDetailsType booker = new BookerDetailsType();
+                    booker.setSurName("진");
+                    booker.setGivenName("에어");
+                    createBookingRQ.setBookerDetails(booker);
+
+
+                    PnrContactType pnrContact = new PnrContactType();
+                    pnrContact.setSurName("진에어");
+                    AddressType address = new AddressType();
+                    address.setEmailAddress(excelVO.getEmailAddress());
+                    address.setSendItineraryToEmailId(false);
+                    address.setCellNumber(StringUtils.replace(excelVO.getCellNumber(), "-", ""));
+                    address.setSendItineraryToSMS(false);
+                    address.setPhoneNumberCountryCode("+82");
+                    pnrContact.setAddress(address);
+                    pnrContact.setIsPrefferedContact(true);
+                    createBookingRQ.getPnrContact().add(pnrContact);
+
+                    createBookingRQ.setPnrType(PNRType.NORMAL.name());
+                    createBookingRQ.setNumberOfSeats(excelVO.getPaxinfoList().size());
+
+                    List<PaxCountDetailsType> paxCountDetails = new ArrayList<>();
+                    for (PaxCountType paxCountType : paxCounts) {
+                        PaxCountDetailsType paxCountDetail = new PaxCountDetailsType();
+                        paxCountDetail.setPaxType(paxCountType.getPaxType());
+                        paxCountDetail.setPaxSubType(paxCountType.getPaxSubType());
+                        paxCountDetail.setPaxCount(paxCountType.getPaxCount());
+                        paxCountDetails.add(paxCountDetail);
+                    }
+                    createBookingRQ.getPaxCountDetails().addAll(paxCountDetails);
+
+                    ItineraryDetailsType itin = new ItineraryDetailsType();
+                    itin.getFlightSegmentDetails().addAll(flightSegments);
+                    createBookingRQ.getItineraryDetails().add(itin);
+
+                    FareInfoType fare = new FareInfoType();
+                    fare.getFareDetailsForGuestType().addAll(faresForGuest);
+                    createBookingRQ.getFareInfo().add(fare);
+
+                    List<GuestRequestDetailsType> guestDetailList = new ArrayList<>();
+
+                    List<GuestRequestDetailsType> tempguestDetailList = new ArrayList<>();
+
+                    for (int i = 0; i < paxCount.getCount(); i++) {
+                        GuestRequestDetailsType guest = new GuestRequestDetailsType();
+                        guest.setGuestId(String.valueOf(i + 1));
+                        guest.setGivenName(excelVO.getPaxinfoList().get(i).getGivenName());
+                        guest.setSurName(excelVO.getPaxinfoList().get(i).getSurName());
+                        guest.setMiddleName(excelVO.getPaxinfoList().get(i).getMiddleName());
+                        guest.setGuestType(PaxDetailsType.valueOf("ADULT"));
+                        guest.setGuestSubType("CREW");
+                        guest.setDateOfBirth(DateUtils.xmlGregorianCalendar("1900-01-01", "yyyy-MM-dd"));
+                        guest.setNamePrefix(NameTitleType.valueOf(excelVO.getPaxinfoList().get(i).getNamePrefix()));
+                        guest.setGender(GenderDetailsType.valueOf(excelVO.getPaxinfoList().get(i).getGender()));
+                        tempguestDetailList.add(guest);
+                    }
+                    guestDetailList.addAll(tempguestDetailList);
+
+                    createBookingRQ.getGuestDetails().addAll(guestDetailList);
+                    createBookingRQ.setPnrOnHoldIndicator(false);
+                    createBookingRQ.setPointOfOrigin("KR");
+                    createBookingRQ.setCurrency("KRW");
+
+
+                    CreateBookingRS createBookingRS = saveCreateBooking.request(createBookingRQ, property);
+                    String errors = errors(createBookingRS);
+                    if (StringUtils.isNotBlank(errors)) {
+                        LoggerUtils.e(LOGGER, "CrewBookingAPI#saveCreateBooking.request: errorCode={}", errors);
+                        //IBE 에러 로그 저장
+                        insertCrewPnrLog(criteria, errors);
+                        failCnt++;
+                        continue;
+                    }
+                    LoggerUtils.i(LOGGER, "CrewBookingService.createBookings: {}:1-", "");
+                }catch (Exception e) {
+                    insertCrewPnrLog(criteria, e.toString());
+                    failCnt++;
+                }
             }
 
             if(failCnt == 0){
@@ -703,7 +959,14 @@ public class CrewBookingService {
                 String critSegStatus = criteriaVO.getSegmentStatus();
                 String critFareClass = criteriaVO.getFareClass();
                 String critPaxCnt = criteriaVO.getPaxCount();
-                String fltSegFareClass = fltSegment.getFareBasis().substring(0, 2);
+
+                String fltSegFareClass = null;
+                String rsFareClass = fltSegment.getFareBasis();
+                boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
+                if(fromKorea)
+                    fltSegFareClass = rsFareClass.substring(0, 2);
+                else
+                    fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
 
 
                 if(null != critSegStatus && !critSegStatus.isEmpty()){
@@ -1052,18 +1315,11 @@ public class CrewBookingService {
                                 crewPNRExcelGUMVO.setNamePrefix(cellValue);
                             }
                             break;
-//                        case 10: // paxCount
-//                            if (StringUtils.isBlank(cellValue)) {
-//                                emptyFields += "paxCount";
-//                            } else {
-//                                crewPNRExcelGUMVO.setPaxCount(Integer.parseInt(cellValue));
-//                            }
-//                            break;
                         case 10: // gender
                             if (StringUtils.isBlank(cellValue)) {
                                 emptyFields += "gender";
                             } else {
-                                crewPNRExcelGUMVO.setEmailAddress(cellValue);
+                                crewPNRExcelGUMVO.setGender(cellValue);
                             }
                             break;
                         case 11: // emailAddress

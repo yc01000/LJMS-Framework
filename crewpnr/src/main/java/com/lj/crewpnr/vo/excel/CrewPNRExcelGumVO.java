@@ -13,12 +13,21 @@ public class CrewPNRExcelGumVO {
     private String surName;
     private String middleName;
     private String namePrefix;
+    private String gender;
     private List<PaxInfoVO> paxinfoList;
     private String emailAddress;
     private String cellNumber;
 
     private String result;
     private String resultMsg;
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
     public int getGroupSeq() {
         return groupSeq;
