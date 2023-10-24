@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lj.sso.ssocore.common.aws.SSOKmsMasterKeyService;
+import com.lj.sso.ssocore.service.SSOKmsMasterKeyService;
 import com.lj.sso.ssocore.common.util.BinderUtils;
 import com.lj.sso.ssocore.security.vo.UserTokenVO;
 

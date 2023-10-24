@@ -1,4 +1,4 @@
-package com.lj.sso.ssocore.common.aws;
+package com.lj.sso.ssocore.service;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -45,10 +45,10 @@ import com.amazonaws.util.Base64;
 public class SSOKmsMasterKeyService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SSOKmsMasterKeyService.class);
 
-	@Value("#{SSOAwsProperties['aws.sso.kms.region.name']}")
+	@Value("${sso.aws.s3.region}")
 	private String region;
 
-	@Value("#{SSOAwsProperties['aws.sso.kms.key.id']}")
+	@Value("${sso.aws.s3.key-id}")
 	private String key;
 
 	private static String regionName;

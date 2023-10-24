@@ -21,9 +21,6 @@
 	<!-- 포탈 로그인 후 페이지 전환 시 사용자 토큰을 이용한 로그인 처리 -->
 	<bean id="ssoLoginCallbackFilter" class="com.lj.sso.ssocore.security.SsoLoginCallbackFilter" />
 
-	<!-- AJAX 세션 타임아웃 필터 -->
-	<bean id="ajaxSessionTimeoutFilter" class="com.lj.sso.ssocore.security.AjaxSessionTimeoutFilter" />
-
 	<!-- 사용자 인증 불가 시 리다이렉트 처리 -->
 	<bean id="ssoAuthenticationEntryPoint" class="com.lj.sso.ssocore.security.SsoAuthenticationEntryPoint" />
 
@@ -35,15 +32,13 @@
 			<sec:frame-options policy="SAMEORIGIN"/>
 		</sec:headers>
 
+		<sec:csrf disabled="true" />
+
 		<sec:intercept-url pattern="/**" access="hasRole('ROLE_USER')" />
 
 		<sec:custom-filter ref="ssoLoginCallbackFilter" before="FIRST" />
-		<sec:custom-filter ref="ajaxSessionTimeoutFilter" after="EXCEPTION_TRANSLATION_FILTER" />
 
-		<sec:logout
-			logout-url="/logout"
-			logout-success-url="https://local-crewpnr.jinair.com"
-			invalidate-session="true" />
+		<sec:logout logout-url="/logout" logout-success-url="/" invalidate-session="true" />
 	</sec:http>
 
 	<sec:authentication-manager alias="authenticationManager">
