@@ -567,6 +567,14 @@ public class CrewBookingService {
         return ResultMapVO.simpleResult("message", "SUCCESS");
     }
 
+    public ResultMapVO cancelReservation(List<String> pnrNumbers) {
+        List<Object> results = new ArrayList<>();
+        for(String pnrNumber: pnrNumbers) {
+            results.add(ResultMapVO.getResult(cancelReservation(pnrNumber)));
+        }
+        return ResultMapVO.simpleResult("results", results);
+    }
+
     public ResultMapVO retrieveBooking(String pnrNumber){
         ResultMapVO result = new ResultMapVO();
 
