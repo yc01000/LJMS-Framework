@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class CrewPNRController {
@@ -71,8 +72,8 @@ public class CrewPNRController {
 
 
     @RequestMapping("/crew/cancelReservation")
-    public String cancelReservation(String pnrNumber) throws Exception {
-        ResultMapVO result = crewBookingService.cancelReservation(pnrNumber);
+    public String cancelReservation(@RequestBody Map<String, Object> params) throws Exception {
+        ResultMapVO result = crewBookingService.cancelReservation((List<String>) params.get("pnrNumber"));
         return WebUtils.toJson(result);
     }
 

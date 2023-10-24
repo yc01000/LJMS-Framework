@@ -53,11 +53,16 @@
           <th>좌석수</th>
           <th>PNR</th>
           <th>Segment STS</th>
+          <th>예약상태</th>
+          <th>선택</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in items" :key="item.id" @click="handleRowClick(item)" @mouseover="handleMouseOver(item.id)"
-          @mouseout="handleMouseOut(item.id)" :class="{ active: highlightedRowId === item.id }">
+
+          @mouseout="handleMouseOut(item.id)"
+          :class="{ active: highlightedRowId === item.id, 'inactive-row': item.segmentStatus === 'CANCELED' }">
+
           <td>{{ item.id }}</td>
           <td>{{ item.fltnum }}</td>
           <td>{{ item.depDate }}</td>
@@ -67,11 +72,23 @@
           <td>{{ item.arrivalDateTime }}</td>
           <td>{{ item.fareClass }}</td>
           <td>{{ item.paxCount }}</td>
-          <td>{{ item.pnrnumber }}</td>
+
+          <td :style="{ color: item.segmentStatus === isReaction(item.segmentStatus) ? 'red' : '' }">{{ item.pnrnumber }}</td>
           <td>{{ item.segmentStatus }}</td>
+
+          <td v-if="isReaction(item.segmentStatus) !== true" onclick="event.cancelBubble=true">{{actionStatus(item.segmentStatus) }}</td>
+          <td v-else onclick="event.cancelBubble=true"><button @click="acceptSchedule(item.pnrnumber)">확인</button></td>
+
+          <td onclick="event.cancelBubble=true"><input v-if="item.segmentStatus !== 'CANCELED'" type="checkbox" v-model="selectedItems[item.pnrnumber]" /></td>
         </tr>
       </tbody>
     </table>
+    <div class="btn_wrap">
+      <button class="btnTypeA" @click="pnrCancel">PNR 취소</button>&nbsp;
+    </div>
+  </div>
+  <div>
+    <MessageBox ref="msg_box" />
   </div>
   <div>
     <MessageBox ref="msg_box" />
@@ -104,6 +121,10 @@ export default {
       selectedDate1: ref(new Date()),
       selectedDate2: ref(new Date()),
       inputJSON: "",
+      selectedItems: [], // 체크박스 선택 여부를 저장하는 배열
+      highlightedRowId: null,
+      selectedDate1: ref(new Date()),
+      selectedDate2: ref(new Date()),
     };
   },
   setup() {
@@ -117,29 +138,83 @@ export default {
     showMessage(title, msg) {
       this.$refs.msg_box.showPopup(title, msg);
     },
-    search() {
-      if (this.fieldValidation() == false) {
-        this.showMessage('error', "도시코드는 필수 입니다.");
+
+    acceptSchedule(pnr) {
+      console.log("pnr:", pnr);
+      fetch('https://stg-crewpnr.jinair.com/crew/acceptSchedule?pnrNumber=' + pnr)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("acceptSchedule result: ", data);
+          this.showMessage('Inform', '처리가 완료되었습니다.');
+        })
+        .catch((error) => {
+          console.error('전송 중 오류가 발생했습니다.', error);
+          this.showMessage('Error', error);
+        });
+    },
+    pnrCancel() {
+      console.log("selectedItems: ", this.selectedItems);
+      if (this.selectedItems.length == 0) {
+        this.showMessage('Warnning', '선택된 예약이 없습니다.');
         return;
       }
-      
-      this.generateJSON();
-      console.log("inputJSON:", this.inputJSON);
+      for (let pnr in this.selectedItems) {
+        console.log("selectedItems pnr: ", pnr);
+        fetch('https://stg-crewpnr.jinair.com/crew/cancelReservation?pnrNumber=' + pnr)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("cancelReservation result: ", data);
+          })
+          .catch((error) => {
+            console.error('전송 중 오류가 발생했습니다.', error);
+            this.showMessage('Error', error);
+          });
+      }
+    },
+    actionStatus(sts) {
+      if (sts == 'CONFIRMED') {
+        return '완료';
+      } else if (sts == 'WAITLISTED') {
+        return '대기';
+      } else if (sts == 'WAS_CONFIRMED' || sts == 'WAS_WAITLISTED') {
+        return '비운항';
+      } else if (sts == 'CANCELED') {
+        return '취소';
+      } else {
+        return 'Unknown';
+      }
+    },
+    isReaction(sts) {
+      if (sts == 'CONFIRMED_FROM_WAITLIST' || sts == 'TIME_CHANGE' || sts == 'SCHEDULE_CHANGE') {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    search() {
+      if (this.fieldValidation() == false) {
+        this.showMessage('Warning', "도시코드는 필수 입니다.");
+        return;
+      }
+
+      let inputJson = this.generateInputJson();
+      console.log("inputJson:", inputJson);
+
       fetch('https://stg-crewpnr.jinair.com/crew/getReservationSummary', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json' // JSON 데이터를 전송한다고 서버에 알림
         },
-        body: this.inputJSON // JSON 데이터를 문자열로 변환하여 바디에 넣음
+        body: inputJson // JSON 데이터를 문자열로 변환하여 바디에 넣음
       })
         .then((response) => response.json())
         .then((data) => {
           console.log("response:", data)
           if (data.all.Error !== undefined) {
             this.items = [];
-            this.showMessage('warnning', data.all.Error);
+            this.showMessage('Warning', data.all.Error);
             return;
-          } 
+          }
           // 순번을 추가한 JSON 데이터
           const itemsWithIndex = data.all.summaryResult.map((item, index) => {
             return {
@@ -153,7 +228,7 @@ export default {
         })
         .catch((error) => {
           console.error('데이터를 불러오는 중 오류가 발생했습니다.', error);
-          this.showMessage('error', error);
+          this.showMessage('Error', error);
         });
 
     },
@@ -176,7 +251,7 @@ export default {
     handleMouseOut(id) {
       this.highlightedRowId = null;
     },
-    generateJSON() {
+    generateInputJson() {
       const jsonData = {
         depStartDate: document.getElementById('qModel_datefr').value,
         depEndDate: document.getElementById('qModel_dateto').value,
@@ -187,8 +262,7 @@ export default {
         // StnfrCode: this.$refs.qModel_stnfr?.value,
         // StntoCode: this.$refs.qModel_stnto?.value,
       };
-      // 생성된 JSON 데이터를 문자열로 변환하여 데이터 속성에 저장
-      this.inputJSON = JSON.stringify(jsonData, null, 2);
+      return JSON.stringify(jsonData, null, 2);
     },
     fieldValidation() {
       if (document.getElementById('qModel_stnfr').value == "" || document.getElementById('qModel_stnto').value == "")
@@ -211,7 +285,10 @@ tr.active {
   /* 선택된 행의 배경 색상 변경 */
 }
 
+.inactive-row {
+  color: lightgray;
+}
+
 .table_style {
   cursor: pointer;
-}
-</style>
+}</style>
