@@ -63,6 +63,15 @@ public class CrewBookingService {
     @Autowired
     private CrewBookingMapper crewBookingMapper;
 
+    @Autowired
+    private AcceptSc acceptSc;
+
+    @Autowired
+    private RejectSc rejectSc;
+
+    @Autowired
+    private AcceptWl acceptWl;
+
     public ResultMapVO createBookingsAsync(MultipartFile file) {
         String service = "CREATE_BOOKINGS";
         String key = RandomUtils.generate(10);
@@ -1133,5 +1142,216 @@ public class CrewBookingService {
 //        }
 
         return IBSDomainUtils.errorMessage(object);
+    }
+
+    public ResultMapVO acceptSchedule(String pnrNumber) {
+        /*
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+	<SOAP-ENV:Header/>
+	<SOAP-ENV:Body>
+		<ns3:AcceptScRQ xmlns:ns3="http://www.ibsplc.com/iRes/simpleTypes/">
+			<AirlineCode>LJ</AirlineCode>
+			<BookingChannel>
+				<ChannelType>API</ChannelType>
+				<Channel>CWI</Channel>
+				<Locale>ko_KR</Locale>
+			</BookingChannel>
+			<ItineraryChangeType>
+				<SegmentChangeType>
+					<PnrActionType>ACCEPT_TC</PnrActionType>
+					<OldSegmentId>500</OldSegmentId>
+				</SegmentChangeType>
+			</ItineraryChangeType>
+			<IPAddress>211.107.79.112</IPAddress>
+			<PnrNumber>C3B22X</PnrNumber>
+		</ns3:AcceptScRQ>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<ns2:AcceptScRS xmlns:ns2="http://www.ibsplc.com/iRes/simpleTypes/">
+			<AirlineCode>LJ</AirlineCode>
+			<Status>STATUS_OK</Status>
+		</ns2:AcceptScRS>
+	</soap:Body>
+</soap:Envelope>
+         */
+
+        BookingChannelType channel = new BookingChannelType();
+        channel.setChannelType("API");
+        channel.setChannel("PWC");
+        channel.setLocale("en_US");
+
+        IbsSoapProperty property = new IbsSoapProperty("TEST");
+        property.setUsername("jinair");
+        property.setPassword("jinatiflyapi");
+
+        RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
+        retrieveBookingRQ.setAirlineCode(airlineCode);
+        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setPnrNumber(pnrNumber);
+        RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
+
+        FlightSegmentDetailsType flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().get(0);
+        Long oldSegmentId = Long.parseLong(flightSegment.getSegmentId());
+        PnrActionType action = null;
+        if(ReservationStatusDetailsType.TIME_CHANGE.equals(flightSegment.getSegmentStatus())) {
+            action = PnrActionType.ACCEPT_TC;
+        } else if(ReservationStatusDetailsType.SCHEDULE_CHANGE.equals(flightSegment.getSegmentStatus())) {
+            action = PnrActionType.ACCEPT_SC;
+        }
+
+        ItineraryChangeType itineraryChange = new ItineraryChangeType();
+        SegmentChangeType segmentChange = new SegmentChangeType();
+        segmentChange.setPnrActionType(action);
+        segmentChange.getOldSegmentId().add(oldSegmentId);
+        itineraryChange.getSegmentChangeType().add(segmentChange);
+
+        AcceptScRQ acceptScRQ = new AcceptScRQ();
+        acceptScRQ.setBookingChannel(retrieveBookingRQ.getBookingChannel());
+        acceptScRQ.setPnrNumber(retrieveBookingRS.getPNRNumber());
+        acceptScRQ.setAirlineCode(retrieveBookingRS.getAirlineCode());
+        acceptScRQ.setAgencyCode(retrieveBookingRS.getAgencyCode());
+        acceptScRQ.setCurrentAgentID(retrieveBookingRS.getCurrentAgentID());
+        acceptScRQ.setIPAddress("127.0.0.1");
+        acceptScRQ.getItineraryChangeType().add(itineraryChange);
+        AcceptScRS acceptScRS = acceptSc.request(acceptScRQ, property);
+
+        String errors = errors(acceptScRS);
+        if(StringUtils.isNotBlank(errors)) {
+            ResultMapVO result = new ResultMapVO();
+            LoggerUtils.e(LOGGER, "CrewBookingAPI#acceptSchedule.request: errorCode={}", errors);
+            result.put("Error", errors);
+            return result;
+        }
+
+        return ResultMapVO.simpleResult("message", "SUCCESS");
+    }
+
+    public ResultMapVO rejectSchedule(String pnrNumber) {
+        /*
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+	<SOAP-ENV:Header/>
+	<SOAP-ENV:Body>
+		<ns3:RejectScRQ xmlns:ns3="http://www.ibsplc.com/iRes/simpleTypes/">
+			<AirlineCode>LJ</AirlineCode>
+			<BookingChannel>
+				<ChannelType>API</ChannelType>
+				<Channel>CWI</Channel>
+				<Locale>ko_KR</Locale>
+			</BookingChannel>
+			<ItineraryChangeType>
+				<SegmentChangeType>
+					<PnrActionType>REJECT_SC</PnrActionType>
+					<OldSegmentId>500</OldSegmentId>
+				</SegmentChangeType>
+			</ItineraryChangeType>
+			<IPAddress>218.146.223.106</IPAddress>
+			<PnrNumber>B2H7PR</PnrNumber>
+		</ns3:RejectScRQ>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<ns2:RejectScRS
+			xmlns:ns2="http://www.ibsplc.com/iRes/simpleTypes/">
+			<AirlineCode>LJ</AirlineCode>
+			<Status>STATUS_OK</Status>
+		</ns2:RejectScRS>
+	</soap:Body>
+</soap:Envelope>
+         */
+
+        BookingChannelType channel = new BookingChannelType();
+        channel.setChannelType("API");
+        channel.setChannel("PWC");
+        channel.setLocale("en_US");
+
+        IbsSoapProperty property = new IbsSoapProperty("TEST");
+        property.setUsername("jinair");
+        property.setPassword("jinatiflyapi");
+
+        RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
+        retrieveBookingRQ.setAirlineCode(airlineCode);
+        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setPnrNumber(pnrNumber);
+        RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
+
+        FlightSegmentDetailsType flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().get(0);
+        Long oldSegmentId = Long.parseLong(flightSegment.getSegmentId());
+
+        ItineraryChangeType itineraryChange = new ItineraryChangeType();
+        SegmentChangeType segmentChange = new SegmentChangeType();
+        segmentChange.setPnrActionType(PnrActionType.REJECT_SC);
+        segmentChange.getOldSegmentId().add(oldSegmentId);
+        itineraryChange.getSegmentChangeType().add(segmentChange);
+
+        RejectScRQ rejectScRQ = new RejectScRQ();
+        rejectScRQ.setBookingChannel(retrieveBookingRQ.getBookingChannel());
+        rejectScRQ.setPnrNumber(retrieveBookingRS.getPNRNumber());
+        rejectScRQ.setAirlineCode(retrieveBookingRS.getAirlineCode());
+        rejectScRQ.setAgencyCode(retrieveBookingRS.getAgencyCode());
+        rejectScRQ.setCurrentAgentID(retrieveBookingRS.getCurrentAgentID());
+        rejectScRQ.setIPAddress("127.0.0.1");
+        rejectScRQ.getItineraryChangeType().add(itineraryChange);
+        RejectScRS rejectScRS = rejectSc.request(rejectScRQ, property);
+
+        String errors = errors(rejectScRS);
+        if(StringUtils.isNotBlank(errors)) {
+            ResultMapVO result = new ResultMapVO();
+            LoggerUtils.e(LOGGER, "CrewBookingAPI#rejectSchedule.request: errorCode={}", errors);
+            result.put("Error", errors);
+            return result;
+        }
+
+        return ResultMapVO.simpleResult("message", "SUCCESS");
+    }
+
+    public ResultMapVO acceptWaitlisted(String pnrNumber) {
+        BookingChannelType channel = new BookingChannelType();
+        channel.setChannelType("API");
+        channel.setChannel("PWC");
+        channel.setLocale("en_US");
+
+        IbsSoapProperty property = new IbsSoapProperty("TEST");
+        property.setUsername("jinair");
+        property.setPassword("jinatiflyapi");
+
+        RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
+        retrieveBookingRQ.setAirlineCode(airlineCode);
+        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setPnrNumber(pnrNumber);
+        RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
+
+        FlightSegmentDetailsType flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().get(0);
+        Long oldSegmentId = Long.parseLong(flightSegment.getSegmentId());
+
+        ItineraryChangeType itineraryChange = new ItineraryChangeType();
+        SegmentChangeType segmentChange = new SegmentChangeType();
+        segmentChange.setPnrActionType(PnrActionType.ACCEPT_WL);
+        segmentChange.getOldSegmentId().add(oldSegmentId);
+        itineraryChange.getSegmentChangeType().add(segmentChange);
+
+        AcceptWlRQ acceptWlRQ = new AcceptWlRQ();
+        acceptWlRQ.setBookingChannel(retrieveBookingRQ.getBookingChannel());
+        acceptWlRQ.setPnrNumber(retrieveBookingRS.getPNRNumber());
+        acceptWlRQ.setAirlineCode(retrieveBookingRS.getAirlineCode());
+        acceptWlRQ.setAgencyCode(retrieveBookingRS.getAgencyCode());
+        acceptWlRQ.setCurrentAgentID(retrieveBookingRS.getCurrentAgentID());
+        acceptWlRQ.setIPAddress("127.0.0.1");
+        acceptWlRQ.getItineraryChangeType().add(itineraryChange);
+        AcceptWlRS acceptWlRS = acceptWl.request(acceptWlRQ, property);
+
+        String errors = errors(acceptWlRS);
+        if(StringUtils.isNotBlank(errors)) {
+            ResultMapVO result = new ResultMapVO();
+            LoggerUtils.e(LOGGER, "CrewBookingAPI#acceptSchedule.request: errorCode={}", errors);
+            result.put("Error", errors);
+            return result;
+        }
+
+        return ResultMapVO.simpleResult("message", "SUCCESS");
     }
 }
