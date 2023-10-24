@@ -94,11 +94,10 @@ export default {
   data() {
     return {
       items: [
-        { "seq": 0, "depDate": "20230904", "fltNum": "LJ305", "stnfrCode": "GMP", "stntoCode": "CJU", "fareClass": "U1", "paxCnt": 5, "errorValue": "cmm.msg.alert.error" }, { "seq": 0, "depDate": "20230904", "fltNum": "LJ305", "stnfrCode": "GMP", "stntoCode": "CJU", "fareClass": "U1", "paxCnt": 5, "errorValue": "AVAILABILITY_8001; Availability cannot be searched for past dates." }
+        // { "seq": 0, "depDate": "20230904", "fltNum": "LJ305", "stnfrCode": "GMP", "stntoCode": "CJU", "fareClass": "U1", "paxCnt": 5, "errorValue": "cmm.msg.alert.error" }, { "seq": 0, "depDate": "20230904", "fltNum": "LJ305", "stnfrCode": "GMP", "stntoCode": "CJU", "fareClass": "U1", "paxCnt": 5, "errorValue": "AVAILABILITY_8001; Availability cannot be searched for past dates." }
       ],
       selectedDate1: ref(new Date()),
       selectedDate2: ref(new Date()),
-      inputJSON: "",
     };
   },
 
@@ -110,25 +109,35 @@ export default {
       this.$refs.msg_box.showPopup(title, msg);
     },
     search() {
-      this.generateJSON();
-      console.log("inputJSON:", this.inputJSON);
+      if (this.fieldValidation() == false) {
+        this.showMessage('Warning', "도시코드는 필수 입니다.");
+        return;
+      }
+
+      let inputJson = this.generateInputJson();
+      console.log("inputJson:", inputJson);
+
       fetch('https://stg-crewpnr.jinair.com/crew/getCreateBookingFailLog', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json' // JSON 데이터를 전송한다고 서버에 알림
         },
-        body: this.inputJSON // JSON 데이터를 문자열로 변환하여 바디에 넣음
+        body: inputJson // JSON 데이터를 문자열로 변환하여 바디에 넣음
       })
         .then((response) => response.json())
         .then((data) => {
+          if(data.list.length == 0){
+            this.showMessage('warnning', '조회된 데이터가 없습니다.');
+          }
           this.items = data.list;
+          console.log("response data:", data)
         })
         .catch((error) => {
           console.error('데이터를 불러오는 중 오류가 발생했습니다.', error);
-          this.showMessage('error', error);
+          this.showMessage('Error', error);
         });
     },
-    generateJSON() {
+    generateInputJson() {
       const jsonData = {
         brdStrtDt: document.getElementById('qModel_datefr').value.replaceAll('-', ''),
         brdEndDt: document.getElementById('qModel_dateto').value.replaceAll('-', ''),
@@ -138,7 +147,14 @@ export default {
         paxCount: document.getElementById('qModel_paxcnt').value,
       };
       // 생성된 JSON 데이터를 문자열로 변환하여 데이터 속성에 저장
-      this.inputJSON = JSON.stringify(jsonData, null, 2);
+
+      return JSON.stringify(jsonData, null, 2);
+    },
+    fieldValidation() {
+      if (document.getElementById('qModel_stnfr').value == "" || document.getElementById('qModel_stnto').value == "")
+        return false;
+      else
+        return true;
     },
   }
 };
