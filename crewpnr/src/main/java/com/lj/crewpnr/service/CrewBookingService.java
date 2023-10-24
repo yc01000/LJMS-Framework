@@ -609,9 +609,37 @@ public class CrewBookingService {
         if (StringUtils.isNotBlank(errors)) {
             return ResultMapVO.simpleErrorCode(errors);
         }
-        result.put("parentPNR", splitPnrRS.getParentPNR());
-        result.put("childPNR", splitPnrRS.getChildPNR());
+//        result.put("parentPNR", splitPnrRS.getParentPNR());
+//        result.put("childPNR", splitPnrRS.getChildPNR());
 
+        // 탑승객 분리와 동시에 Child PNR 취소 - CancelBooking
+        CancelBookingRQ cancelBookingRQ = new CancelBookingRQ();
+        cancelBookingRQ.setAirlineCode(airlineCode);
+        cancelBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel("PWC"));
+        cancelBookingRQ.setPnrNumber(splitPnrRS.getChildPNR());
+        CancelBookingRS cancelBookingRS = cancelBooking.request(cancelBookingRQ, property);
+        errors = errors(cancelBookingRS);
+        if (StringUtils.isNotBlank(errors)) {
+            return ResultMapVO.simpleErrorCode(errors);
+        }
+
+        // 탑승객 분리와 동시에 Child PNR 취소 - SaveModifyBooking
+        SaveModifyBookingRQ saveModifyBookingRQ = new SaveModifyBookingRQ();
+        saveModifyBookingRQ.setAirlineCode(cancelBookingRQ.getAirlineCode());
+        saveModifyBookingRQ.setBookingChannel(cancelBookingRQ.getBookingChannel());
+        saveModifyBookingRQ.setBookerDetails(cancelBookingRS.getBookerDetails());
+        saveModifyBookingRQ.setPnrNumber(cancelBookingRQ.getPnrNumber());
+        saveModifyBookingRQ.setIsCancelPnr(true);
+        saveModifyBookingRQ.setAgencyCode(cancelBookingRS.getAgencyCode());
+        saveModifyBookingRQ.setOriginalAgentID(cancelBookingRS.getAgencyCode());
+        saveModifyBookingRQ.setCurrentAgentID(cancelBookingRS.getAgencyCode());
+        SaveModifyBookingRS saveModifyBookingRS = saveModifyBooking.request(saveModifyBookingRQ, property);
+        errors = errors(saveModifyBookingRS);
+        if (StringUtils.isNotBlank(errors)) {
+            return ResultMapVO.simpleErrorCode(errors);
+        }
+
+        result.put("message", "SUCCESS");
         return result;
     }
 

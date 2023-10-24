@@ -173,6 +173,14 @@ public class IBSDomainUtils {
 		return channelKey;
 	}
 
+	public static BookingChannelType bookingChannel(String channel) {
+		BookingChannelType channelType = new BookingChannelType();
+		channelType.setChannelType(Constants.IBS_BOOKING_CHANNEL_CHANNEL_TYPE);
+		channelType.setChannel(channel);
+		channelType.setLocale(Constants.IBS_BOOKING_CHANNEL_LOCALE);
+		return channelType;
+	}
+
 	public static String getMappedCountryCode(String currency) {
 		if(StringUtils.isBlank(currency)) {
 			return null;
