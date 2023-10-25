@@ -191,17 +191,7 @@ public class CrewPNRController {
     }
 
     @RequestMapping("/crew/acceptSchedule")
-    public String acceptSchedule(@RequestBody RetrieveChangeGateVO gate) throws Exception {
-        return WebUtils.toJson(crewBookingService.acceptSchedule(gate.getPnrNumber()));
-    }
-
-    @RequestMapping("/crew/rejectSchedule")
-    public String rejectSchedule(@RequestBody RetrieveChangeGateVO gate) throws Exception {
-        return WebUtils.toJson(crewBookingService.rejectSchedule(gate.getPnrNumber()));
-    }
-
-    @RequestMapping("/crew/acceptWaitlisted")
-    public String acceptWaitlisted(@RequestBody RetrieveChangeGateVO gate) throws Exception {
-        return WebUtils.toJson(crewBookingService.acceptWaitlisted(gate.getPnrNumber()));
+    public String acceptSchedule(String pnrNumber) {
+        return WebUtils.toJson(crewBookingService.acceptSchedule(pnrNumber));
     }
 }

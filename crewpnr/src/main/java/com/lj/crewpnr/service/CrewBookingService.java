@@ -1464,6 +1464,8 @@ public class CrewBookingService {
             action = PnrActionType.ACCEPT_TC;
         } else if(ReservationStatusDetailsType.SCHEDULE_CHANGE.equals(flightSegment.getSegmentStatus())) {
             action = PnrActionType.ACCEPT_SC;
+        } else if(ReservationStatusDetailsType.WAITLISTED.equals(flightSegment.getSegmentStatus())) {
+            action = PnrActionType.ACCEPT_WL;
         }
 
         ItineraryChangeType itineraryChange = new ItineraryChangeType();
@@ -1472,17 +1474,32 @@ public class CrewBookingService {
         segmentChange.getOldSegmentId().add(oldSegmentId);
         itineraryChange.getSegmentChangeType().add(segmentChange);
 
-        AcceptScRQ acceptScRQ = new AcceptScRQ();
-        acceptScRQ.setBookingChannel(retrieveBookingRQ.getBookingChannel());
-        acceptScRQ.setPnrNumber(retrieveBookingRS.getPNRNumber());
-        acceptScRQ.setAirlineCode(retrieveBookingRS.getAirlineCode());
-        acceptScRQ.setAgencyCode(retrieveBookingRS.getAgencyCode());
-        acceptScRQ.setCurrentAgentID(retrieveBookingRS.getCurrentAgentID());
-        acceptScRQ.setIPAddress("127.0.0.1");
-        acceptScRQ.getItineraryChangeType().add(itineraryChange);
-        AcceptScRS acceptScRS = acceptSc.request(acceptScRQ, property);
+        String errors = null;
+        if(!PnrActionType.ACCEPT_WL.equals(action)) {
+            AcceptScRQ acceptScRQ = new AcceptScRQ();
+            acceptScRQ.setBookingChannel(retrieveBookingRQ.getBookingChannel());
+            acceptScRQ.setPnrNumber(retrieveBookingRS.getPNRNumber());
+            acceptScRQ.setAirlineCode(retrieveBookingRS.getAirlineCode());
+            acceptScRQ.setAgencyCode(retrieveBookingRS.getAgencyCode());
+            acceptScRQ.setCurrentAgentID(retrieveBookingRS.getCurrentAgentID());
+            acceptScRQ.setIPAddress("127.0.0.1");
+            acceptScRQ.getItineraryChangeType().add(itineraryChange);
+            AcceptScRS acceptScRS = acceptSc.request(acceptScRQ, property);
 
-        String errors = errors(acceptScRS);
+            errors = errors(acceptScRS);
+        } else {
+            AcceptWlRQ acceptWlRQ = new AcceptWlRQ();
+            acceptWlRQ.setBookingChannel(retrieveBookingRQ.getBookingChannel());
+            acceptWlRQ.setPnrNumber(retrieveBookingRS.getPNRNumber());
+            acceptWlRQ.setAirlineCode(retrieveBookingRS.getAirlineCode());
+            acceptWlRQ.setAgencyCode(retrieveBookingRS.getAgencyCode());
+            acceptWlRQ.setCurrentAgentID(retrieveBookingRS.getCurrentAgentID());
+            acceptWlRQ.setIPAddress("127.0.0.1");
+            acceptWlRQ.getItineraryChangeType().add(itineraryChange);
+            AcceptWlRS acceptWlRS = acceptWl.request(acceptWlRQ, property);
+
+            errors = errors(acceptWlRS);
+        }
         if(StringUtils.isNotBlank(errors)) {
             ResultMapVO result = new ResultMapVO();
             LoggerUtils.e(LOGGER, "CrewBookingAPI#acceptSchedule.request: errorCode={}", errors);
