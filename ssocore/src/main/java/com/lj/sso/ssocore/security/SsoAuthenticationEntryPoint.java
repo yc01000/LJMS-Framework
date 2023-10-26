@@ -3,6 +3,7 @@ package com.lj.sso.ssocore.security;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +52,11 @@ public class SsoAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		LOGGER.info("request url is: {}", request.getRequestURI());
 		String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&state=%s", authorizeUri, clientId, redirectUri, scope);
 		LOGGER.info("move to sso: {}", uri);
+
+		if(StringUtils.equals(request.getRequestURI(), "/")) {
+			new DefaultRedirectStrategy().sendRedirect(request, response, uri);
+			return;
+		}
 
 		Map<String, Object> results = new HashMap<>();
 		results.put("error", "not signed in");
