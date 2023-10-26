@@ -22,8 +22,8 @@ import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelGumVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
 import com.lj.crewpnr.vo.excel.PaxInfoVO;
-import com.lj.sso.ssocore.security.vo.UserInfoVO;
-import com.lj.sso.ssocore.util.PrincipalUtils;
+//import com.lj.sso.ssocore.security.vo.UserInfoVO;
+//import com.lj.sso.ssocore.util.PrincipalUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1722,15 +1722,15 @@ public class CrewBookingService {
     }
 
     public String getAgencyCode(){
-        UserInfoVO loginUser = PrincipalUtils.user();
-        CodeInfoVO codeInfoVO = null;
-        String agencyCode = null;
-
-        codeInfoVO = codeHandler.getCodeInfo("CMM209", loginUser.getDepartment());
-
-        if(codeInfoVO != null){
-            agencyCode = codeInfoVO.getAddInfo1();
-        }
-        return agencyCode;
+//        UserInfoVO loginUser = PrincipalUtils.user();
+//        CodeInfoVO codeInfoVO = null;
+//        String agencyCode = null;
+//
+//        codeInfoVO = codeHandler.getCodeInfo("CMM209", loginUser.getDepartment());
+//
+//        if(codeInfoVO != null){
+//            agencyCode = codeInfoVO.getAddInfo1();
+//        }
+        return "20024600";
     }
 }
