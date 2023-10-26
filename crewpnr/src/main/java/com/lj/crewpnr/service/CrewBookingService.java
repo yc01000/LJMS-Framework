@@ -783,7 +783,67 @@ public class CrewBookingService {
             return ResultMapVO.simpleErrorCode("PNR null");
         }
 
+        BookingChannelType channel = new BookingChannelType();
+        channel.setChannelType("API");
+        channel.setChannel("PWC");
+        channel.setLocale("en_US");
+
         IbsSoapProperty property = new IbsSoapProperty("TEST");
+        property.setUsername("jinair");
+        property.setPassword("jinatiflyapi");
+
+        RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
+        retrieveBookingRQ.setAirlineCode(airlineCode);
+        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setPnrNumber(pnrNumber);
+        RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
+        String errors = errors(retrieveBookingRS);
+        if (StringUtils.isNotBlank(errors)) {
+            ResultMapVO result = new ResultMapVO();
+            LoggerUtils.e(LOGGER, "CrewBookingAPI#rejectSchedule.request: errorCode={}", errors);
+            result.put("Error", errors);
+            return result;
+        }
+
+        //WK/SC, WL/SC
+        //TK/TC, TL/TC
+        final List<ReservationStatusDetailsType> REJECT_NEEDED_STATUSES = Arrays.asList(
+                ReservationStatusDetailsType.WAS_CONFIRMED,
+                ReservationStatusDetailsType.WAITLISTED,
+                ReservationStatusDetailsType.TIME_CHANGE,
+                ReservationStatusDetailsType.TIME_CHANGE_FROM_CONFIRMED,
+                ReservationStatusDetailsType.SCHEDULE_CHANGE);
+        boolean needRejectFirst = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
+                .anyMatch(t -> REJECT_NEEDED_STATUSES.contains(t.getSegmentStatus()));
+        if(needRejectFirst) {
+            FlightSegmentDetailsType flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().get(0);
+            Long oldSegmentId = Long.parseLong(flightSegment.getSegmentId());
+
+            ItineraryChangeType itineraryChange = new ItineraryChangeType();
+            SegmentChangeType segmentChange = new SegmentChangeType();
+            segmentChange.setPnrActionType(PnrActionType.REJECT_SC);
+            segmentChange.getOldSegmentId().add(oldSegmentId);
+            itineraryChange.getSegmentChangeType().add(segmentChange);
+
+            RejectScRQ rejectScRQ = new RejectScRQ();
+            rejectScRQ.setBookingChannel(retrieveBookingRQ.getBookingChannel());
+            rejectScRQ.setPnrNumber(retrieveBookingRS.getPNRNumber());
+            rejectScRQ.setAirlineCode(retrieveBookingRS.getAirlineCode());
+            rejectScRQ.setAgencyCode(retrieveBookingRS.getAgencyCode());
+            rejectScRQ.setCurrentAgentID(retrieveBookingRS.getCurrentAgentID());
+            rejectScRQ.setIPAddress("127.0.0.1");
+            rejectScRQ.getItineraryChangeType().add(itineraryChange);
+            RejectScRS rejectScRS = rejectSc.request(rejectScRQ, property);
+
+            errors = errors(rejectScRS);
+            if (StringUtils.isNotBlank(errors)) {
+                ResultMapVO result = new ResultMapVO();
+                LoggerUtils.e(LOGGER, "CrewBookingAPI#rejectSchedule.request: errorCode={}", errors);
+                result.put("Error", errors);
+                return result;
+            }
+        }
+
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
@@ -798,7 +858,7 @@ public class CrewBookingService {
         cancelBookingRQ.setPnrNumber(pnrNumber);
 
         CancelBookingRS cancelBookingRS = cancelBooking.request(cancelBookingRQ, property);
-        String errors = errors(cancelBookingRS);
+        errors = errors(cancelBookingRS);
         if (StringUtils.isNotBlank(errors)) {
             return ResultMapVO.simpleErrorCode(errors);
         }
