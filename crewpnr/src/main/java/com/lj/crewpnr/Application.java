@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @ComponentScan(basePackages="com.lj")
-//@ImportResource("classpath:config/security-config.xml")
+@ImportResource("classpath:config/security-config.xml")
 public class Application {
 
 	public static void main(String[] args) {
