@@ -1,6 +1,8 @@
 package com.lj.crewpnr.service;
 
 import com.lj.core.common.util.RandomUtils;
+import com.lj.core.commoncode.handler.CodeHandler;
+import com.lj.core.commoncode.vo.CodeInfoVO;
 import com.lj.core.integration.soap.ibs.IbsSoapProperty;
 import com.lj.core.integration.soap.ibs.api.booking.*;
 import com.lj.core.integration.soap.ibs.domain.booking.*;
@@ -20,6 +22,8 @@ import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelGumVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
 import com.lj.crewpnr.vo.excel.PaxInfoVO;
+import com.lj.sso.ssocore.security.vo.UserInfoVO;
+import com.lj.sso.ssocore.util.PrincipalUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -71,6 +75,8 @@ public class CrewBookingService {
 
     @Autowired
     private AcceptWl acceptWl;
+    @Autowired
+    private CodeHandler codeHandler;
 
     public ResultMapVO createBookingsAsync(MultipartFile file) {
         String service = "CREATE_BOOKINGS";
@@ -99,12 +105,19 @@ public class CrewBookingService {
     }
 
     public ResultMapVO createBookings(MultipartFile file){
+        ResultMapVO resultMapVO = new ResultMapVO();
+
+        //로그인 유저의 부서 코드로 agency Code 세팅
+        String agencyCode = getAgencyCode();
+//        if(agencyCode == null){
+//            resultMapVO.put("message", "Agency Code null");
+//            return resultMapVO;
+//        }
 
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
-        ResultMapVO resultMapVO = new ResultMapVO();
         List<CrewPNRExcelVO> crewPNRExcelList = null;
         //엑셀파일 읽기
         crewPNRExcelList = this.readExcelFile(file);
@@ -160,7 +173,7 @@ public class CrewBookingService {
                     criteria.setFareLevel("CR");
 
 //                    if (StringUtils.equals(excelVO.getMiddleName(), "OOA"))
-                        agencyCd = "20024620"; //운항
+//                        agencyCd = "20024620"; //운항
 //                    else if (StringUtils.equals(excelVO.getMiddleName(), "UFA"))
 //                        agencyCd = "20024600"; //객실
 //                    else if (StringUtils.equals(excelVO.getMiddleName(), "MCA"))
@@ -295,12 +308,18 @@ public class CrewBookingService {
     }
 
     public ResultMapVO createBookingsForGum(MultipartFile file){
+        ResultMapVO resultMapVO = new ResultMapVO();
+
+        //로그인 유저의 부서 코드로 agency Code 세팅
+        String agencyCode = getAgencyCode();
+//        if(agencyCode == null){
+//            resultMapVO.put("message", "Agency Code null");
+//            return resultMapVO;
+//        }
 
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
-
-        ResultMapVO resultMapVO = new ResultMapVO();
 
 
         //엑셀파일 읽기
@@ -401,7 +420,7 @@ public class CrewBookingService {
                     criteria.setFareLevel("CR");
 
 //                if (StringUtils.equals(excelVO.getMiddleName(), "OOA"))
-                    agencyCd = "20024620"; //운항
+//                    agencyCd = "20024620"; //운항
 //                else if (StringUtils.equals(excelVO.getMiddleName(), "UFA"))
 //                    agencyCd = "20024600"; //객실
 //                else //StringUtils.equals(excelVO.getMiddleName(), "MCA")
@@ -977,8 +996,14 @@ public class CrewBookingService {
     }
 
     public ResultMapVO getReservationSummary(ReservationSummaryCriteriaVO criteriaVO) {
-
         ResultMapVO resultMapVO = new ResultMapVO();
+
+        //로그인 유저의 부서 코드로 agency Code 세팅
+        String agencyCode = getAgencyCode();
+//        if(agencyCode == null){
+//            resultMapVO.put("message", "Agency Code null");
+//            return resultMapVO;
+//        }
 
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
@@ -998,7 +1023,7 @@ public class CrewBookingService {
         req.setAirlineCode(airlineCode);
         req.setBoardPoint(criteriaVO.getStnfrCode());
         req.setOffPoint(criteriaVO.getStntoCode());
-        req.setAgencyCode("20024620");
+        req.setAgencyCode(agencyCode);
 
         req.setPnrType(PNRType.NORMAL);
         req.setBookingChannel(bookingChannelKeyType);
@@ -1694,5 +1719,18 @@ public class CrewBookingService {
         }
 
         return ResultMapVO.simpleResult("message", "SUCCESS");
+    }
+
+    public String getAgencyCode(){
+        UserInfoVO loginUser = PrincipalUtils.user();
+        CodeInfoVO codeInfoVO = null;
+        String agencyCode = null;
+
+        codeInfoVO = codeHandler.getCodeInfo("CMM209", loginUser.getDepartment());
+
+        if(codeInfoVO != null){
+            agencyCode = codeInfoVO.getAddInfo1();
+        }
+        return agencyCode;
     }
 }
