@@ -4,7 +4,7 @@ import com.lj.core.mail.vo.MailInfoVO;
 
 import java.util.Map;
 
-public interface EMSDBSampleMapper {
+public interface MailMapper {
 
     Map<String, Object> select(String id);
 

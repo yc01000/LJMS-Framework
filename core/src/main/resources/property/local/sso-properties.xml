@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>
-	<comment>Spring Security Properties for Single-Log-On</comment>	
-
-	<!-- <entry key="sso.login.url.local">http://local-portal.jinair.com:8080</entry> -->
-	<entry key="sso.login.url.local">http://pss2dev.jinair.com</entry>
-</properties>

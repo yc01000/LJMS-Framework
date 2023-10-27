@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.lj.core.mail.mapper.EMSDBSampleMapper">
+<mapper namespace="com.lj.core.mail.mapper.MailMapper">
 
 	<!-- 메일 발송 등록 (URL 방식) -->
 	<insert id="insert" parameterType="com.lj.core.mail.vo.MailInfoVO">
-		/* com.lj.crewpnr.mapper.emsdb.EMSDBSampleMapper.insert */
+		/* com.lj.crewpnr.mapper.emsdb.MailMapper.insert */
 		<selectKey resultType="long" keyProperty="mailId" order="BEFORE">
 			SELECT MAILQUEUE_SEC_SEQ.NEXTVAL FROM DUAL
 		</selectKey>

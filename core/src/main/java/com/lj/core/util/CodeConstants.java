@@ -1,4 +1,4 @@
-package com.lj.core.common.util;
+package com.lj.core.util;
 
 /**
  * <pre>
@@ -11,7 +11,6 @@ package com.lj.core.common.util;
  *  @version : 1.0
  *  @desc    : 코드 상수
  */
-@Deprecated
 public class CodeConstants {
 
 	public static final String	CD_MST_언어구분		= "CMM001";

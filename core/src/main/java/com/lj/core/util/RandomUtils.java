@@ -1,10 +1,9 @@
-package com.lj.core.common.util;
+package com.lj.core.util;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.security.SecureRandom;
 
-@Deprecated
 public class RandomUtils {
 
 	private static final char[] ENTRY_ALPHANUMERIC =  {

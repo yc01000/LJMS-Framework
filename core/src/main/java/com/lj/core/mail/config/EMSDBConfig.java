@@ -1,4 +1,4 @@
-package com.lj.core.config;
+package com.lj.core.mail.config;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
