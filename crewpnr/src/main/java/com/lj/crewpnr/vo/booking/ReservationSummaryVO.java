@@ -12,6 +12,7 @@ public class ReservationSummaryVO {
     private String PNRNumber;
     private String SegmentStatus;
     private String SegmentStatusDtl;
+    private String pnrStatus;
 
     public String getFltnum() {
         return fltnum;
@@ -99,5 +100,13 @@ public class ReservationSummaryVO {
 
     public void setSegmentStatusDtl(String segmentStatusDtl) {
         SegmentStatusDtl = segmentStatusDtl;
+    }
+
+    public String getPnrStatus() {
+        return pnrStatus;
+    }
+
+    public void setPnrStatus(String pnrStatus) {
+        this.pnrStatus = pnrStatus;
     }
 }
