@@ -1030,6 +1030,7 @@ public class CrewBookingService {
         req.setActivePnrNumber(100);
         req.setPastPnrNumber(100);
         req.setIsUnFlownPassengersOnly(false);
+        req.setIsCancelledRequired(true);
 
         RetrieveReservationSummaryRS retrieveReservationSummaryRS = retrieveReservationSummaryRequest.request(req, property);
         String errors = errors(retrieveReservationSummaryRS);
@@ -1042,6 +1043,12 @@ public class CrewBookingService {
         String isFltData = null;
 
         List<ReservationSummaryVO> reservationSummaryVOList = new ArrayList<>();
+        List<PnrSummary> summaries = new ArrayList<>();
+
+        // 지난 예약 포함
+        summaries.addAll(retrieveReservationSummaryRS.getPnrSummary());
+        summaries.addAll(retrieveReservationSummaryRS.getPnrSummaryPast());
+
         for (var pnrSummary : retrieveReservationSummaryRS.getPnrSummary()) {
             ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
             int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
@@ -1106,6 +1113,7 @@ public class CrewBookingService {
                 reservationSummaryVOList.add(reservationSummaryVO);
             }
         }
+        reservationSummaryVOList.sort(Comparator.comparing(ReservationSummaryVO::getDepDate));
 
         resultMapVO.put("summaryResult", reservationSummaryVOList);
         return resultMapVO;
