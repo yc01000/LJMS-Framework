@@ -1049,7 +1049,7 @@ public class CrewBookingService {
         summaries.addAll(retrieveReservationSummaryRS.getPnrSummary());
         summaries.addAll(retrieveReservationSummaryRS.getPnrSummaryPast());
 
-        for (var pnrSummary : retrieveReservationSummaryRS.getPnrSummary()) {
+        for (var pnrSummary : summaries) {
             ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
             int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
 
@@ -1062,29 +1062,31 @@ public class CrewBookingService {
 
                 String fltSegFareClass = null;
                 String rsFareClass = fltSegment.getFareBasis();
-                boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
-                if(fromKorea)
-                    fltSegFareClass = rsFareClass.substring(0, 2);
-                else
-                    fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
+                if(StringUtils.isNotBlank(rsFareClass)) {
+                    boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
+                    if (fromKorea)
+                        fltSegFareClass = rsFareClass.substring(0, 2);
+                    else
+                        fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
 
 
-                if(null != critSegStatus && !critSegStatus.isEmpty()){
-                    if(!StringUtils.equals(fltSegment.getSegmentStatus(),critSegStatus)){
-                        isFltData = "N";
-                        continue;
+                    if (null != critSegStatus && !critSegStatus.isEmpty()) {
+                        if (!StringUtils.equals(fltSegment.getSegmentStatus(), critSegStatus)) {
+                            isFltData = "N";
+                            continue;
+                        }
                     }
-                }
-                if(null != critFareClass && !critFareClass.isEmpty()){
-                    if(!StringUtils.equals(fltSegFareClass,critFareClass)){
-                        isFltData = "N";
-                        continue;
+                    if (null != critFareClass && !critFareClass.isEmpty()) {
+                        if (!StringUtils.equals(fltSegFareClass, critFareClass)) {
+                            isFltData = "N";
+                            continue;
+                        }
                     }
-                }
-                if(null != critPaxCnt && !critPaxCnt.isEmpty()){
-                    if(paxCnt != Integer.parseInt(critPaxCnt)){
-                        isFltData = "N";
-                        continue;
+                    if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
+                        if (paxCnt != Integer.parseInt(critPaxCnt)) {
+                            isFltData = "N";
+                            continue;
+                        }
                     }
                 }
                 reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
