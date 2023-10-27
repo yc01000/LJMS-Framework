@@ -622,7 +622,7 @@ public class CrewBookingService {
 
         // 로그인 유저의 부서 확인 후 대응하는 대리점 코드 세팅
         String agencyCode = null;
-        if(StringUtils.equals(loginUser.getDepartment(), "1118")) {
+        if (StringUtils.equals(loginUser.getDepartment(), "1118")) {
             agencyCode = "20024620";
         }
 
@@ -641,8 +641,8 @@ public class CrewBookingService {
 
         RetrieveReservationSummaryRQ req = new RetrieveReservationSummaryRQ();
 
-        req.setFlightStartDate(DateUtils.xmlGregorianCalendar(criteriaVO.getDepStartDate(),"yyyy-MM-dd"));
-        req.setFlightEndDate( DateUtils.xmlGregorianCalendar(criteriaVO.getDepEndDate(),"yyyy-MM-dd"));
+        req.setFlightStartDate(DateUtils.xmlGregorianCalendar(criteriaVO.getDepStartDate(), "yyyy-MM-dd"));
+        req.setFlightEndDate(DateUtils.xmlGregorianCalendar(criteriaVO.getDepEndDate(), "yyyy-MM-dd"));
         req.setAirlineCode(airlineCode);
         req.setBoardPoint(criteriaVO.getStnfrCode());
         req.setOffPoint(criteriaVO.getStntoCode());
@@ -663,12 +663,16 @@ public class CrewBookingService {
         }
 
         List<ReservationSummaryVO> reservationSummaryVOList = new ArrayList<>();
+        List<PnrSummary> summaries = new ArrayList<>();
+        summaries.addAll(retrieveReservationSummaryRS.getPnrSummary());
+        summaries.addAll(retrieveReservationSummaryRS.getPnrSummaryPast());
+        ReservationSummaryVO reservationSummaryVO = null;
         for (var pnrSummary : retrieveReservationSummaryRS.getPnrSummary()) {
-            ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
+            reservationSummaryVO = new ReservationSummaryVO();
             reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
 
             for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
-                reservationSummaryVO.setFltnum(fltSegment.getAirlineCode()+ fltSegment.getFlightNumber());
+                reservationSummaryVO.setFltnum(fltSegment.getAirlineCode() + fltSegment.getFlightNumber());
 
                 String depTime = DateUtils.string(fltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd(E)");
 
@@ -680,7 +684,7 @@ public class CrewBookingService {
                 XMLGregorianCalendar arrDateUtc = fltSegment.getScheduledArrivalDateTime();
 
                 String depDateTime = depDateUtc.getHour() + ":" + String.format("%02d", depDateUtc.getMinute());
-                String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d",arrDateUtc.getMinute());
+                String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d", arrDateUtc.getMinute());
 
                 reservationSummaryVO.setDepartureDateTime(depDateTime);
 
@@ -690,7 +694,7 @@ public class CrewBookingService {
             }
 
             int paxCnt = 0;
-            for(var pnrDetail: pnrSummary.getPnrGuestSummaryDetails()){
+            for (var pnrDetail : pnrSummary.getPnrGuestSummaryDetails()) {
                 paxCnt++;
             }
 
@@ -698,6 +702,7 @@ public class CrewBookingService {
 
             reservationSummaryVOList.add(reservationSummaryVO);
         }
+        reservationSummaryVOList.sort(Comparator.comparing(ReservationSummaryVO::getDepDate));
 
         resultMapVO.put("summaryResult", reservationSummaryVOList);
         return resultMapVO;
