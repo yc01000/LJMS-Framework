@@ -183,6 +183,13 @@ public class CrewBookingService {
                     criteria.setCurrency("KRW");
                     criteria.setPointOfPurchase("KR");
 
+                    //최대 9명까지 pnr 생성 가능
+                    if(excelVO.getPaxCount() > 9){
+                        failCnt++;
+                        insertCrewPnrLog(criteria, "createBookings: {pnr max 9}");
+                        continue;
+                    }
+
                     int logSeq = 2;
                     ResultMapVO availabilityResult = this.searchAvailabilities(criteria);
 
@@ -429,6 +436,12 @@ public class CrewBookingService {
                     criteria.setAgencyCode(agencyCd);
                     criteria.setCurrency("KRW");
                     criteria.setPointOfPurchase("KR");
+
+                    if(excelVO.getPaxinfoList().size() > 9){
+                        failCnt++;
+                        insertCrewPnrLog(criteria, "createBookings: {pnr max 9}");
+                        continue;
+                    }
 
                     int logSeq = 2;
                     ResultMapVO availabilityResult = this.searchAvailabilities(criteria);
@@ -1052,6 +1065,7 @@ public class CrewBookingService {
         for (var pnrSummary : summaries) {
             ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
             int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
+            String pnrStatus = pnrSummary.getPnrStatus();
 
             //segmentStatus, fareClass, paxCount 조회 조건 필터링
             for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
@@ -1109,6 +1123,7 @@ public class CrewBookingService {
                 reservationSummaryVO.setArrivalDateTime(arrDateTime);
                 reservationSummaryVO.setFareClass(fltSegFareClass);
                 reservationSummaryVO.setSegmentStatus(fltSegment.getSegmentStatus());
+                reservationSummaryVO.setPnrStatus(pnrStatus);
             }
             if ("Y".equals(isFltData)) {
                 reservationSummaryVO.setPaxCount(paxCnt);
