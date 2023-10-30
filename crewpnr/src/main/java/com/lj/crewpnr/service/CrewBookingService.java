@@ -1053,8 +1053,6 @@ public class CrewBookingService {
             return resultMapVO;
         }
 
-        String isFltData = null;
-
         List<ReservationSummaryVO> reservationSummaryVOList = new ArrayList<>();
         List<PnrSummary> summaries = new ArrayList<>();
 
@@ -1062,79 +1060,307 @@ public class CrewBookingService {
         summaries.addAll(retrieveReservationSummaryRS.getPnrSummary());
         summaries.addAll(retrieveReservationSummaryRS.getPnrSummaryPast());
 
+        /**
+         * CONFIRMED
+         * WAITLISTED
+         * CONFIRMED_FROM_WAITLIST
+         * CANCELLED
+         * "TIME_CHANGE + TIME_CHANGE_FROM_CONFIRMED
+         * ==> TKTC 상태"
+         * "TIME_CHANGE + TIME_CHANGE_FROM_WAITLIST
+         * ==> TLTK 상태"
+         * "SCHEDULE_CHANGE +  WAS_CONFIRMED
+         * ==> WKSC 상태"
+         * "SCHEDULE_CHANGE +  WAITLISTED
+         * ==> WLSC 상태"
+         * WAS_CONFIRMED
+         * WAS_WAITLISTED
+         */
+        final List<String> ENABLED_STATUSES = Arrays.asList(
+//                "HOLDING_SOLD",
+//                "STANDBY",
+                "CONFIRMED",
+                "CANCELLED",
+                "TIME_CHANGE",
+//                "TIME_CHANGE_FROM_CONFIRMED",
+//                "TIME_CHANGE_FROM_WAITLIST",
+//                "TIME_CHANGE_FROM_STANDBY",
+//                "EARLY_SHOW",
+//                "LATE_SHOW",
+//                "WAS_STANDBY",
+                "SCHEDULE_CHANGE",
+                "CONFIRMED_FROM_WAITLIST",
+                "WAS_CONFIRMED",
+                "WAS_WAITLISTED",
+                "WAITLISTED"
+//                "UNABLE_CLOSED",
+//                "NO_ACTION_TAKEN",
+//                "UNABLE_FLIGHT_NON_OPERATING",
+//                "HOLDING_NEEDED",
+//                "TP_CONFIRMED",
+//                "WAS_REQUESTED",
+//                "REQUESTED",
+//                "WAS_HOLDING_NEEDED",
+//                "CONFIRMEDVERBALLY",
+//                "TIME_CHANGE_FROM_HOLDING_NEEDED",
+//                "WAS_TP_CONFIRMED",
+//                "CANCELLEDVERBALLY"
+                );
+
+        /**
+         * 완료: CONFIRMED
+         * 대기: WAITLISTED
+         * 비운항: NO_OP
+         * 여정 변경: SCHEDULE_CHANGE
+         * 시간 변경: TIME_CHANGE
+         * 취소: CANCELLED
+         */
+        final Map<String, String> STATUS_MAP = new HashMap<>() {
+            {
+                put("CONFIRMED", "CONFIRMED");
+                put("WAITLISTED", "WAITLISTED");
+                put("CONFIRMED_FROM_WAITLIST", "WAITLISTED");
+                put("CANCELLED", "CANCELLED");
+                put("TIME_CHANGE", "TIME_CHANGE");
+                put("SCHEDULE_CHANGE", "SCHEDULE_CHANGE");
+                put("WAS_CONFIRMED", "NO_OP");
+                put("WAS_WAITLISTED", "NO_OP");
+            }
+        };
+
+        final Map<String, String> STATUS_DISPLAY_MAP = new HashMap<>() {
+            {
+                put("CONFIRMED", "완료");
+                put("WAITLISTED", "대기");
+                put("CANCELLED", "취소");
+                put("TIME_CHANGE", "시간 변경");
+                put("SCHEDULE_CHANGE", "여정 변경");
+                put("NO_OP", "비운항");
+            }
+        };
+
         for (var pnrSummary : summaries) {
             ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
             int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
             String pnrStatus = pnrSummary.getPnrStatus();
 
+            FlightSegmentSummaryDetails targetFltSegment = null;
+            String fltSegFareClass = null;
+
+            // status별 우선순위가 있기 때문에 status for loop를 바깥으로 구성
+            for (var segmentStatus : ENABLED_STATUSES) {
+                for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
+                    // Segment Status에 따른 검색 결과 제어
+                    if (StringUtils.equals(pnrStatus, "CANCELLED")) {
+                        targetFltSegment = fltSegment;
+                        break;
+                    } else {
+                        if (!StringUtils.equals(fltSegment.getSegmentStatus(), segmentStatus)) {
+                            continue;
+                        }
+                    }
+
+                    targetFltSegment = fltSegment;
+                    break;
+                }
+
+                if(targetFltSegment != null) break;
+            }
+
+            String critSegStatus = criteriaVO.getSegmentStatus();
+            String critFareClass = criteriaVO.getFareClass();
+            String critPaxCnt = criteriaVO.getPaxCount();
+
             //segmentStatus, fareClass, paxCount 조회 조건 필터링
-            for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
-                isFltData = "Y";
-                String critSegStatus = criteriaVO.getSegmentStatus();
-                String critFareClass = criteriaVO.getFareClass();
-                String critPaxCnt = criteriaVO.getPaxCount();
+            if (null != critSegStatus && !critSegStatus.isEmpty()) {
+                if (!StringUtils.equals(targetFltSegment.getSegmentStatus(), critSegStatus)) {
+                    continue;
+                }
+            }
 
-                String fltSegFareClass = null;
-                String rsFareClass = fltSegment.getFareBasis();
-                if(StringUtils.isNotBlank(rsFareClass)) {
-                    boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
-                    if (fromKorea)
-                        fltSegFareClass = rsFareClass.substring(0, 2);
-                    else
-                        fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
+            String rsFareClass = targetFltSegment.getFareBasis();
+            if(StringUtils.isNotBlank(rsFareClass)) {
+                boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
+                if (fromKorea)
+                    fltSegFareClass = rsFareClass.substring(0, 2);
+                else
+                    fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
 
-
-                    if (null != critSegStatus && !critSegStatus.isEmpty()) {
-                        if (!StringUtils.equals(fltSegment.getSegmentStatus(), critSegStatus)) {
-                            isFltData = "N";
-                            continue;
-                        }
-                    }
-                    if (null != critFareClass && !critFareClass.isEmpty()) {
-                        if (!StringUtils.equals(fltSegFareClass, critFareClass)) {
-                            isFltData = "N";
-                            continue;
-                        }
-                    }
-                    if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
-                        if (paxCnt != Integer.parseInt(critPaxCnt)) {
-                            isFltData = "N";
-                            continue;
-                        }
+                if (null != critFareClass && !critFareClass.isEmpty()) {
+                    if (!StringUtils.equals(fltSegFareClass, critFareClass)) {
+                        continue;
                     }
                 }
-                reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
-                reservationSummaryVO.setFltnum(fltSegment.getAirlineCode()+ fltSegment.getFlightNumber());
-
-                String depTime = DateUtils.string(fltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd(E)");
-
-                reservationSummaryVO.setDepDate(depTime);
-                reservationSummaryVO.setStnfrCode(fltSegment.getBoardPoint());
-                reservationSummaryVO.setStntoCode(fltSegment.getOffPoint());
-
-                XMLGregorianCalendar depDateUtc = fltSegment.getScheduledDepartureDateTime();
-                XMLGregorianCalendar arrDateUtc = fltSegment.getScheduledArrivalDateTime();
-
-                String depDateTime = depDateUtc.getHour() + ":" + String.format("%02d", depDateUtc.getMinute());
-                String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d",arrDateUtc.getMinute());
-
-                reservationSummaryVO.setDepartureDateTime(depDateTime);
-
-                reservationSummaryVO.setArrivalDateTime(arrDateTime);
-                reservationSummaryVO.setFareClass(fltSegFareClass);
-                reservationSummaryVO.setSegmentStatus(fltSegment.getSegmentStatus());
-                reservationSummaryVO.setPnrStatus(pnrStatus);
             }
-            if ("Y".equals(isFltData)) {
-                reservationSummaryVO.setPaxCount(paxCnt);
-                reservationSummaryVOList.add(reservationSummaryVO);
+
+            if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
+                if (paxCnt != Integer.parseInt(critPaxCnt)) {
+                    continue;
+                }
             }
+
+            reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
+            reservationSummaryVO.setFltnum(targetFltSegment.getAirlineCode()+ targetFltSegment.getFlightNumber());
+
+            String depTime = DateUtils.string(targetFltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd(E)");
+
+            reservationSummaryVO.setDepDate(depTime);
+            reservationSummaryVO.setStnfrCode(targetFltSegment.getBoardPoint());
+            reservationSummaryVO.setStntoCode(targetFltSegment.getOffPoint());
+
+            XMLGregorianCalendar depDateUtc = targetFltSegment.getScheduledDepartureDateTime();
+            XMLGregorianCalendar arrDateUtc = targetFltSegment.getScheduledArrivalDateTime();
+
+            String depDateTime = depDateUtc.getHour() + ":" + String.format("%02d", depDateUtc.getMinute());
+            String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d",arrDateUtc.getMinute());
+
+            reservationSummaryVO.setDepartureDateTime(depDateTime);
+
+            reservationSummaryVO.setArrivalDateTime(arrDateTime);
+            reservationSummaryVO.setFareClass(fltSegFareClass);
+            reservationSummaryVO.setSegmentStatus(targetFltSegment.getSegmentStatus());
+            reservationSummaryVO.setPnrStatus(pnrStatus);
+            reservationSummaryVO.setPaxCount(paxCnt);
+
+            // status
+            reservationSummaryVO.setStatus(STATUS_MAP.get(targetFltSegment.getSegmentStatus()));
+            reservationSummaryVO.setStatusDisplay(STATUS_DISPLAY_MAP.get(reservationSummaryVO.getStatus()));
+
+            reservationSummaryVOList.add(reservationSummaryVO);
         }
         reservationSummaryVOList.sort(Comparator.comparing(ReservationSummaryVO::getDepDate));
 
         resultMapVO.put("summaryResult", reservationSummaryVOList);
         return resultMapVO;
     }
+
+//    public ResultMapVO getReservationSummary(ReservationSummaryCriteriaVO criteriaVO) {
+//        ResultMapVO resultMapVO = new ResultMapVO();
+//
+//        //로그인 유저의 부서 코드로 agency Code 세팅
+//        String agencyCode = getAgencyCode();
+////        if(agencyCode == null){
+////            resultMapVO.put("message", "Agency Code null");
+////            return resultMapVO;
+////        }
+//
+//        IbsSoapProperty property = new IbsSoapProperty("TEST");
+//        property.setUsername("jinair");
+//        property.setPassword("jinatiflyapi");
+//
+//
+//        BookingChannelKeyType bookingChannelKeyType = new BookingChannelKeyType();
+//        bookingChannelKeyType.setChannel(Constants.IBS_CHANNEL.CHANNEL);
+//        bookingChannelKeyType.setChannelType(Constants.IBS_CHANNEL.CHANNEL_TYPE);
+//        bookingChannelKeyType.setLocale(Constants.IBS_CHANNEL.LOCALE);
+//
+//
+//        RetrieveReservationSummaryRQ req = new RetrieveReservationSummaryRQ();
+//
+//        req.setFlightStartDate(DateUtils.xmlGregorianCalendar(criteriaVO.getDepStartDate(),"yyyy-MM-dd"));
+//        req.setFlightEndDate( DateUtils.xmlGregorianCalendar(criteriaVO.getDepEndDate(),"yyyy-MM-dd"));
+//        req.setAirlineCode(airlineCode);
+//        req.setBoardPoint(criteriaVO.getStnfrCode());
+//        req.setOffPoint(criteriaVO.getStntoCode());
+//        req.setAgencyCode(agencyCode);
+//
+//        req.setPnrType(PNRType.NORMAL);
+//        req.setBookingChannel(bookingChannelKeyType);
+//        req.setActivePnrNumber(100);
+//        req.setPastPnrNumber(100);
+//        req.setIsUnFlownPassengersOnly(false);
+//        req.setIsCancelledRequired(true);
+//
+//        RetrieveReservationSummaryRS retrieveReservationSummaryRS = retrieveReservationSummaryRequest.request(req, property);
+//        String errors = errors(retrieveReservationSummaryRS);
+//        if (StringUtils.isNotBlank(errors)) {
+//            LoggerUtils.e(LOGGER, "CrewBookingAPI#RetrieveReservationSummary.request: errorCode={}", errors);
+//            resultMapVO.put("Error", errors);
+//            return resultMapVO;
+//        }
+//
+//        String isFltData = null;
+//
+//        List<ReservationSummaryVO> reservationSummaryVOList = new ArrayList<>();
+//        List<PnrSummary> summaries = new ArrayList<>();
+//
+//        // 지난 예약 포함
+//        summaries.addAll(retrieveReservationSummaryRS.getPnrSummary());
+//        summaries.addAll(retrieveReservationSummaryRS.getPnrSummaryPast());
+//
+//        for (var pnrSummary : summaries) {
+//            ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
+//            int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
+//            String pnrStatus = pnrSummary.getPnrStatus();
+//
+//            //segmentStatus, fareClass, paxCount 조회 조건 필터링
+//            for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
+//                isFltData = "Y";
+//                String critSegStatus = criteriaVO.getSegmentStatus();
+//                String critFareClass = criteriaVO.getFareClass();
+//                String critPaxCnt = criteriaVO.getPaxCount();
+//
+//                String fltSegFareClass = null;
+//                String rsFareClass = fltSegment.getFareBasis();
+//                if(StringUtils.isNotBlank(rsFareClass)) {
+//                    boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
+//                    if (fromKorea)
+//                        fltSegFareClass = rsFareClass.substring(0, 2);
+//                    else
+//                        fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
+//
+//
+//                    if (null != critSegStatus && !critSegStatus.isEmpty()) {
+//                        if (!StringUtils.equals(fltSegment.getSegmentStatus(), critSegStatus)) {
+//                            isFltData = "N";
+//                            continue;
+//                        }
+//                    }
+//                    if (null != critFareClass && !critFareClass.isEmpty()) {
+//                        if (!StringUtils.equals(fltSegFareClass, critFareClass)) {
+//                            isFltData = "N";
+//                            continue;
+//                        }
+//                    }
+//                    if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
+//                        if (paxCnt != Integer.parseInt(critPaxCnt)) {
+//                            isFltData = "N";
+//                            continue;
+//                        }
+//                    }
+//                }
+//                reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
+//                reservationSummaryVO.setFltnum(fltSegment.getAirlineCode()+ fltSegment.getFlightNumber());
+//
+//                String depTime = DateUtils.string(fltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd(E)");
+//
+//                reservationSummaryVO.setDepDate(depTime);
+//                reservationSummaryVO.setStnfrCode(fltSegment.getBoardPoint());
+//                reservationSummaryVO.setStntoCode(fltSegment.getOffPoint());
+//
+//                XMLGregorianCalendar depDateUtc = fltSegment.getScheduledDepartureDateTime();
+//                XMLGregorianCalendar arrDateUtc = fltSegment.getScheduledArrivalDateTime();
+//
+//                String depDateTime = depDateUtc.getHour() + ":" + String.format("%02d", depDateUtc.getMinute());
+//                String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d",arrDateUtc.getMinute());
+//
+//                reservationSummaryVO.setDepartureDateTime(depDateTime);
+//
+//                reservationSummaryVO.setArrivalDateTime(arrDateTime);
+//                reservationSummaryVO.setFareClass(fltSegFareClass);
+//                reservationSummaryVO.setSegmentStatus(fltSegment.getSegmentStatus());
+//                reservationSummaryVO.setPnrStatus(pnrStatus);
+//            }
+//            if ("Y".equals(isFltData)) {
+//                reservationSummaryVO.setPaxCount(paxCnt);
+//                reservationSummaryVOList.add(reservationSummaryVO);
+//            }
+//        }
+//        reservationSummaryVOList.sort(Comparator.comparing(ReservationSummaryVO::getDepDate));
+//
+//        resultMapVO.put("summaryResult", reservationSummaryVOList);
+//        return resultMapVO;
+//    }
 
     public List<CrewPNRExcelVO> readExcelFile(MultipartFile file) {
         List<CrewPNRExcelVO> dataList = new ArrayList<>();

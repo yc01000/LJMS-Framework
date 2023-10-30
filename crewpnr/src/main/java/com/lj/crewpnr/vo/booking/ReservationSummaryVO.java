@@ -14,6 +14,10 @@ public class ReservationSummaryVO {
     private String SegmentStatusDtl;
     private String pnrStatus;
 
+    private String status;
+
+    private String statusDisplay;
+
     public String getFltnum() {
         return fltnum;
     }
@@ -108,5 +112,21 @@ public class ReservationSummaryVO {
 
     public void setPnrStatus(String pnrStatus) {
         this.pnrStatus = pnrStatus;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatusDisplay() {
+        return statusDisplay;
+    }
+
+    public void setStatusDisplay(String statusDisplay) {
+        this.statusDisplay = statusDisplay;
     }
 }

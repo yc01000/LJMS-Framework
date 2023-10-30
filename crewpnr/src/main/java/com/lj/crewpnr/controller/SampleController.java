@@ -53,11 +53,6 @@ public class SampleController {
     @Value("${server.scheme}://${server.name}")
     String serverEndpoint;
 
-    @RequestMapping("/")
-    public String index() throws SQLException {
-        return "redirect:" + serverEndpoint + "/index.html";
-    }
-
     // http://localhost:8080/sample/ibs?pnrNo=X2E9W7
     @RequestMapping("/sample/ibs")
     @ResponseBody

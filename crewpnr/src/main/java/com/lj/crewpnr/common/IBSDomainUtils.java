@@ -139,9 +139,7 @@ public class IBSDomainUtils {
 		BookingChannelType channel = new BookingChannelType();
 		channel.setChannelType(Constants.IBS_BOOKING_CHANNEL_CHANNEL_TYPE);
 		channel.setChannel(IbsChannel.find(AccessChannelCode.B2T, domestic ? DomIntType.DOM : DomIntType.INT));
-		if(ProfileUtils.isSales()) {
-			channel.setChannel("PW" + (domestic ? "D" : "I"));
-		}
+		channel.setChannel("PW" + (domestic ? "D" : "I"));
 		channel.setLocale(Constants.IBS_BOOKING_CHANNEL_LOCALE);
 		return channel;
 	}
@@ -150,9 +148,7 @@ public class IBSDomainUtils {
 		BookingChannelKeyType channel = new BookingChannelKeyType();
 		channel.setChannelType(Constants.IBS_BOOKING_CHANNEL_CHANNEL_TYPE);
 		channel.setChannel(IbsChannel.find(AccessChannelCode.B2T, domestic ? DomIntType.DOM : DomIntType.INT));
-		if(ProfileUtils.isSales()) {
-			channel.setChannel("PW" + (domestic ? "D" : "I"));
-		}
+		channel.setChannel("PW" + (domestic ? "D" : "I"));
 		channel.setLocale(Constants.IBS_BOOKING_CHANNEL_LOCALE);
 		return channel;
 	}
@@ -725,18 +721,6 @@ public class IBSDomainUtils {
 		if(StringUtils.contains(DEALT_WITH_INTL_ROUTES, origin + destination)) {
 			return true;
 		}
-
-		/*final String DEALT_WITH_INTL_ROUTES_BY_CONDITION = ";ICNCJU;";
-		if(StringUtils.contains(DEALT_WITH_INTL_ROUTES_BY_CONDITION, origin + destination)) {
-			Date now = new Date();
-			Date targetDate = DateUtils.date("20210501", "yyyyMMdd");
-			if(ProfileUtils.isNotProduct()) {
-				targetDate = DateUtils.date("20210415", "yyyyMMdd");
-			}
-			if(targetDate.getTime() <= now.getTime()) {
-				return true;
-			}
-		}*/
 
 		return false;
 	}

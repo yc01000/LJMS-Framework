@@ -469,24 +469,25 @@ public class DateUtils {
 	}
 
 	private static Locale locale() {
-		HttpServletRequest request = request();
-		if(request == null) {
-			return DEFAULT_LOCALE;
-		}
-
-		String langCountry = CookieUtils.getCookie(request, CookieName.AGT_LANG_COUNTRY);
-		if(StringUtils.isBlank(langCountry)) {
-			return DEFAULT_LOCALE;
-		}
-
-		String[] parsed = StringUtils.split(langCountry, "_");
-		if(parsed == null || parsed.length != 2) {
-			return DEFAULT_LOCALE;
-		}
-
-		String lang = parsed[0];
-		String country = parsed[1];
-		return new Locale(lang, country);
+		return DEFAULT_LOCALE;
+//		HttpServletRequest request = request();
+//		if(request == null) {
+//			return DEFAULT_LOCALE;
+//		}
+//
+//		String langCountry = CookieUtils.getCookie(request, CookieName.AGT_LANG_COUNTRY);
+//		if(StringUtils.isBlank(langCountry)) {
+//			return DEFAULT_LOCALE;
+//		}
+//
+//		String[] parsed = StringUtils.split(langCountry, "_");
+//		if(parsed == null || parsed.length != 2) {
+//			return DEFAULT_LOCALE;
+//		}
+//
+//		String lang = parsed[0];
+//		String country = parsed[1];
+//		return new Locale(lang, country);
 	}
 
 	private static HttpServletRequest request() {
@@ -527,73 +528,4 @@ public class DateUtils {
 		ZonedDateTime systemDateTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 		return systemDateTime.getHour() == 0 && (systemDateTime.getMinute()>=0 && systemDateTime.getMinute() <= 15);
 	}
-
-	/** GMT+0 기준 타임존 보정값을 분 단위로 리턴 */
-//	public static int timezoneToMinutes(String timezone) {
-//		if(StringUtils.isBlank(timezone)) {
-//			return 0;
-//		}
-//
-//		boolean plus = false;
-//		int hh = 0;
-//		int mm = 0;
-//		if(StringUtils.startsWith(timezone, "GMT")) {
-//			String signAndHHmm = StringUtils.replace(timezone, "GMT", "");
-//			plus = StringUtils.startsWith(signAndHHmm, "+");
-//			String hhmm = StringUtils.replace(StringUtils.replace(signAndHHmm, "+", ""), "-", "");
-//			String[] parsed = StringUtils.split(hhmm, ":");
-//			hh = new Integer(parsed[0]);
-//			mm = new Integer(parsed[1]);
-//		}
-//
-//		return (plus ? 1 : -1) * ((hh * 60) + mm);
-//	}
-
-//	public static int age(String dateOfBirthString, String pattern) {
-//		if(StringUtils.isBlank(dateOfBirthString)) {
-//			return -1;
-//		}
-//
-//		return age(dateOfBirthString, pattern, false);
-//	}
-
-//	public static int age(String dateOfBirthString, String pattern, boolean korean) {
-//		if(StringUtils.isBlank(dateOfBirthString)) {
-//			return -1;
-//		}
-//
-//		return age(date(dateOfBirthString, pattern), korean);
-//	}
-
-//	public static int age(Date date) {
-//		return age(date, false);
-//	}
-
-//	public static int age(Date date, boolean korean) {
-//		if(date == null) {
-//			return -1;
-//		}
-//
-//		if(korean) {
-//			Calendar birthCalendar = Calendar.getInstance();
-//			birthCalendar.setTime(date);
-//			int yearOfBirth = birthCalendar.get(Calendar.YEAR);
-//			int thisYear = Calendar.getInstance().get(Calendar.YEAR);
-//			return thisYear - yearOfBirth + 1;
-//		}
-//
-//		LocalDate dateOfBirth = localDate(date);
-//		LocalDate now = localDate(new Date());
-//		return Years.yearsBetween(dateOfBirth, now).getYears();
-//	}
-
-//	public static LocalDate localDate(String dateString, String pattern) {
-//		return localDate(date(dateString, pattern));
-//	}
-
-//	public static LocalDate localDate(Date date) {
-//		Calendar calendar = Calendar.getInstance();
-//		calendar.setTime(date);
-//		return new LocalDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
-//	}
 }

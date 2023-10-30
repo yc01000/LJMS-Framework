@@ -8,11 +8,7 @@ import jakarta.annotation.Resource;
 
 /** 프로파일 유틸 */
 @Component
-public class ProfileUtils {
-
-	private static final String AGENT = "agt";
-
-	private static final String SALES = "sales";
+public class Profiles {
 
 	private static final String PRODUCT = "prd";
 
@@ -23,14 +19,6 @@ public class ProfileUtils {
 	private static final String LOCAL = "local";
 
 	private static Environment environment;
-
-	public static boolean isAgent() {
-		return StringUtils.indexOf(activeProfileLower(), AGENT) != -1;
-	}
-
-	public static boolean isSales() {
-		return StringUtils.indexOf(activeProfileLower(), SALES) != -1;
-	}
 
 	public static boolean isNotProduct() {
 		return !isProduct();
@@ -67,6 +55,6 @@ public class ProfileUtils {
 
 	@Resource
 	public void setEnvironment(Environment environment) {
-		ProfileUtils.environment = environment;
+		Profiles.environment = environment;
 	}
 }

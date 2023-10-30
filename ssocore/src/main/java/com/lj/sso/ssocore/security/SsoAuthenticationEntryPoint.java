@@ -14,7 +14,9 @@ import org.springframework.security.web.RedirectStrategy;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,7 +55,8 @@ public class SsoAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&state=%s", authorizeUri, clientId, redirectUri, scope);
 		LOGGER.info("move to sso: {}", uri);
 
-		if(StringUtils.equals(request.getRequestURI(), "/")) {
+		List<String> pageURIs = Arrays.asList("/", "/reservations", "/failhistories");
+		if(pageURIs.contains(request.getRequestURI())) {
 			new DefaultRedirectStrategy().sendRedirect(request, response, uri);
 			return;
 		}
