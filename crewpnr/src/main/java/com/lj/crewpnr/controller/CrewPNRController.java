@@ -3,12 +3,14 @@ package com.lj.crewpnr.controller;
 import com.lj.core.integration.soap.ibs.api.booking.GetAirAvailability;
 import com.lj.core.util.WebUtils;
 import com.lj.crewpnr.mapper.pssdb.CrewBookingMapper;
+import com.lj.crewpnr.service.CommonService;
 import com.lj.crewpnr.service.CrewBookingService;
 import com.lj.crewpnr.vo.*;
 import com.lj.crewpnr.vo.booking.ReservationSummaryCriteriaVO;
 import com.lj.crewpnr.vo.booking.ReservationSummaryVO;
 import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 //import com.lj.crewpnr.vo.excel.CreateListExcel;
+import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
 import com.lj.crewpnr.vo.excel.ExcelInfoVO;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,17 +42,21 @@ public class CrewPNRController {
     @Resource(name="GetAirAvailability")
     private GetAirAvailability airAvailability;
 
+    @Autowired
+    private CommonService commonService;
+
     @RequestMapping("/crew/createBookings")
     public String createBookings(@RequestParam("file") MultipartFile file) throws Exception {
-        ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(file);
-//        ResultMapVO resultMapVO = crewBookingService.createBookings(file);
+        //ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(file,"CMM");
+        List<CrewPNRExcelVO> crewPNRExcelList = commonService.readExcelFile(file, "CMM");
+        ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(crewPNRExcelList);
         return WebUtils.toJson(resultMapVO);
     }
 
     @RequestMapping("/crew/createBookingsForGum")
     public String createBookingsForGUM(@RequestParam("file") MultipartFile file) throws Exception {
-        ResultMapVO resultMapVO = crewBookingService.createBookingsForGumAsync(file);
-        //ResultMapVO resultMapVO = crewBookingService.createBookingsForGum(file);
+        List<CrewPNRExcelVO> crewPNRExcelList = commonService.readExcelFile(file, "GUM");
+        ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(crewPNRExcelList);
         return WebUtils.toJson(resultMapVO);
     }
 

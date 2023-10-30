@@ -2,7 +2,6 @@ package com.lj.crewpnr.service;
 
 import com.lj.core.common.util.RandomUtils;
 import com.lj.core.commoncode.handler.CodeHandler;
-import com.lj.core.commoncode.vo.CodeInfoVO;
 import com.lj.core.integration.soap.ibs.IbsSoapProperty;
 import com.lj.core.integration.soap.ibs.api.booking.*;
 import com.lj.core.integration.soap.ibs.domain.booking.*;
@@ -19,7 +18,6 @@ import com.lj.crewpnr.vo.availability.PaxCountVO;
 import com.lj.crewpnr.vo.booking.ReservationSummaryCriteriaVO;
 import com.lj.crewpnr.vo.booking.ReservationSummaryVO;
 import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
-import com.lj.crewpnr.vo.excel.CrewPNRExcelGumVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
 import com.lj.crewpnr.vo.excel.PaxInfoVO;
 //import com.lj.sso.ssocore.security.vo.UserInfoVO;
@@ -78,33 +76,27 @@ public class CrewBookingService {
     @Autowired
     private CodeHandler codeHandler;
 
-    public ResultMapVO createBookingsAsync(MultipartFile file) {
-        String service = "CREATE_BOOKINGS";
-        String key = RandomUtils.generate(10);
-
-        final MultipartFile fileFinalized = file;
-        new Thread(() -> createBookings(fileFinalized)).start();
-
+    public ResultMapVO createBookingsAsync(List<CrewPNRExcelVO> crewPNRExcelList) {
         ResultMapVO result = new ResultMapVO();
-        result.put("service", service);
-        result.put("key", key);
+
+        try{
+            String service = "CREATE_BOOKINGS";
+            String key = RandomUtils.generate(10);
+
+            final List<CrewPNRExcelVO> fileFinalized = crewPNRExcelList;
+            new Thread(() -> createBookings(fileFinalized)).start();
+
+            result.put("service", service);
+            result.put("key", key);
+        }
+        catch(Exception ex){
+            result = new ResultMapVO();
+            result.put("result", ex);
+        }
         return result;
     }
 
-    public ResultMapVO createBookingsForGumAsync(MultipartFile file) {
-        String service = "CREATE_BOOKINGS";
-        String key = RandomUtils.generate(10);
-
-        final MultipartFile fileFinalized = file;
-        new Thread(() -> createBookingsForGum(fileFinalized)).start();
-
-        ResultMapVO result = new ResultMapVO();
-        result.put("service", service);
-        result.put("key", key);
-        return result;
-    }
-
-    public ResultMapVO createBookings(MultipartFile file){
+    public ResultMapVO createBookings(List<CrewPNRExcelVO> crewPNRExcelList){
         ResultMapVO resultMapVO = new ResultMapVO();
 
         //로그인 유저의 부서 코드로 agency Code 세팅
@@ -118,9 +110,7 @@ public class CrewBookingService {
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
-        List<CrewPNRExcelVO> crewPNRExcelList = null;
-        //엑셀파일 읽기
-        crewPNRExcelList = this.readExcelFile(file);
+
 
         AvailabilityCriteriaVO criteria = null;
 
@@ -132,262 +122,9 @@ public class CrewBookingService {
 
                     criteria = new AvailabilityCriteriaVO();
                     List<AvailabilitySearchVO> availabilitySearches = new ArrayList<>();
-                    String agencyCd = "";
+//                    String agencyCd = "";
                     String fareClass = "";
-
-                    AvailabilitySearchVO availabilitySearch = new AvailabilitySearchVO();
-                    availabilitySearch.setOrigin(excelVO.getBoardPoint());
-                    availabilitySearch.setDestination(excelVO.getOffPoint());
-                    availabilitySearch.setFlightNumber(excelVO.getFltNumber());
-                    availabilitySearch.setDepartureDate(excelVO.getFlightDate());
-
-                    boolean fromKorea = IBSDomainUtils.isDomestic(excelVO.getBoardPoint(), excelVO.getOffPoint());
-
-                    if (fromKorea) {
-                        if (StringUtils.equals(excelVO.getFareClass(), "PE")) {  //Premium Economy
-                            fareClass = "U0";
-                        } else {
-                            fareClass = "U1";                  //Economy
-                        }
-                    } else {
-                        if (StringUtils.equals(excelVO.getFareClass(), "PE")) {
-                            fareClass = "C";
-                        } else {
-                            fareClass = "U3";
-                        }
-                    }
-                    criteria.setFareClass((fareClass));
-                    availabilitySearch.setFareClass(fareClass);
-
-                    availabilitySearches.add(availabilitySearch);
-
-                    criteria.setAvailabilitySearches(availabilitySearches);
-
-                    criteria.setPaxCounts(new ArrayList<>());
-                    PaxCountVO paxCount = new PaxCountVO();
-                    paxCount.setType(Constants.PAX_TYPE.ADULT);
-                    paxCount.setSubType("CREW");
-                    paxCount.setCount(excelVO.getPaxCount());
-                    criteria.getPaxCounts().add(paxCount);
-                    criteria.setTripType(Constants.TRIP_TYPE.ONW_WAY);
-                    criteria.setFareLevel("CR");
-
-//                    if (StringUtils.equals(excelVO.getMiddleName(), "OOA"))
-//                        agencyCd = "20024620"; //운항
-//                    else if (StringUtils.equals(excelVO.getMiddleName(), "UFA"))
-//                        agencyCd = "20024600"; //객실
-//                    else if (StringUtils.equals(excelVO.getMiddleName(), "MCA"))
-//                        agencyCd = "20024610"; //정비
-
-                    criteria.setAgencyCode(agencyCd);
-                    criteria.setCurrency("KRW");
-                    criteria.setPointOfPurchase("KR");
-
-                    //최대 9명까지 pnr 생성 가능
-                    if(excelVO.getPaxCount() > 9){
-                        failCnt++;
-                        insertCrewPnrLog(criteria, "createBookings: {pnr max 9}");
-                        continue;
-                    }
-
-                    int logSeq = 2;
-                    ResultMapVO availabilityResult = this.searchAvailabilities(criteria);
-
-                    if (ResultMapVO.hasErrors(availabilityResult)) {
-                        String errorValue = availabilityResult.getErrorCode();
-                        LoggerUtils.e(LOGGER, "AvailabilityService.searchAvailabilities:{} {}:errorCode={}",
-                                "", "" + (logSeq++), errorValue);
-
-                        failCnt++;
-                        continue;
-                    }
-
-                    BookingChannelType bookingChannelType = new BookingChannelType();
-                    bookingChannelType.setChannel("PWC");
-                    bookingChannelType.setChannelType("API");
-                    bookingChannelType.setLocale("en_US");
-
-                    List<FlightSegmentDetailsType> flightSegments = availabilityResult.get("flightSegments", List.class);
-                    List<FareDetailsForGuestType> faresForGuest = availabilityResult.get("faresForGuest", List.class);
-                    List<PaxCountType> paxCounts = availabilityResult.get("paxCounts", List.class);
-
-                    CreateBookingRQ createBookingRQ = new CreateBookingRQ();
-                    createBookingRQ.setAirlineCode(airlineCode);
-                    createBookingRQ.setPointOfSale("KR");
-                    createBookingRQ.setAgencyCode(agencyCd);
-                    createBookingRQ.setOriginalAgentID(agencyCd);
-                    createBookingRQ.setCurrentAgentID(agencyCd);
-                    createBookingRQ.setBookingChannel(bookingChannelType);
-
-                    BookerDetailsType booker = new BookerDetailsType();
-                    booker.setSurName("진");
-                    booker.setGivenName("에어");
-                    createBookingRQ.setBookerDetails(booker);
-
-
-                    PnrContactType pnrContact = new PnrContactType();
-                    pnrContact.setSurName("진에어");
-                    AddressType address = new AddressType();
-                    address.setEmailAddress(excelVO.getEmailAddress());
-                    address.setSendItineraryToEmailId(false);
-                    address.setCellNumber(StringUtils.replace(excelVO.getCellNumber(), "-", ""));
-                    address.setSendItineraryToSMS(false);
-                    address.setPhoneNumberCountryCode("+82");
-                    pnrContact.setAddress(address);
-                    pnrContact.setIsPrefferedContact(true);
-                    createBookingRQ.getPnrContact().add(pnrContact);
-
-                    createBookingRQ.setPnrType(PNRType.NORMAL.name());
-                    createBookingRQ.setNumberOfSeats(excelVO.getPaxCount());
-
-                    List<PaxCountDetailsType> paxCountDetails = new ArrayList<>();
-                    for (PaxCountType paxCountType : paxCounts) {
-                        PaxCountDetailsType paxCountDetail = new PaxCountDetailsType();
-                        paxCountDetail.setPaxType(paxCountType.getPaxType());
-                        paxCountDetail.setPaxSubType(paxCountType.getPaxSubType());
-                        paxCountDetail.setPaxCount(paxCountType.getPaxCount());
-                        paxCountDetails.add(paxCountDetail);
-                    }
-                    createBookingRQ.getPaxCountDetails().addAll(paxCountDetails);
-
-                    ItineraryDetailsType itin = new ItineraryDetailsType();
-                    itin.getFlightSegmentDetails().addAll(flightSegments);
-                    createBookingRQ.getItineraryDetails().add(itin);
-
-                    FareInfoType fare = new FareInfoType();
-                    fare.getFareDetailsForGuestType().addAll(faresForGuest);
-                    createBookingRQ.getFareInfo().add(fare);
-
-                    List<GuestRequestDetailsType> guestDetailList = new ArrayList<>();
-
-                    List<GuestRequestDetailsType> tempguestDetailList = new ArrayList<>();
-
-                    for (int i = 0; i < paxCount.getCount(); i++) {
-                        GuestRequestDetailsType guest = new GuestRequestDetailsType();
-                        guest.setGuestId(String.valueOf(i + 1));
-                        guest.setGivenName(excelVO.getGivenName());
-                        guest.setSurName(excelVO.getSurName());
-                        guest.setMiddleName(excelVO.getMiddleName());
-                        guest.setGuestType(PaxDetailsType.valueOf("ADULT"));
-                        guest.setGuestSubType("CREW");
-                        guest.setDateOfBirth(DateUtils.xmlGregorianCalendar("1900-01-01", "yyyy-MM-dd"));
-                        guest.setNamePrefix(NameTitleType.valueOf(excelVO.getNamePrefix()));
-//                    guest.getGender("M");
-                        tempguestDetailList.add(guest);
-                    }
-                    guestDetailList.addAll(tempguestDetailList);
-
-                    createBookingRQ.getGuestDetails().addAll(guestDetailList);
-                    createBookingRQ.setPnrOnHoldIndicator(false);
-                    createBookingRQ.setPointOfOrigin("KR");
-                    createBookingRQ.setCurrency("KRW");
-
-
-                    CreateBookingRS createBookingRS = saveCreateBooking.request(createBookingRQ, property);
-                    String errors = errors(createBookingRS);
-                    if (StringUtils.isNotBlank(errors)) {
-                        LoggerUtils.e(LOGGER, "CrewBookingAPI#saveCreateBooking.request: errorCode={}", errors);
-                        //IBE 에러 로그 저장
-                        insertCrewPnrLog(criteria, errors);
-                        failCnt++;
-                        continue;
-                    }
-                    LoggerUtils.i(LOGGER, "CrewBookingService.createBookings: {}:1-", "");
-                } catch (Exception e) {
-                    insertCrewPnrLog(criteria, e.toString());
-                    failCnt++;
-                }
-            }
-            if(failCnt == 0){
-                resultMapVO.put("result","S");
-            }
-            else{
-                if(listCnt == failCnt){
-                    resultMapVO.put("result","AF");
-                }
-                else{
-                    resultMapVO.put("result","PF");
-                }
-
-            }
-        }
-        return resultMapVO;
-    }
-
-    public ResultMapVO createBookingsForGum(MultipartFile file){
-        ResultMapVO resultMapVO = new ResultMapVO();
-
-        //로그인 유저의 부서 코드로 agency Code 세팅
-        String agencyCode = getAgencyCode();
-//        if(agencyCode == null){
-//            resultMapVO.put("message", "Agency Code null");
-//            return resultMapVO;
-//        }
-
-        IbsSoapProperty property = new IbsSoapProperty("TEST");
-        property.setUsername("jinair");
-        property.setPassword("jinatiflyapi");
-
-
-        //엑셀파일 읽기
-        List<CrewPNRExcelGumVO> crewPNRExcelGumTempList = this.readGumExcelFile(file);
-
-        //엑셀에서 읽은 데이터를 crewPNRExcelGumTempList에 담고 그 중 같은 groupSeq 별로 승객 묶어서 crewPNRExcelGumList 에 add
-        CrewPNRExcelGumVO crewPNRExcelGumVO = new CrewPNRExcelGumVO();
-        List<PaxInfoVO> gumPaxInfoList = new ArrayList<>();
-        List<CrewPNRExcelGumVO> crewPNRExcelGumList = new ArrayList<>();
-
-        int gumListCnt = crewPNRExcelGumTempList.size();
-        int previousSeq = crewPNRExcelGumTempList.get(0).getGroupSeq();
-        for (int i = 0; i < gumListCnt; i++) {
-            PaxInfoVO paxInfoVO = new PaxInfoVO();
-
-            //groupSeq 가 이전과 다를 경우, 새로운 groupSeq 로 간주하여 이전 데이터를 List에 담고 초기화
-            if (previousSeq != crewPNRExcelGumTempList.get(i).getGroupSeq()) {
-
-                crewPNRExcelGumVO.setPaxinfoList(gumPaxInfoList);
-                crewPNRExcelGumList.add(crewPNRExcelGumVO);
-
-                crewPNRExcelGumVO = new CrewPNRExcelGumVO();
-                gumPaxInfoList = new ArrayList<>();
-            }
-
-            previousSeq = crewPNRExcelGumTempList.get(i).getGroupSeq();
-            crewPNRExcelGumVO.setGroupSeq(crewPNRExcelGumTempList.get(i).getGroupSeq());
-            crewPNRExcelGumVO.setFltNumber(crewPNRExcelGumTempList.get(i).getFltNumber());
-            crewPNRExcelGumVO.setBoardPoint(crewPNRExcelGumTempList.get(i).getBoardPoint());
-            crewPNRExcelGumVO.setOffPoint(crewPNRExcelGumTempList.get(i).getOffPoint());
-            crewPNRExcelGumVO.setFlightDate(crewPNRExcelGumTempList.get(i).getFlightDate());
-            crewPNRExcelGumVO.setFareClass(crewPNRExcelGumTempList.get(i).getFareClass());
-
-            paxInfoVO.setMiddleName(crewPNRExcelGumTempList.get(i).getMiddleName());
-            paxInfoVO.setGivenName(crewPNRExcelGumTempList.get(i).getGivenName());
-            paxInfoVO.setSurName(crewPNRExcelGumTempList.get(i).getSurName());
-            paxInfoVO.setNamePrefix(crewPNRExcelGumTempList.get(i).getNamePrefix());
-            paxInfoVO.setGender(crewPNRExcelGumTempList.get(i).getGender());
-            gumPaxInfoList.add(paxInfoVO);
-
-            //마지막 index 일 경우 add 하고 종료
-            if (i == gumListCnt - 1) {
-                crewPNRExcelGumVO.setPaxinfoList(gumPaxInfoList);
-                crewPNRExcelGumList.add(crewPNRExcelGumVO);
-            }
-        }
-
-
-        AvailabilityCriteriaVO criteria = null;
-
-        int failCnt = 0;
-        if(!crewPNRExcelGumList.isEmpty()) {
-            int listCnt = crewPNRExcelGumList.size();
-            for (CrewPNRExcelGumVO excelVO : crewPNRExcelGumList) {
-                try {
-
-
-                    criteria = new AvailabilityCriteriaVO();
-                    List<AvailabilitySearchVO> availabilitySearches = new ArrayList<>();
-                    String agencyCd = "";
-                    String fareClass = "";
+                    String middleName = "";
 
                     AvailabilitySearchVO availabilitySearch = new AvailabilitySearchVO();
                     availabilitySearch.setOrigin(excelVO.getBoardPoint());
@@ -426,17 +163,18 @@ public class CrewBookingService {
                     criteria.setTripType(Constants.TRIP_TYPE.ONW_WAY);
                     criteria.setFareLevel("CR");
 
-//                if (StringUtils.equals(excelVO.getMiddleName(), "OOA"))
-//                    agencyCd = "20024620"; //운항
-//                else if (StringUtils.equals(excelVO.getMiddleName(), "UFA"))
-//                    agencyCd = "20024600"; //객실
-//                else //StringUtils.equals(excelVO.getMiddleName(), "MCA")
-//                    agencyCd = "20024610"; //정비
+                    if (StringUtils.equals(agencyCode, "20024620"))
+                        middleName = "OOA"; //운항
+                    else if (StringUtils.equals(excelVO.getMiddleName(), "20024600"))
+                        middleName = "UFA"; //객실
+                    else if (StringUtils.equals(excelVO.getMiddleName(), "20024610"))
+                        middleName = "MCA"; //정비
 
-                    criteria.setAgencyCode(agencyCd);
+                    criteria.setAgencyCode(agencyCode);
                     criteria.setCurrency("KRW");
                     criteria.setPointOfPurchase("KR");
 
+                    //최대 9명까지 pnr 생성 가능
                     if(excelVO.getPaxinfoList().size() > 9){
                         failCnt++;
                         insertCrewPnrLog(criteria, "createBookings: {pnr max 9}");
@@ -467,9 +205,9 @@ public class CrewBookingService {
                     CreateBookingRQ createBookingRQ = new CreateBookingRQ();
                     createBookingRQ.setAirlineCode(airlineCode);
                     createBookingRQ.setPointOfSale("KR");
-                    createBookingRQ.setAgencyCode(agencyCd);
-                    createBookingRQ.setOriginalAgentID(agencyCd);
-                    createBookingRQ.setCurrentAgentID(agencyCd);
+                    createBookingRQ.setAgencyCode(agencyCode);
+                    createBookingRQ.setOriginalAgentID(agencyCode);
+                    createBookingRQ.setCurrentAgentID(agencyCode);
                     createBookingRQ.setBookingChannel(bookingChannelType);
 
                     BookerDetailsType booker = new BookerDetailsType();
@@ -520,7 +258,7 @@ public class CrewBookingService {
                         guest.setGuestId(String.valueOf(i + 1));
                         guest.setGivenName(excelVO.getPaxinfoList().get(i).getGivenName());
                         guest.setSurName(excelVO.getPaxinfoList().get(i).getSurName());
-                        guest.setMiddleName(excelVO.getPaxinfoList().get(i).getMiddleName());
+                        guest.setMiddleName(middleName);
                         guest.setGuestType(PaxDetailsType.valueOf("ADULT"));
                         guest.setGuestSubType("CREW");
                         guest.setDateOfBirth(DateUtils.xmlGregorianCalendar("1900-01-01", "yyyy-MM-dd"));
@@ -540,18 +278,39 @@ public class CrewBookingService {
                     String errors = errors(createBookingRS);
                     if (StringUtils.isNotBlank(errors)) {
                         LoggerUtils.e(LOGGER, "CrewBookingAPI#saveCreateBooking.request: errorCode={}", errors);
-                        //IBE 에러 로그 저장
-                        insertCrewPnrLog(criteria, errors);
-                        failCnt++;
-                        continue;
+
+                        //만석인 경우 segmentStatus 변경하여 createbooking 재호출
+                        if(errors.contains("BKG_BOE_1628")){
+                            itin = new ItineraryDetailsType();
+                            for(FlightSegmentDetailsType seg : flightSegments){
+                                seg.setSegmentStatus(ReservationStatusDetailsType.valueOf("WAITLISTED"));
+                                itin.getFlightSegmentDetails().add(seg);
+                            }
+
+                            createBookingRQ.getItineraryDetails().set(0,itin);
+
+                            createBookingRS = saveCreateBooking.request(createBookingRQ, property);
+                            String reErrors = errors(createBookingRS);
+                            if (StringUtils.isNotBlank(reErrors)) {
+                                //IBE 에러 로그 저장
+                                insertCrewPnrLog(criteria, reErrors);
+                                failCnt++;
+                                continue;
+                            }
+                        }
+                        else{
+                            //IBE 에러 로그 저장
+                            insertCrewPnrLog(criteria, errors);
+                            failCnt++;
+                            continue;
+                        }
                     }
                     LoggerUtils.i(LOGGER, "CrewBookingService.createBookings: {}:1-", "");
-                }catch (Exception e) {
+                } catch (Exception e) {
                     insertCrewPnrLog(criteria, e.toString());
                     failCnt++;
                 }
             }
-
             if(failCnt == 0){
                 resultMapVO.put("result","S");
             }
@@ -562,6 +321,7 @@ public class CrewBookingService {
                 else{
                     resultMapVO.put("result","PF");
                 }
+
             }
         }
         return resultMapVO;
@@ -1134,358 +894,6 @@ public class CrewBookingService {
 
         resultMapVO.put("summaryResult", reservationSummaryVOList);
         return resultMapVO;
-    }
-
-    public List<CrewPNRExcelVO> readExcelFile(MultipartFile file) {
-        List<CrewPNRExcelVO> dataList = new ArrayList<>();
-
-        Workbook workbook = null;
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-
-        try {
-            //엑셀파일 읽기
-            if (extension.equals("xlsx")) {
-                workbook = new XSSFWorkbook(file.getInputStream());
-            } else if (extension.equals("xls")) {
-                workbook = new HSSFWorkbook(file.getInputStream());
-            }
-
-            Sheet worksheet = workbook.getSheetAt(0);
-            Iterator<Row> iterator = worksheet.iterator();
-
-            String emptyFields = "";
-            int rowNo;
-
-            for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
-                CrewPNRExcelVO crewPNRExcelVO = new CrewPNRExcelVO();
-                Row row = worksheet.getRow(i);
-                rowNo = row.getRowNum();
-
-                Iterator<Cell> cellIterator = row.iterator();
-
-                if (rowNo == 0) {
-                    continue;
-                }
-
-                while (cellIterator.hasNext()) {
-                    Cell cell = cellIterator.next();
-                    String cellValue = null;
-
-                    // 타입별 내용 읽기
-                    if (cell.getCellType() == CellType.STRING) {
-                        cellValue = cell.getStringCellValue();
-                    } else if (cell.getCellType() == CellType.NUMERIC) {
-                        if (DateUtil.isCellDateFormatted(cell)) {
-                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                            cellValue = dateFormat.format(cell.getDateCellValue());
-                        } else {
-                            cell.setCellType(CellType.NUMERIC);
-                            cellValue =String.valueOf((int)cell.getNumericCellValue());
-                        }
-                    } else if (cell.getCellType() == CellType.BLANK) {
-                        cellValue = "";
-                    } else {
-                    }
-
-                    switch (cell.getColumnIndex()) {
-                        case 0: // fltNumber
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "fltNumber";
-                            } else {
-                                crewPNRExcelVO.setFltNumber(cellValue);
-                            }
-                            break;
-                        case 1: // boardPoint
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "boardPoint";
-                            } else {
-                                crewPNRExcelVO.setBoardPoint(cellValue);
-                            }
-                            break;
-                        case 2: // offPoint
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "offPoint";
-                            } else {
-                                crewPNRExcelVO.setOffPoint(cellValue);
-                            }
-                            break;
-                        case 3: // flightDate
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "flightDate";
-                            } else {
-                                crewPNRExcelVO.setFlightDate(cellValue);
-                            }
-                            break;
-                        case 4: // fareClass
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "fareClass";
-                            } else {
-                                crewPNRExcelVO.setFareClass(cellValue);
-                            }
-                            break;
-                        case 5: // givenName
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "givenName";
-                            } else {
-                                crewPNRExcelVO.setGivenName(cellValue);
-                            }
-                            break;
-                        case 6: // surName
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "surName";
-                            } else {
-                                crewPNRExcelVO.setSurName(cellValue);
-                            }
-                            break;
-                        case 7: // middleName
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "middleName";
-                            } else {
-                                crewPNRExcelVO.setMiddleName(cellValue);
-                            }
-                            break;
-                        case 8: // namePrefix
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "namePrefix";
-                            } else {
-                                crewPNRExcelVO.setNamePrefix(cellValue);
-                            }
-                            break;
-                        case 9: // paxCount
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "paxCount";
-                            } else {
-                                crewPNRExcelVO.setPaxCount(Integer.parseInt(cellValue));
-                            }
-                            break;
-                        case 10: // emailAddress
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "emailAddress";
-                            } else {
-                                crewPNRExcelVO.setEmailAddress(cellValue);
-                            }
-                            break;
-                        case 11: // cellNumber
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "cellNumber";
-                            } else {
-                                crewPNRExcelVO.setCellNumber(cellValue);
-                            }
-                            break;
-//                        case 12: // pnrComments
-//                            if (StringUtils.isBlank(cellValue)) {
-//                                emptyFields += "pnrComments";
-//                            } else {
-//                                crewPNRExcelVO.setPnrComments(cellValue);
-//                            }
-//                            break;
-                        default:
-                            break;
-                    }
-                    if (!emptyFields.equals("")) {
-                        crewPNRExcelVO.setResult("N");
-                        crewPNRExcelVO.setResultMsg(i + "행 " + emptyFields + " null" );
-//                        dataList.add(crewPNRExcelVO);
-//                        return dataList;
-                    }
-                }
-
-                dataList.add(crewPNRExcelVO);
-
-                emptyFields = "";
-            }
-        } catch (FileNotFoundException e) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("FileNotFoundException", e);
-            }
-        } catch (IOException e) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("IOException", e);
-            }
-        } finally {
-            try {
-                if (workbook != null) workbook.close();
-            } catch (IOException e) {
-            }
-        }
-        return dataList;
-    }
-
-    public List<CrewPNRExcelGumVO> readGumExcelFile(MultipartFile file) {
-        List<CrewPNRExcelGumVO> dataList = new ArrayList<>();
-
-        Workbook workbook = null;
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-
-        try {
-            //엑셀파일 읽기
-            if (extension.equals("xlsx")) {
-                workbook = new XSSFWorkbook(file.getInputStream());
-            } else if (extension.equals("xls")) {
-                workbook = new HSSFWorkbook(file.getInputStream());
-            }
-
-            Sheet worksheet = workbook.getSheetAt(0);
-            Iterator<Row> iterator = worksheet.iterator();
-
-            String emptyFields = "";
-            int rowNo;
-
-            for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
-                CrewPNRExcelGumVO crewPNRExcelGUMVO = new CrewPNRExcelGumVO();
-                Row row = worksheet.getRow(i);
-                rowNo = row.getRowNum();
-
-                Iterator<Cell> cellIterator = row.iterator();
-
-                if (rowNo == 0) {
-                    continue;
-                }
-
-                while (cellIterator.hasNext()) {
-                    Cell cell = cellIterator.next();
-                    String cellValue = null;
-
-                    // 타입별 내용 읽기
-                    if (cell.getCellType() == CellType.STRING) {
-                        cellValue = cell.getStringCellValue();
-                    } else if (cell.getCellType() == CellType.NUMERIC) {
-                        if (DateUtil.isCellDateFormatted(cell)) {
-                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                            cellValue = dateFormat.format(cell.getDateCellValue());
-                        } else {
-                            cell.setCellType(CellType.NUMERIC);
-                            cellValue =String.valueOf((int)cell.getNumericCellValue());
-                        }
-                    } else if (cell.getCellType() == CellType.BLANK) {
-                        cellValue = "";
-                    } else {
-                    }
-
-                    switch (cell.getColumnIndex()) {
-                        case 0: // groupSeq
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "groupSeq";
-                            } else {
-                                crewPNRExcelGUMVO.setGroupSeq(Integer.parseInt(cellValue));
-                            }
-                            break;
-                        case 1: // fltNumber
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "fltNumber";
-                            } else {
-                                crewPNRExcelGUMVO.setFltNumber(cellValue);
-                            }
-                            break;
-                        case 2: // boardPoint
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "boardPoint";
-                            } else {
-                                crewPNRExcelGUMVO.setBoardPoint(cellValue);
-                            }
-                            break;
-                        case 3: // offPoint
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "offPoint";
-                            } else {
-                                crewPNRExcelGUMVO.setOffPoint(cellValue);
-                            }
-                            break;
-                        case 4: // flightDate
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "flightDate";
-                            } else {
-                                crewPNRExcelGUMVO.setFlightDate(cellValue);
-                            }
-                            break;
-                        case 5: // fareClass
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "fareClass";
-                            } else {
-                                crewPNRExcelGUMVO.setFareClass(cellValue);
-                            }
-                            break;
-                        case 6: // givenName
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "givenName";
-                            } else {
-                                crewPNRExcelGUMVO.setGivenName(cellValue);
-                            }
-                            break;
-                        case 7: // surName
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "surName";
-                            } else {
-                                crewPNRExcelGUMVO.setSurName(cellValue);
-                            }
-                            break;
-                        case 8: // middleName
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "middleName";
-                            } else {
-                                crewPNRExcelGUMVO.setMiddleName(cellValue);
-                            }
-                            break;
-                        case 9: // namePrefix
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "namePrefix";
-                            } else {
-                                crewPNRExcelGUMVO.setNamePrefix(cellValue);
-                            }
-                            break;
-                        case 10: // gender
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "gender";
-                            } else {
-                                crewPNRExcelGUMVO.setGender(cellValue);
-                            }
-                            break;
-                        case 11: // emailAddress
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "emailAddress";
-                            } else {
-                                crewPNRExcelGUMVO.setEmailAddress(cellValue);
-                            }
-                            break;
-                        case 12: // cellNumber
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "cellNumber";
-                            } else {
-                                crewPNRExcelGUMVO.setCellNumber(cellValue);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    if (!emptyFields.equals("")) {
-                        crewPNRExcelGUMVO.setResult("N");
-                        crewPNRExcelGUMVO.setResultMsg(i + "행 " + emptyFields + " null" );
-//                        dataList.add(crewPNRExcelGUMVO);
-//                        return dataList;
-                    }
-                }
-
-                dataList.add(crewPNRExcelGUMVO);
-
-                emptyFields = "";
-
-
-            }
-        } catch (FileNotFoundException e) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("FileNotFoundException", e);
-            }
-        } catch (IOException e) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("IOException", e);
-            }
-        } finally {
-            try {
-                if (workbook != null) workbook.close();
-            } catch (IOException e) {
-            }
-        }
-        return dataList;
     }
 
     public int insertCrewPnrLog(AvailabilityCriteriaVO criteria, String errorValue) {

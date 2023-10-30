@@ -1,6 +1,9 @@
 package com.lj.crewpnr.vo.excel;
 
+import java.util.List;
+
 public class CrewPNRExcelVO {
+    private int groupSeq;
     private String fltNumber;
     private String boardPoint;
     private String offPoint;
@@ -10,13 +13,31 @@ public class CrewPNRExcelVO {
     private String surName;
     private String middleName;
     private String namePrefix;
+    private String gender;
+    private List<PaxInfoVO> paxinfoList;
     private int paxCount;
     private String emailAddress;
     private String cellNumber;
-    private String pnrComments;
 
     private String result;
     private String resultMsg;
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public int getGroupSeq() {
+        return groupSeq;
+    }
+
+    public void setGroupSeq(int groupSeq) {
+        this.groupSeq = groupSeq;
+    }
+
     public String getFltNumber() {
         return fltNumber;
     }
@@ -89,6 +110,14 @@ public class CrewPNRExcelVO {
         this.namePrefix = namePrefix;
     }
 
+    public List<PaxInfoVO> getPaxinfoList() {
+        return paxinfoList;
+    }
+
+    public void setPaxinfoList(List<PaxInfoVO> paxinfoList) {
+        this.paxinfoList = paxinfoList;
+    }
+
     public int getPaxCount() {
         return paxCount;
     }
@@ -111,14 +140,6 @@ public class CrewPNRExcelVO {
 
     public void setCellNumber(String cellNumber) {
         this.cellNumber = cellNumber;
-    }
-
-    public String getPnrComments() {
-        return pnrComments;
-    }
-
-    public void setPnrComments(String pnrComments) {
-        this.pnrComments = pnrComments;
     }
 
     public String getResult() {
