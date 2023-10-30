@@ -1118,8 +1118,8 @@ public class CrewBookingService {
         final Map<String, String> STATUS_MAP = new HashMap<>() {
             {
                 put("CONFIRMED", "CONFIRMED");
-                put("WAITLISTED", "WAITLISTED");
-                put("CONFIRMED_FROM_WAITLIST", "WAITLISTED");
+                put("WAITLISTED", "WAITLISTED_HL");
+                put("CONFIRMED_FROM_WAITLIST", "WAITLISTED_KL");
                 put("CANCELLED", "CANCELLED");
                 put("TIME_CHANGE", "TIME_CHANGE");
                 put("SCHEDULE_CHANGE", "SCHEDULE_CHANGE");
@@ -1131,7 +1131,8 @@ public class CrewBookingService {
         final Map<String, String> STATUS_DISPLAY_MAP = new HashMap<>() {
             {
                 put("CONFIRMED", "완료");
-                put("WAITLISTED", "대기");
+                put("WAITLISTED", "대기(HL)");
+                put("WAITLISTED_KL", "대기(KL)");
                 put("CANCELLED", "취소");
                 put("TIME_CHANGE", "시간 변경");
                 put("SCHEDULE_CHANGE", "여정 변경");
