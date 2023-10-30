@@ -1,10 +1,13 @@
 package com.lj.crewpnr.service;
 
+import com.google.gson.Gson;
 import com.lj.core.common.util.RandomUtils;
 import com.lj.core.commoncode.handler.CodeHandler;
 import com.lj.core.integration.soap.ibs.IbsSoapProperty;
 import com.lj.core.integration.soap.ibs.api.booking.*;
 import com.lj.core.integration.soap.ibs.domain.booking.*;
+import com.lj.core.mail.service.MailService;
+import com.lj.core.mail.vo.MailInfoVO;
 import com.lj.core.util.LoggerUtils;
 import com.lj.crewpnr.common.Constants;
 import com.lj.crewpnr.common.Constants.ERROR_CODE;
@@ -31,12 +34,16 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -75,6 +82,12 @@ public class CrewBookingService {
     private AcceptWl acceptWl;
     @Autowired
     private CodeHandler codeHandler;
+
+    @Autowired
+    private MailService mailService;
+
+    @Value("${server.scheme}://${server.name}")
+    String serverEndpoint;
 
     public ResultMapVO createBookingsAsync(List<CrewPNRExcelVO> crewPNRExcelList) {
         ResultMapVO result = new ResultMapVO();
@@ -116,6 +129,9 @@ public class CrewBookingService {
 
         int failCnt = 0;
         if(crewPNRExcelList != null ) {
+            // 시작 시각
+            Date dateStart = new Date();
+
             int listCnt = crewPNRExcelList.size();
             for (CrewPNRExcelVO excelVO : crewPNRExcelList) {
                 try {
@@ -322,6 +338,29 @@ public class CrewBookingService {
                     resultMapVO.put("result","PF");
                 }
 
+            }
+
+            Date dateEnd = new Date();
+
+            try {
+                CreateBookingsResultVO createBookingsResult = new CreateBookingsResultVO();
+                createBookingsResult.setAllCount(listCnt);
+                createBookingsResult.setSuccessCount(listCnt - failCnt);
+                createBookingsResult.setFailureCount(failCnt);
+                createBookingsResult.setDateStart(DateUtils.string(dateStart, "yyyy-MM-dd(E) HH:mm:ss"));
+                createBookingsResult.setDateEnd(DateUtils.string(dateEnd, "yyyy-MM-dd(E) HH:mm:ss"));
+                String q = URLEncoder.encode(Base64.getEncoder().encodeToString(new Gson().toJson(createBookingsResult).getBytes(StandardCharsets.UTF_8)));
+                String url = String.format("%s%s?q=%s", serverEndpoint, "/mail/createBookingsResult", q);
+
+                MailInfoVO mailInfoVO = new MailInfoVO();
+                mailInfoVO.setReceiverName("laevus@jinair.com");
+                mailInfoVO.setMailContentsType(MailInfoVO.MailContentType.URL);
+                mailInfoVO.setMailTitle("승무원 예약 생성 결과");
+                mailInfoVO.setMailContents(url);
+                mailInfoVO.setTaskId(74);
+                mailService.send(mailInfoVO);
+            } catch (Exception e) {
+                LoggerUtils.e(LOGGER, "{}", e.getMessage());
             }
         }
         return resultMapVO;
