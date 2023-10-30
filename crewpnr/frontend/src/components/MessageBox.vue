@@ -29,7 +29,8 @@ export default {
   props: {
   },
   mounted() {
-
+    console.log('MessageBox mounted--------------');
+    this.showPopup;
   },
   methods: {
     showPopup(strTitle, strMsg) {

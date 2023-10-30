@@ -9,8 +9,11 @@
   </div>
 
   <div class="btn_wrap">
-    <input type="file" ref="fileInput" @change="handleFileChange" />
-    <a href="#" @click="uploadFile" class="btnTypeA">엑셀 파일 업로드 (PNR 생성 요청)</a>
+    <input type="file" ref="fileInput1" @change="handleFileChange1" />
+    <a href="#" @click="uploadFile1" class="btnTypeA">엑셀 업로드 (국내선 PNR 생성 요청)</a>
+    <br><br>
+    <input type="file" ref="fileInput2" @change="handleFileChange2" />
+    <a href="#" @click="uploadFile2" class="btnTypeA">엑셀 업로드 (GUM PNR 생성 요청)</a>
     <br><br>
     <a href="#" class="btnTypeC" @click="downloadExcel">엑셀 형식 다운로드</a>
     <a href="#" class="btnTypeC" @click="downloadExcelGum">엑셀 형식 다운로드 (GUM)</a>
@@ -22,7 +25,7 @@
 
 <script>
 import axios from 'axios';
-import MessageBox from './MessageBox.vue';
+import MessageBox from '@/components/MessageBox.vue';
 
 export default {
   components: {
@@ -30,20 +33,24 @@ export default {
   },
   data() {
     return {
-      selectedFile: null,
+      selectedFile1: null,
+      selectedFile2: null,
     };
   },
   methods: {
     showMessage(title, msg) {
       this.$refs.msg_box.showPopup(title, msg);
     },
-    handleFileChange(event) {
-      this.selectedFile = event.target.files[0];
+    handleFileChange1(event) {
+      this.selectedFile1 = event.target.files[0];
     },
-    async uploadFile() {
+    handleFileChange2(event) {
+      this.selectedFile2 = event.target.files[0];
+    },
+    async uploadFile1() {
       try {
         const formData = new FormData();
-        formData.append('file', this.selectedFile);
+        formData.append('file', this.selectedFile1);
 
         const response = await axios.post('https://stg-crewpnr.jinair.com/crew/createBookings', formData, {
           headers: {
@@ -52,9 +59,30 @@ export default {
         });
 
         if (response.status === 200) {
-          this.showMessage('uploaded', response);
+          this.showMessage('uploaded', '전송이 완료되었습니다.');
         } else {
-          this.showMessage('error', response);
+          this.showMessage('error', '전송이 실패하였습니다.');
+        }
+      } catch (error) {
+        console.error(error);
+        this.showMessage('error', error);
+      }
+    },
+    async uploadFile2() {
+      try {
+        const formData = new FormData();
+        formData.append('file', this.selectedFile2);
+
+        const response = await axios.post('https://stg-crewpnr.jinair.com/crew/createBookingsForGum', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (response.status === 200) {
+          this.showMessage('uploaded', '전송이 완료되었습니다.');
+        } else {
+          this.showMessage('error', '전송이 실패하였습니다.');
         }
       } catch (error) {
         console.error(error);
