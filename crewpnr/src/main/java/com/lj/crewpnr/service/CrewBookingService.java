@@ -813,8 +813,6 @@ public class CrewBookingService {
             return resultMapVO;
         }
 
-        String isFltData = null;
-
         List<ReservationSummaryVO> reservationSummaryVOList = new ArrayList<>();
         List<PnrSummary> summaries = new ArrayList<>();
 
@@ -822,78 +820,659 @@ public class CrewBookingService {
         summaries.addAll(retrieveReservationSummaryRS.getPnrSummary());
         summaries.addAll(retrieveReservationSummaryRS.getPnrSummaryPast());
 
+        /**
+         * CONFIRMED
+         * WAITLISTED
+         * CONFIRMED_FROM_WAITLIST
+         * CANCELLED
+         * "TIME_CHANGE + TIME_CHANGE_FROM_CONFIRMED
+         * ==> TKTC 상태"
+         * "TIME_CHANGE + TIME_CHANGE_FROM_WAITLIST
+         * ==> TLTK 상태"
+         * "SCHEDULE_CHANGE +  WAS_CONFIRMED
+         * ==> WKSC 상태"
+         * "SCHEDULE_CHANGE +  WAITLISTED
+         * ==> WLSC 상태"
+         * WAS_CONFIRMED
+         * WAS_WAITLISTED
+         */
+        final List<String> ENABLED_STATUSES = Arrays.asList(
+//                "HOLDING_SOLD",
+//                "STANDBY",
+                "CONFIRMED",
+                "CANCELLED",
+                "TIME_CHANGE",
+//                "TIME_CHANGE_FROM_CONFIRMED",
+//                "TIME_CHANGE_FROM_WAITLIST",
+//                "TIME_CHANGE_FROM_STANDBY",
+//                "EARLY_SHOW",
+//                "LATE_SHOW",
+//                "WAS_STANDBY",
+                "SCHEDULE_CHANGE",
+                "CONFIRMED_FROM_WAITLIST",
+                "WAS_CONFIRMED",
+                "WAS_WAITLISTED",
+                "WAITLISTED"
+//                "UNABLE_CLOSED",
+//                "NO_ACTION_TAKEN",
+//                "UNABLE_FLIGHT_NON_OPERATING",
+//                "HOLDING_NEEDED",
+//                "TP_CONFIRMED",
+//                "WAS_REQUESTED",
+//                "REQUESTED",
+//                "WAS_HOLDING_NEEDED",
+//                "CONFIRMEDVERBALLY",
+//                "TIME_CHANGE_FROM_HOLDING_NEEDED",
+//                "WAS_TP_CONFIRMED",
+//                "CANCELLEDVERBALLY"
+                );
+
+        /**
+         * 완료: CONFIRMED
+         * 대기: WAITLISTED
+         * 비운항: NO_OP
+         * 여정 변경: SCHEDULE_CHANGE
+         * 시간 변경: TIME_CHANGE
+         * 취소: CANCELLED
+         */
+        final Map<String, String> STATUS_MAP = new HashMap<>() {
+            {
+                put("CONFIRMED", "CONFIRMED");
+                put("WAITLISTED", "WAITLISTED_HL");
+                put("CONFIRMED_FROM_WAITLIST", "WAITLISTED_KL");
+                put("CANCELLED", "CANCELLED");
+                put("TIME_CHANGE", "TIME_CHANGE");
+                put("SCHEDULE_CHANGE", "SCHEDULE_CHANGE");
+                put("WAS_CONFIRMED", "NO_OP");
+                put("WAS_WAITLISTED", "NO_OP");
+            }
+        };
+
+        final Map<String, String> STATUS_DISPLAY_MAP = new HashMap<>() {
+            {
+                put("CONFIRMED", "완료");
+                put("WAITLISTED", "대기(HL)");
+                put("WAITLISTED_KL", "대기(KL)");
+                put("CANCELLED", "취소");
+                put("TIME_CHANGE", "시간 변경");
+                put("SCHEDULE_CHANGE", "여정 변경");
+                put("NO_OP", "비운항");
+            }
+        };
+
         for (var pnrSummary : summaries) {
             ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
             int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
             String pnrStatus = pnrSummary.getPnrStatus();
 
+            FlightSegmentSummaryDetails targetFltSegment = null;
+            String fltSegFareClass = null;
+
+            // status별 우선순위가 있기 때문에 status for loop를 바깥으로 구성
+            for (var segmentStatus : ENABLED_STATUSES) {
+                for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
+                    // Segment Status에 따른 검색 결과 제어
+                    if (StringUtils.equals(pnrStatus, "CANCELLED")) {
+                        targetFltSegment = fltSegment;
+                        break;
+                    } else {
+                        if (!StringUtils.equals(fltSegment.getSegmentStatus(), segmentStatus)) {
+                            continue;
+                        }
+                    }
+
+                    targetFltSegment = fltSegment;
+                    break;
+                }
+
+                if(targetFltSegment != null) break;
+            }
+
+            String critSegStatus = criteriaVO.getSegmentStatus();
+            String critFareClass = criteriaVO.getFareClass();
+            String critPaxCnt = criteriaVO.getPaxCount();
+
             //segmentStatus, fareClass, paxCount 조회 조건 필터링
-            for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
-                isFltData = "Y";
-                String critSegStatus = criteriaVO.getSegmentStatus();
-                String critFareClass = criteriaVO.getFareClass();
-                String critPaxCnt = criteriaVO.getPaxCount();
+            if (null != critSegStatus && !critSegStatus.isEmpty()) {
+                if (!StringUtils.equals(targetFltSegment.getSegmentStatus(), critSegStatus)) {
+                    continue;
+                }
+            }
 
-                String fltSegFareClass = null;
-                String rsFareClass = fltSegment.getFareBasis();
-                if(StringUtils.isNotBlank(rsFareClass)) {
-                    boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
-                    if (fromKorea)
-                        fltSegFareClass = rsFareClass.substring(0, 2);
-                    else
-                        fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
+            String rsFareClass = targetFltSegment.getFareBasis();
+            if(StringUtils.isNotBlank(rsFareClass)) {
+                boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
+                if (fromKorea)
+                    fltSegFareClass = rsFareClass.substring(0, 2);
+                else
+                    fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
 
-
-                    if (null != critSegStatus && !critSegStatus.isEmpty()) {
-                        if (!StringUtils.equals(fltSegment.getSegmentStatus(), critSegStatus)) {
-                            isFltData = "N";
-                            continue;
-                        }
-                    }
-                    if (null != critFareClass && !critFareClass.isEmpty()) {
-                        if (!StringUtils.equals(fltSegFareClass, critFareClass)) {
-                            isFltData = "N";
-                            continue;
-                        }
-                    }
-                    if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
-                        if (paxCnt != Integer.parseInt(critPaxCnt)) {
-                            isFltData = "N";
-                            continue;
-                        }
+                if (null != critFareClass && !critFareClass.isEmpty()) {
+                    if (!StringUtils.equals(fltSegFareClass, critFareClass)) {
+                        continue;
                     }
                 }
-                reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
-                reservationSummaryVO.setFltnum(fltSegment.getAirlineCode()+ fltSegment.getFlightNumber());
-
-                String depTime = DateUtils.string(fltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd(E)");
-
-                reservationSummaryVO.setDepDate(depTime);
-                reservationSummaryVO.setStnfrCode(fltSegment.getBoardPoint());
-                reservationSummaryVO.setStntoCode(fltSegment.getOffPoint());
-
-                XMLGregorianCalendar depDateUtc = fltSegment.getScheduledDepartureDateTime();
-                XMLGregorianCalendar arrDateUtc = fltSegment.getScheduledArrivalDateTime();
-
-                String depDateTime = depDateUtc.getHour() + ":" + String.format("%02d", depDateUtc.getMinute());
-                String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d",arrDateUtc.getMinute());
-
-                reservationSummaryVO.setDepartureDateTime(depDateTime);
-
-                reservationSummaryVO.setArrivalDateTime(arrDateTime);
-                reservationSummaryVO.setFareClass(fltSegFareClass);
-                reservationSummaryVO.setSegmentStatus(fltSegment.getSegmentStatus());
-                reservationSummaryVO.setPnrStatus(pnrStatus);
             }
-            if ("Y".equals(isFltData)) {
-                reservationSummaryVO.setPaxCount(paxCnt);
-                reservationSummaryVOList.add(reservationSummaryVO);
+
+            if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
+                if (paxCnt != Integer.parseInt(critPaxCnt)) {
+                    continue;
+                }
             }
+
+            reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
+            reservationSummaryVO.setFltnum(targetFltSegment.getAirlineCode()+ targetFltSegment.getFlightNumber());
+
+            String depTime = DateUtils.string(targetFltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd(E)");
+
+            reservationSummaryVO.setDepDate(depTime);
+            reservationSummaryVO.setStnfrCode(targetFltSegment.getBoardPoint());
+            reservationSummaryVO.setStntoCode(targetFltSegment.getOffPoint());
+
+            XMLGregorianCalendar depDateUtc = targetFltSegment.getScheduledDepartureDateTime();
+            XMLGregorianCalendar arrDateUtc = targetFltSegment.getScheduledArrivalDateTime();
+
+            String depDateTime = depDateUtc.getHour() + ":" + String.format("%02d", depDateUtc.getMinute());
+            String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d",arrDateUtc.getMinute());
+
+            reservationSummaryVO.setDepartureDateTime(depDateTime);
+
+            reservationSummaryVO.setArrivalDateTime(arrDateTime);
+            reservationSummaryVO.setFareClass(fltSegFareClass);
+            reservationSummaryVO.setSegmentStatus(targetFltSegment.getSegmentStatus());
+            reservationSummaryVO.setPnrStatus(pnrStatus);
+            reservationSummaryVO.setPaxCount(paxCnt);
+
+            // status
+            reservationSummaryVO.setStatus(STATUS_MAP.get(targetFltSegment.getSegmentStatus()));
+            reservationSummaryVO.setStatusDisplay(STATUS_DISPLAY_MAP.get(reservationSummaryVO.getStatus()));
+
+            reservationSummaryVOList.add(reservationSummaryVO);
         }
         reservationSummaryVOList.sort(Comparator.comparing(ReservationSummaryVO::getDepDate));
 
         resultMapVO.put("summaryResult", reservationSummaryVOList);
         return resultMapVO;
+    }
+
+//    public ResultMapVO getReservationSummary(ReservationSummaryCriteriaVO criteriaVO) {
+//        ResultMapVO resultMapVO = new ResultMapVO();
+//
+//        //로그인 유저의 부서 코드로 agency Code 세팅
+//        String agencyCode = getAgencyCode();
+////        if(agencyCode == null){
+////            resultMapVO.put("message", "Agency Code null");
+////            return resultMapVO;
+////        }
+//
+//        IbsSoapProperty property = new IbsSoapProperty("TEST");
+//        property.setUsername("jinair");
+//        property.setPassword("jinatiflyapi");
+//
+//
+//        BookingChannelKeyType bookingChannelKeyType = new BookingChannelKeyType();
+//        bookingChannelKeyType.setChannel(Constants.IBS_CHANNEL.CHANNEL);
+//        bookingChannelKeyType.setChannelType(Constants.IBS_CHANNEL.CHANNEL_TYPE);
+//        bookingChannelKeyType.setLocale(Constants.IBS_CHANNEL.LOCALE);
+//
+//
+//        RetrieveReservationSummaryRQ req = new RetrieveReservationSummaryRQ();
+//
+//        req.setFlightStartDate(DateUtils.xmlGregorianCalendar(criteriaVO.getDepStartDate(),"yyyy-MM-dd"));
+//        req.setFlightEndDate( DateUtils.xmlGregorianCalendar(criteriaVO.getDepEndDate(),"yyyy-MM-dd"));
+//        req.setAirlineCode(airlineCode);
+//        req.setBoardPoint(criteriaVO.getStnfrCode());
+//        req.setOffPoint(criteriaVO.getStntoCode());
+//        req.setAgencyCode(agencyCode);
+//
+//        req.setPnrType(PNRType.NORMAL);
+//        req.setBookingChannel(bookingChannelKeyType);
+//        req.setActivePnrNumber(100);
+//        req.setPastPnrNumber(100);
+//        req.setIsUnFlownPassengersOnly(false);
+//        req.setIsCancelledRequired(true);
+//
+//        RetrieveReservationSummaryRS retrieveReservationSummaryRS = retrieveReservationSummaryRequest.request(req, property);
+//        String errors = errors(retrieveReservationSummaryRS);
+//        if (StringUtils.isNotBlank(errors)) {
+//            LoggerUtils.e(LOGGER, "CrewBookingAPI#RetrieveReservationSummary.request: errorCode={}", errors);
+//            resultMapVO.put("Error", errors);
+//            return resultMapVO;
+//        }
+//
+//        String isFltData = null;
+//
+//        List<ReservationSummaryVO> reservationSummaryVOList = new ArrayList<>();
+//        List<PnrSummary> summaries = new ArrayList<>();
+//
+//        // 지난 예약 포함
+//        summaries.addAll(retrieveReservationSummaryRS.getPnrSummary());
+//        summaries.addAll(retrieveReservationSummaryRS.getPnrSummaryPast());
+//
+//        for (var pnrSummary : summaries) {
+//            ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
+//            int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
+//            String pnrStatus = pnrSummary.getPnrStatus();
+//
+//            //segmentStatus, fareClass, paxCount 조회 조건 필터링
+//            for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
+//                isFltData = "Y";
+//                String critSegStatus = criteriaVO.getSegmentStatus();
+//                String critFareClass = criteriaVO.getFareClass();
+//                String critPaxCnt = criteriaVO.getPaxCount();
+//
+//                String fltSegFareClass = null;
+//                String rsFareClass = fltSegment.getFareBasis();
+//                if(StringUtils.isNotBlank(rsFareClass)) {
+//                    boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
+//                    if (fromKorea)
+//                        fltSegFareClass = rsFareClass.substring(0, 2);
+//                    else
+//                        fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
+//
+//
+//                    if (null != critSegStatus && !critSegStatus.isEmpty()) {
+//                        if (!StringUtils.equals(fltSegment.getSegmentStatus(), critSegStatus)) {
+//                            isFltData = "N";
+//                            continue;
+//                        }
+//                    }
+//                    if (null != critFareClass && !critFareClass.isEmpty()) {
+//                        if (!StringUtils.equals(fltSegFareClass, critFareClass)) {
+//                            isFltData = "N";
+//                            continue;
+//                        }
+//                    }
+//                    if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
+//                        if (paxCnt != Integer.parseInt(critPaxCnt)) {
+//                            isFltData = "N";
+//                            continue;
+//                        }
+//                    }
+//                }
+//                reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
+//                reservationSummaryVO.setFltnum(fltSegment.getAirlineCode()+ fltSegment.getFlightNumber());
+//
+//                String depTime = DateUtils.string(fltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd(E)");
+//
+//                reservationSummaryVO.setDepDate(depTime);
+//                reservationSummaryVO.setStnfrCode(fltSegment.getBoardPoint());
+//                reservationSummaryVO.setStntoCode(fltSegment.getOffPoint());
+//
+//                XMLGregorianCalendar depDateUtc = fltSegment.getScheduledDepartureDateTime();
+//                XMLGregorianCalendar arrDateUtc = fltSegment.getScheduledArrivalDateTime();
+//
+//                String depDateTime = depDateUtc.getHour() + ":" + String.format("%02d", depDateUtc.getMinute());
+//                String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d",arrDateUtc.getMinute());
+//
+//                reservationSummaryVO.setDepartureDateTime(depDateTime);
+//
+//                reservationSummaryVO.setArrivalDateTime(arrDateTime);
+//                reservationSummaryVO.setFareClass(fltSegFareClass);
+//                reservationSummaryVO.setSegmentStatus(fltSegment.getSegmentStatus());
+//                reservationSummaryVO.setPnrStatus(pnrStatus);
+//            }
+//            if ("Y".equals(isFltData)) {
+//                reservationSummaryVO.setPaxCount(paxCnt);
+//                reservationSummaryVOList.add(reservationSummaryVO);
+//            }
+//        }
+//        reservationSummaryVOList.sort(Comparator.comparing(ReservationSummaryVO::getDepDate));
+//
+//        resultMapVO.put("summaryResult", reservationSummaryVOList);
+//        return resultMapVO;
+//    }
+
+    public List<CrewPNRExcelVO> readExcelFile(MultipartFile file) {
+        List<CrewPNRExcelVO> dataList = new ArrayList<>();
+
+        Workbook workbook = null;
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+
+        try {
+            //엑셀파일 읽기
+            if (extension.equals("xlsx")) {
+                workbook = new XSSFWorkbook(file.getInputStream());
+            } else if (extension.equals("xls")) {
+                workbook = new HSSFWorkbook(file.getInputStream());
+            }
+
+            Sheet worksheet = workbook.getSheetAt(0);
+            Iterator<Row> iterator = worksheet.iterator();
+
+            String emptyFields = "";
+            int rowNo;
+
+            for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
+                CrewPNRExcelVO crewPNRExcelVO = new CrewPNRExcelVO();
+                Row row = worksheet.getRow(i);
+                rowNo = row.getRowNum();
+
+                Iterator<Cell> cellIterator = row.iterator();
+
+                if (rowNo == 0) {
+                    continue;
+                }
+
+                while (cellIterator.hasNext()) {
+                    Cell cell = cellIterator.next();
+                    String cellValue = null;
+
+                    // 타입별 내용 읽기
+                    if (cell.getCellType() == CellType.STRING) {
+                        cellValue = cell.getStringCellValue();
+                    } else if (cell.getCellType() == CellType.NUMERIC) {
+                        if (DateUtil.isCellDateFormatted(cell)) {
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            cellValue = dateFormat.format(cell.getDateCellValue());
+                        } else {
+                            cell.setCellType(CellType.NUMERIC);
+                            cellValue =String.valueOf((int)cell.getNumericCellValue());
+                        }
+                    } else if (cell.getCellType() == CellType.BLANK) {
+                        cellValue = "";
+                    } else {
+                    }
+
+                    switch (cell.getColumnIndex()) {
+                        case 0: // fltNumber
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "fltNumber";
+                            } else {
+                                crewPNRExcelVO.setFltNumber(cellValue);
+                            }
+                            break;
+                        case 1: // boardPoint
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "boardPoint";
+                            } else {
+                                crewPNRExcelVO.setBoardPoint(cellValue);
+                            }
+                            break;
+                        case 2: // offPoint
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "offPoint";
+                            } else {
+                                crewPNRExcelVO.setOffPoint(cellValue);
+                            }
+                            break;
+                        case 3: // flightDate
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "flightDate";
+                            } else {
+                                crewPNRExcelVO.setFlightDate(cellValue);
+                            }
+                            break;
+                        case 4: // fareClass
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "fareClass";
+                            } else {
+                                crewPNRExcelVO.setFareClass(cellValue);
+                            }
+                            break;
+                        case 5: // givenName
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "givenName";
+                            } else {
+                                crewPNRExcelVO.setGivenName(cellValue);
+                            }
+                            break;
+                        case 6: // surName
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "surName";
+                            } else {
+                                crewPNRExcelVO.setSurName(cellValue);
+                            }
+                            break;
+                        case 7: // middleName
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "middleName";
+                            } else {
+                                crewPNRExcelVO.setMiddleName(cellValue);
+                            }
+                            break;
+                        case 8: // namePrefix
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "namePrefix";
+                            } else {
+                                crewPNRExcelVO.setNamePrefix(cellValue);
+                            }
+                            break;
+                        case 9: // paxCount
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "paxCount";
+                            } else {
+                                crewPNRExcelVO.setPaxCount(Integer.parseInt(cellValue));
+                            }
+                            break;
+                        case 10: // emailAddress
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "emailAddress";
+                            } else {
+                                crewPNRExcelVO.setEmailAddress(cellValue);
+                            }
+                            break;
+                        case 11: // cellNumber
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "cellNumber";
+                            } else {
+                                crewPNRExcelVO.setCellNumber(cellValue);
+                            }
+                            break;
+//                        case 12: // pnrComments
+//                            if (StringUtils.isBlank(cellValue)) {
+//                                emptyFields += "pnrComments";
+//                            } else {
+//                                crewPNRExcelVO.setPnrComments(cellValue);
+//                            }
+//                            break;
+                        default:
+                            break;
+                    }
+                    if (!emptyFields.equals("")) {
+                        crewPNRExcelVO.setResult("N");
+                        crewPNRExcelVO.setResultMsg(i + "행 " + emptyFields + " null" );
+//                        dataList.add(crewPNRExcelVO);
+//                        return dataList;
+                    }
+                }
+
+                dataList.add(crewPNRExcelVO);
+
+                emptyFields = "";
+            }
+        } catch (FileNotFoundException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("FileNotFoundException", e);
+            }
+        } catch (IOException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("IOException", e);
+            }
+        } finally {
+            try {
+                if (workbook != null) workbook.close();
+            } catch (IOException e) {
+            }
+        }
+        return dataList;
+    }
+
+    public List<CrewPNRExcelGumVO> readGumExcelFile(MultipartFile file) {
+        List<CrewPNRExcelGumVO> dataList = new ArrayList<>();
+
+        Workbook workbook = null;
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+
+        try {
+            //엑셀파일 읽기
+            if (extension.equals("xlsx")) {
+                workbook = new XSSFWorkbook(file.getInputStream());
+            } else if (extension.equals("xls")) {
+                workbook = new HSSFWorkbook(file.getInputStream());
+            }
+
+            Sheet worksheet = workbook.getSheetAt(0);
+            Iterator<Row> iterator = worksheet.iterator();
+
+            String emptyFields = "";
+            int rowNo;
+
+            for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
+                CrewPNRExcelGumVO crewPNRExcelGUMVO = new CrewPNRExcelGumVO();
+                Row row = worksheet.getRow(i);
+                rowNo = row.getRowNum();
+
+                Iterator<Cell> cellIterator = row.iterator();
+
+                if (rowNo == 0) {
+                    continue;
+                }
+
+                while (cellIterator.hasNext()) {
+                    Cell cell = cellIterator.next();
+                    String cellValue = null;
+
+                    // 타입별 내용 읽기
+                    if (cell.getCellType() == CellType.STRING) {
+                        cellValue = cell.getStringCellValue();
+                    } else if (cell.getCellType() == CellType.NUMERIC) {
+                        if (DateUtil.isCellDateFormatted(cell)) {
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                            cellValue = dateFormat.format(cell.getDateCellValue());
+                        } else {
+                            cell.setCellType(CellType.NUMERIC);
+                            cellValue =String.valueOf((int)cell.getNumericCellValue());
+                        }
+                    } else if (cell.getCellType() == CellType.BLANK) {
+                        cellValue = "";
+                    } else {
+                    }
+
+                    switch (cell.getColumnIndex()) {
+                        case 0: // groupSeq
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "groupSeq";
+                            } else {
+                                crewPNRExcelGUMVO.setGroupSeq(Integer.parseInt(cellValue));
+                            }
+                            break;
+                        case 1: // fltNumber
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "fltNumber";
+                            } else {
+                                crewPNRExcelGUMVO.setFltNumber(cellValue);
+                            }
+                            break;
+                        case 2: // boardPoint
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "boardPoint";
+                            } else {
+                                crewPNRExcelGUMVO.setBoardPoint(cellValue);
+                            }
+                            break;
+                        case 3: // offPoint
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "offPoint";
+                            } else {
+                                crewPNRExcelGUMVO.setOffPoint(cellValue);
+                            }
+                            break;
+                        case 4: // flightDate
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "flightDate";
+                            } else {
+                                crewPNRExcelGUMVO.setFlightDate(cellValue);
+                            }
+                            break;
+                        case 5: // fareClass
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "fareClass";
+                            } else {
+                                crewPNRExcelGUMVO.setFareClass(cellValue);
+                            }
+                            break;
+                        case 6: // givenName
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "givenName";
+                            } else {
+                                crewPNRExcelGUMVO.setGivenName(cellValue);
+                            }
+                            break;
+                        case 7: // surName
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "surName";
+                            } else {
+                                crewPNRExcelGUMVO.setSurName(cellValue);
+                            }
+                            break;
+                        case 8: // middleName
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "middleName";
+                            } else {
+                                crewPNRExcelGUMVO.setMiddleName(cellValue);
+                            }
+                            break;
+                        case 9: // namePrefix
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "namePrefix";
+                            } else {
+                                crewPNRExcelGUMVO.setNamePrefix(cellValue);
+                            }
+                            break;
+                        case 10: // gender
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "gender";
+                            } else {
+                                crewPNRExcelGUMVO.setGender(cellValue);
+                            }
+                            break;
+                        case 11: // emailAddress
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "emailAddress";
+                            } else {
+                                crewPNRExcelGUMVO.setEmailAddress(cellValue);
+                            }
+                            break;
+                        case 12: // cellNumber
+                            if (StringUtils.isBlank(cellValue)) {
+                                emptyFields += "cellNumber";
+                            } else {
+                                crewPNRExcelGUMVO.setCellNumber(cellValue);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    if (!emptyFields.equals("")) {
+                        crewPNRExcelGUMVO.setResult("N");
+                        crewPNRExcelGUMVO.setResultMsg(i + "행 " + emptyFields + " null" );
+//                        dataList.add(crewPNRExcelGUMVO);
+//                        return dataList;
+                    }
+                }
+
+                dataList.add(crewPNRExcelGUMVO);
+
+                emptyFields = "";
+
+
+            }
+        } catch (FileNotFoundException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("FileNotFoundException", e);
+            }
+        } catch (IOException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("IOException", e);
+            }
+        } finally {
+            try {
+                if (workbook != null) workbook.close();
+            } catch (IOException e) {
+            }
+        }
+        return dataList;
     }
 
     public int insertCrewPnrLog(AvailabilityCriteriaVO criteria, String errorValue) {
