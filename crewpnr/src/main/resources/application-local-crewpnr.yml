@@ -7,8 +7,8 @@ spring:
       driver-class-name: oracle.jdbc.driver.OracleDriver
     emsdb:
       jdbc-url: jdbc:oracle:thin:@emsdb.cybtexbvxkgj.ap-northeast-2.rds.amazonaws.com:1521:EMSDB
-      username: JINAIR
-      password: AIRJIN
+      username: jinair
+      password: airjin
       driver-class-name: oracle.jdbc.driver.OracleDriver
 
 server:
@@ -42,3 +42,17 @@ ibs:
       cert:
         PYM: 'certification/dev/aiRES_PYM_Cert.cer'
         # FRMK: 'certification/dev/aiRES_FRMK_Cert.cer'
+
+logging:
+  level:
+    com:
+      zaxxer:
+        hikari:
+          pool:
+            HikariPool: INFO
+    org:
+      springframework:
+        boot:
+          autoconfigure:
+            logging:
+              ConditionEvaluationReportLogger: INFO
