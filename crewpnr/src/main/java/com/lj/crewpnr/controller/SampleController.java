@@ -73,7 +73,7 @@ public class SampleController {
     public void sampleEmail(String email) {
         MailInfoVO mail = new MailInfoVO();
         mail.setMailContentsType(MailInfoVO.MailContentType.URL);
-        mail.setTaskId(941);
+        mail.setTaskId(74);
         mail.setReceiverEmail(email);
         mail.setReceiverName(email);
         mail.setReceiverId("1");
