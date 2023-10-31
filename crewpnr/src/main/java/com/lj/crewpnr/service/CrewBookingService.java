@@ -353,14 +353,16 @@ public class CrewBookingService {
                 String url = String.format("%s%s?q=%s", serverEndpoint, "/mail/createBookingsResult", q);
 
                 MailInfoVO mailInfoVO = new MailInfoVO();
-                mailInfoVO.setReceiverName("laevus@jinair.com");
                 mailInfoVO.setMailContentsType(MailInfoVO.MailContentType.URL);
+                mailInfoVO.setTaskId(74);
+                mailInfoVO.setReceiverEmail("laevus@jinair.com");
+                mailInfoVO.setReceiverName("laevus@jinair.com");
                 mailInfoVO.setMailTitle("승무원 예약 생성 결과");
                 mailInfoVO.setMailContents(url);
-                mailInfoVO.setTaskId(74);
                 mailService.send(mailInfoVO);
             } catch (Exception e) {
                 LoggerUtils.e(LOGGER, "{}", e);
+                e.printStackTrace();
             }
         }
         return resultMapVO;
