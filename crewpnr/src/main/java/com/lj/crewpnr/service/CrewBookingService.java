@@ -51,7 +51,7 @@ import java.util.*;
 @Service
 public class CrewBookingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BookingService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CrewBookingService.class);
     private static final String airlineCode = "LJ";
     @Autowired
     private GetAirAvailability airAvailability;
@@ -360,7 +360,7 @@ public class CrewBookingService {
                 mailInfoVO.setTaskId(74);
                 mailService.send(mailInfoVO);
             } catch (Exception e) {
-                LoggerUtils.e(LOGGER, "{}", e.getMessage());
+                LoggerUtils.e(LOGGER, "{}", e);
             }
         }
         return resultMapVO;
