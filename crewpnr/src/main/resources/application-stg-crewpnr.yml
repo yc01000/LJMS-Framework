@@ -7,8 +7,8 @@ spring:
       driver-class-name: oracle.jdbc.driver.OracleDriver
     emsdb:
       jdbc-url: jdbc:oracle:thin:@emsdb.cybtexbvxkgj.ap-northeast-2.rds.amazonaws.com:1521:EMSDB
-      username: JINAIR
-      password: AIRJIN
+      username: jinair
+      password: airjin
       driver-class-name: oracle.jdbc.driver.OracleDriver
 
 server:
