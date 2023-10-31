@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" sacnPeriod="30 seconds">
+	<property name="LOGS_APP_NAME" value="home" />
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>logback %d{HH:mm:ss.SSS} [%-10thread{10}] %-5level [%-36logger{36}] - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="JOINTIBSAPILOG" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>{"T":"%d{yyyy-MM-dd HH:mm:ss.SSS}","stage":"${spring.profiles.active}","level":"%level","msg":%msg,"thread":"[%thread]"}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="HOM_BIZ_LOG" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>{"T":"%d{yyyy-MM-dd HH:mm:ss.SSS}","stage":"${spring.profiles.active}","level":"%level","msg":%msg,"thread":"[%thread]"}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- IBS 웹서비스 로그 -->
+	<logger	name="com.lj.core.integration.soap.interceptor.LogClientSoapInterceptor" additivity="true" level="debug">
+		<appender-ref ref="STDOUT" />
+	</logger>
+
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core" level="info" additivity="true" />
+	<logger name="org.springframework.beans" level="info" additivity="true" />
+	<logger name="org.springframework.context" level="info" additivity="true" />
+	<logger name="org.springframework.web" level="info" additivity="true" />
+	<logger name="org.apache.commons.dbcp2" level="info" additivity="false" />
+	<logger name="org.apache.commons.beanutils" level="info" additivity="false" />
+	<logger name="org.apache.http" level="error" additivity="false" />
+
+	<logger name="java.sql" level="error" />
+	<logger name="jdbc.sqlonly" level="debug" />
+	<logger name="jdbc.sqltiming" level="debug" />
+	<logger name="jdbc.audit" level="error" />
+	<logger name="jdbc.resultset" level="error" />
+
+	<logger name="oracle.jdbc" level="debug" />
+
+	<!-- application logger -->
+	<logger name="com.lj.home" additivity="true" level="debug"/>
+	<logger name="com.lj.payment" additivity="true" level="debug"/>
+	<root level="debug">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>
