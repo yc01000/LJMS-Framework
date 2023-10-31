@@ -76,9 +76,10 @@ public class SampleController {
         mail.setTaskId(74);
         mail.setReceiverEmail(email);
         mail.setReceiverName(email);
-        mail.setReceiverId("1");
         mail.setMailTitle("[JINAIR] 정보주체 이외로 부터 수집한 개인정보의 수집 출처 안내");
-        mail.setMailContents("https://stgwww.jinair.com/HOM/templates/milk_partners_join.html");
+//        mail.setMailContents("https://stgwww.jinair.com/HOM/templates/milk_partners_join.html");
+        mail.setMailContents("https://stgwww.jinair.com/mail/authcode?q=AQICAHjUTEIVn2DkoovB9aHnGU%2BcDTaEKrmcE98cBwl6kRwymgGZ19tnz3Wwf3PYO8P0OU3mAAAAaDBmBgkqhkiG9w0BBwagWTBXAgEAMFIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMDf2MooC8e6JDtctzAgEQgCVGJak9iYQVqAGC9kfQoJmaywGUG%2BD3ZjWMaBdMZsZkWZVAG7kK");
+        mail.setReceiverId("laevus");
         mailService.send(mail);
     }
 
