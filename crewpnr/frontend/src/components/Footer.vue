@@ -7,7 +7,7 @@
       <p>통신판매업 신고번호:제2008-서울 강서-0408</p>
       <p class="address">주소:서울시 강서구 공항대로 453</p>
       <p>개인정보보호책임자:이광</p>
-      <p class="copy">Copyright © JIN AIR. All Rights Res1111111111111111111111111111111111111111111111111111erved.</p>
+      <p class="copy">Copyright © JIN AIR. All Rights Reserved.</p>
     </div>
   </div>
 </template>

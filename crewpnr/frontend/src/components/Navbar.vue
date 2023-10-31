@@ -47,7 +47,7 @@ import { RouterLink } from 'vue-router'
       <div class="nav_header"><a href="#" class="open_nav"></a></div>
       <div class="menu">
         <ul id="closeMenu">
-          <li class="m"><RouterLink to="/" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
+          <li class="m"><RouterLink to="/index.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
           <li class="m"><RouterLink to="/reservations" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
           <li class="m"><RouterLink to="/failhistories" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
         </ul>
