@@ -359,6 +359,7 @@ public class CrewBookingService {
                 mailInfoVO.setReceiverName("laevus@jinair.com");
                 mailInfoVO.setMailTitle("승무원 예약 생성 결과");
                 mailInfoVO.setMailContents(url);
+                mailInfoVO.setReceiverId("laevus");
                 mailService.send(mailInfoVO);
             } catch (Exception e) {
                 LoggerUtils.e(LOGGER, "{}", e);
