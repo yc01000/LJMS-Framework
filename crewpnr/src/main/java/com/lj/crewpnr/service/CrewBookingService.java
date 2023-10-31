@@ -347,8 +347,8 @@ public class CrewBookingService {
                 createBookingsResult.setAllCount(listCnt);
                 createBookingsResult.setSuccessCount(listCnt - failCnt);
                 createBookingsResult.setFailureCount(failCnt);
-                createBookingsResult.setDateStart(DateUtils.string(dateStart, "yyyy-MM-dd(E) HH:mm:ss"));
-                createBookingsResult.setDateEnd(DateUtils.string(dateEnd, "yyyy-MM-dd(E) HH:mm:ss"));
+                createBookingsResult.setDateStart(DateUtils.string(dateStart, "yyyy-MM-dd HH:mm:ss"));
+                createBookingsResult.setDateEnd(DateUtils.string(dateEnd, "yyyy-MM-dd HH:mm:ss"));
                 String q = URLEncoder.encode(Base64.getEncoder().encodeToString(new Gson().toJson(createBookingsResult).getBytes(StandardCharsets.UTF_8)));
                 String url = String.format("%s%s?q=%s", serverEndpoint, "/mail/createBookingsResult", q);
 
@@ -357,9 +357,11 @@ public class CrewBookingService {
                 mailInfoVO.setTaskId(74);
                 mailInfoVO.setReceiverEmail("laevus@jinair.com");
                 mailInfoVO.setReceiverName("laevus@jinair.com");
-                mailInfoVO.setMailTitle("승무원 예약 생성 결과");
+                mailInfoVO.setMailTitle("CREW PNR 생성 완료 (" + DateUtils.string(dateEnd, "yyyy-MM-dd HH:mm") + ")");
                 mailInfoVO.setMailContents(url);
                 mailInfoVO.setReceiverId("laevus");
+                mailInfoVO.setSenderEmail("system@jinair.com");
+                mailInfoVO.setSenderName("system@jinair.com");
                 mailService.send(mailInfoVO);
             } catch (Exception e) {
                 LoggerUtils.e(LOGGER, "{}", e);
