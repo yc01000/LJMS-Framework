@@ -16,7 +16,7 @@
     <a href="#" @click="uploadFile2" class="btnTypeA">엑셀 업로드 (GUM PNR 생성 요청)</a>
     <br><br>
     <a href="https://imagesstg.jinair.com/eForm/crewpnr_example.xlsx" class="btnTypeC">엑셀 형식 다운로드</a>
-    <a href="#" class="btnTypeC" @click="downloadExcelGum">엑셀 형식 다운로드 (GUM)</a>
+    <a href="https://imagesstg.jinair.com/eForm/crewpnr_gum_example.xlsx" class="btnTypeC" @click="downloadExcelGum">엑셀 형식 다운로드 (GUM)</a>
   </div>
   <div>
     <MessageBox ref="msg_box" />
