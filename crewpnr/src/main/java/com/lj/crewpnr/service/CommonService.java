@@ -32,15 +32,20 @@ public class CommonService {
         if(StringUtils.equals(fileType,"CMM")){
             List<CrewPNRExcelVO> crewPNRExcelTempList = this.readCmmExcelFile(file);
 
-            List<PaxInfoVO> paxInfoList = new ArrayList<>();
-            PaxInfoVO paxInfoVO = new PaxInfoVO();
+
 
             for (CrewPNRExcelVO crewVO : crewPNRExcelTempList) {
+                List<PaxInfoVO> paxInfoList = new ArrayList<>();
+                PaxInfoVO paxInfoVO = new PaxInfoVO();
+                crewPNRExcelVO = new CrewPNRExcelVO();
+
                 crewPNRExcelVO.setFltNumber(crewVO.getFltNumber());
                 crewPNRExcelVO.setBoardPoint(crewVO.getBoardPoint());
                 crewPNRExcelVO.setOffPoint(crewVO.getOffPoint());
                 crewPNRExcelVO.setFlightDate(crewVO.getFlightDate());
                 crewPNRExcelVO.setFareClass(crewVO.getFareClass());
+                crewPNRExcelVO.setEmailAddress(crewVO.getEmailAddress());
+                crewPNRExcelVO.setCellNumber(crewVO.getCellNumber());
 
                 for (int i = 0; i < crewVO.getPaxCount(); i++) {
                     paxInfoVO.setGivenName(crewVO.getGivenName());
@@ -81,6 +86,8 @@ public class CommonService {
                 crewPNRExcelVO.setOffPoint(crewPNRExcelGumTempList.get(i).getOffPoint());
                 crewPNRExcelVO.setFlightDate(crewPNRExcelGumTempList.get(i).getFlightDate());
                 crewPNRExcelVO.setFareClass(crewPNRExcelGumTempList.get(i).getFareClass());
+                crewPNRExcelVO.setEmailAddress(crewPNRExcelGumTempList.get(i).getEmailAddress());
+                crewPNRExcelVO.setCellNumber(crewPNRExcelGumTempList.get(i).getCellNumber());
 
                 paxInfoVO.setGivenName(crewPNRExcelGumTempList.get(i).getGivenName());
                 paxInfoVO.setSurName(crewPNRExcelGumTempList.get(i).getSurName());
@@ -122,6 +129,12 @@ public class CommonService {
                 CrewPNRExcelVO crewPNRExcelVO = new CrewPNRExcelVO();
                 Row row = worksheet.getRow(i);
                 rowNo = row.getRowNum();
+
+                if(row.getFirstCellNum() == -1)
+                    continue;
+
+                if(row.getLastCellNum() == -1)
+                    continue;
 
                 Iterator<Cell> cellIterator = row.iterator();
 
@@ -283,6 +296,12 @@ public class CommonService {
                 CrewPNRExcelVO crewPNRExcelGUMVO = new CrewPNRExcelVO();
                 Row row = worksheet.getRow(i);
                 rowNo = row.getRowNum();
+
+                if(row.getFirstCellNum() == -1)
+                    continue;
+
+                if(row.getLastCellNum() == -1)
+                    continue;
 
                 Iterator<Cell> cellIterator = row.iterator();
 
