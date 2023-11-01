@@ -10,7 +10,6 @@ import com.lj.core.util.WebUtils;
 import com.lj.crewpnr.common.IBSDomainUtils;
 import com.lj.crewpnr.mapper.pssdb.PSSDBSampleMapper;
 import com.lj.crewpnr.service.BookingService;
-import com.lj.sso.ssocore.util.PrincipalUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,13 +108,6 @@ public class SampleController {
     @ResponseBody
     public String airport(@PathVariable String airportCode) {
         return WebUtils.toJson(cityAirportHandler.getCityAirportInfo(airportCode));
-    }
-
-    // http://localhost:8080/sample/principal
-    @RequestMapping("/sample/principal")
-    @ResponseBody
-    public String principal() {
-        return WebUtils.toJson(PrincipalUtils.user());
     }
 
     // http://localhost:8080/sample/utils/isDomestic/ICN
