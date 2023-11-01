@@ -76,13 +76,13 @@
                     <th>Destination Station</th>
                     <th>Fare Class</th>
                     <th>Passenger Count</th>
-                    <th>Error Value</th>
+                    <th width="40%">Error Value</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="item in items" :key="item.seq">
                     <td>{{ item.seq }}</td>
-                    <td>{{ item.depDate }}</td>
+                    <td>{{ item.depDate.substring(0,4) + '-' + item.depDate.substring(4,6) + '-' + item.depDate.slice(6) }}</td>
                     <td>{{ item.fltNum }}</td>
                     <td>{{ item.stnfrCode }}</td>
                     <td>{{ item.stntoCode }}</td>

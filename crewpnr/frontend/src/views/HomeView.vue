@@ -15,7 +15,7 @@
     <input type="file" ref="fileInput2" @change="handleFileChange2" />
     <a href="#" @click="uploadFile2" class="btnTypeA">엑셀 업로드 (GUM PNR 생성 요청)</a>
     <br><br>
-    <a href="#" class="btnTypeC" @click="downloadExcel">엑셀 형식 다운로드</a>
+    <a href="https://imagesstg.jinair.com/eForm/crewpnr_example.xlsx" class="btnTypeC">엑셀 형식 다운로드</a>
     <a href="#" class="btnTypeC" @click="downloadExcelGum">엑셀 형식 다운로드 (GUM)</a>
   </div>
   <div>
