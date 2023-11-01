@@ -3,8 +3,8 @@
         <div class="select-trigger" @click="toggleDropdown">
             <select>
                 <!-- <option value="">{{ selectedOptions.length > 0 ? selectedOptions.join(', ') : 'All (Select options)' }} -->
-                <option value="">{{ selectedOptions.length > 0 ? selectedOptions.map((item)=> item.label).join(', ') : 'All (Select options)' }}
-                </option>
+                <!-- <option value="">{{ selectedOptions.length > 0 ? selectedOptions.map((item)=> item.label).join(', ') : 'All (Select options)' }}</option> -->
+                <option value="">예약상태</option>
             </select>
         </div>
         <div class="dropdown" v-if="isDropdownOpen">
@@ -76,6 +76,7 @@ export default {
     padding: 1px;
     margin-left: 10px;
     height: 30px;
+    text-align: left;
 }
 
 .option input {
