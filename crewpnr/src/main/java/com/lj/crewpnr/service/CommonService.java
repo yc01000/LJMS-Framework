@@ -43,7 +43,6 @@ public class CommonService {
                 crewPNRExcelVO.setFareClass(crewVO.getFareClass());
 
                 for (int i = 0; i < crewVO.getPaxCount(); i++) {
-                    paxInfoVO.setMiddleName(crewVO.getMiddleName());
                     paxInfoVO.setGivenName(crewVO.getGivenName());
                     paxInfoVO.setSurName(crewVO.getSurName());
                     paxInfoVO.setNamePrefix(crewVO.getNamePrefix());
@@ -83,7 +82,6 @@ public class CommonService {
                 crewPNRExcelVO.setFlightDate(crewPNRExcelGumTempList.get(i).getFlightDate());
                 crewPNRExcelVO.setFareClass(crewPNRExcelGumTempList.get(i).getFareClass());
 
-                paxInfoVO.setMiddleName(crewPNRExcelGumTempList.get(i).getMiddleName());
                 paxInfoVO.setGivenName(crewPNRExcelGumTempList.get(i).getGivenName());
                 paxInfoVO.setSurName(crewPNRExcelGumTempList.get(i).getSurName());
                 paxInfoVO.setNamePrefix(crewPNRExcelGumTempList.get(i).getNamePrefix());
@@ -369,35 +367,28 @@ public class CommonService {
                                 crewPNRExcelGUMVO.setSurName(cellValue);
                             }
                             break;
-                        case 8: // middleName
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "middleName";
-                            } else {
-                                crewPNRExcelGUMVO.setMiddleName(cellValue);
-                            }
-                            break;
-                        case 9: // namePrefix
+                        case 8: // namePrefix
                             if (StringUtils.isBlank(cellValue)) {
                                 emptyFields += "namePrefix";
                             } else {
                                 crewPNRExcelGUMVO.setNamePrefix(cellValue);
                             }
                             break;
-                        case 10: // gender
+                        case 9: // gender
                             if (StringUtils.isBlank(cellValue)) {
                                 emptyFields += "gender";
                             } else {
                                 crewPNRExcelGUMVO.setGender(cellValue);
                             }
                             break;
-                        case 11: // emailAddress
+                        case 10: // emailAddress
                             if (StringUtils.isBlank(cellValue)) {
                                 emptyFields += "emailAddress";
                             } else {
                                 crewPNRExcelGUMVO.setEmailAddress(cellValue);
                             }
                             break;
-                        case 12: // cellNumber
+                        case 11: // cellNumber
                             if (StringUtils.isBlank(cellValue)) {
                                 emptyFields += "cellNumber";
                             } else {
