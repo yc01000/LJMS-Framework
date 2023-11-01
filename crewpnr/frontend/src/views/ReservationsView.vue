@@ -84,8 +84,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in filteredRows" :key="item.id" @click="handleRowClick(item)"
-                            @mouseover="handleMouseOver(item.id)" @mouseout="handleMouseOut(item.id)"
+                        <tr v-for="item in filteredRows" :key="item.id" @click="handleRowClick(item)" @mouseover="handleMouseOver(item.id)" @mouseout="handleMouseOut(item.id)"
                             :class="{ active: highlightedRowId === item.id, 'inactive-row': item.status === 'CANCELLED' }">
                             <td>{{ item.id }}</td>
                             <td>{{ item.fltnum }}</td>
@@ -148,7 +147,7 @@ export default {
             selectedDate2: ref(new Date()),
             stnfr: "",
             stnto: "",
-            selectedStatus: [], //예약상태 선택값
+            selectedStatus: [], //예약상태 statusOptions의 선택값
             statusOptions: [
                 { value: "CONFIRMED", label: "완료" },
                 { value: "WAITLISTED_HL", label: "대기(HL)" },
@@ -198,6 +197,7 @@ export default {
         }
     },
     methods: {
+        // 전체 선택시, 버튼과 취소 PNR은 제외시켜야 함.
         selectAllItems() {
             if (this.selectAll) {
                 this.selectedItems = [...this.filteredRows];
@@ -217,7 +217,7 @@ export default {
             console.log('refs.msg_box:', this.$refs.msg_box);
             this.$refs.msg_box.showPopup(title, msg);
         },
-        handleSelection(selectedOptions) { //검색조건의 예약상태 리스트
+        handleSelection(selectedOptions) { //검색조건의 예약상태 리스트. 조회시, 콤보박스 컴포넌트 체크내용과 화면에서 동일하게 유지 하기위해..,
             this.selectedStatus = selectedOptions;
         },
         //Accept버튼 처리.
@@ -240,6 +240,10 @@ export default {
             let successMsg = ""; // Promise로 인해 this.$refs.msg_box 가 null 로 찍히므로 finally에서 메시지박스 호출.
             if (this.selectedItems.length == 0) {
                 this.showMessage('Warning', '선택된 예약이 없습니다.');
+                return;
+            }
+            if (this.selectedItems.length > 20) {
+                this.showMessage('Warning', '선택된 예약은 20개 미만이어야 합니다.');
                 return;
             }
             const jsonData = {
@@ -345,6 +349,9 @@ export default {
             this.modalVisible = false;
         },
         handleRowClick(item) {
+            if(this.isExcept(item.status)){
+                return;
+            }
             this.selectedPNR = item.pnrnumber;
             this.selectedItin = item.stnfrCode + "-" + item.stntoCode;
             this.showModal();
