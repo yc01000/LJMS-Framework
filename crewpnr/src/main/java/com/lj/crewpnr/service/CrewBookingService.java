@@ -881,6 +881,35 @@ public class CrewBookingService {
          * WAS_WAITLISTED
          */
         final List<String> ENABLED_STATUSES = Arrays.asList(
+                "HOLDING_SOLD",
+                "STANDBY",
+                "CONFIRMED",
+                "CANCELLED",
+                "TIME_CHANGE",
+                "TIME_CHANGE_FROM_CONFIRMED",
+                "TIME_CHANGE_FROM_WAITLIST",
+                "TIME_CHANGE_FROM_STANDBY",
+                "EARLY_SHOW",
+                "LATE_SHOW",
+                "WAS_STANDBY",
+                "SCHEDULE_CHANGE",
+                "CONFIRMED_FROM_WAITLIST",
+                "WAS_CONFIRMED",
+                "WAS_WAITLISTED",
+                "WAITLISTED",
+                "UNABLE_CLOSED",
+                "NO_ACTION_TAKEN",
+                "UNABLE_FLIGHT_NON_OPERATING",
+                "HOLDING_NEEDED",
+                "TP_CONFIRMED",
+                "WAS_REQUESTED",
+                "REQUESTED",
+                "WAS_HOLDING_NEEDED",
+                "CONFIRMEDVERBALLY",
+                "TIME_CHANGE_FROM_HOLDING_NEEDED",
+                "WAS_TP_CONFIRMED",
+                "CANCELLEDVERBALLY"
+/*
 //                "HOLDING_SOLD",
 //                "STANDBY",
                 "CONFIRMED",
@@ -909,6 +938,7 @@ public class CrewBookingService {
 //                "TIME_CHANGE_FROM_HOLDING_NEEDED",
 //                "WAS_TP_CONFIRMED",
 //                "CANCELLEDVERBALLY"
+ */
                 );
 
         /**
