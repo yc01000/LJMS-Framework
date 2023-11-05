@@ -184,7 +184,7 @@ input+label{margin:0 15px 0 7px;display:inline-block;}
 .table_style.b_bot_none {border-bottom:0;}
 .table_style th {height:36px; background:#f7f7f5;padding:5px 0;box-sizing:border-box;word-wrap:break-word;word-break:break-all;} /* 190128 수정 */
 .table_style th span {color:#000; font-size:13px;}
-.table_style td {height:36px; text-align:center; color:#000;word-wrap:break-word;word-break:break-all;} /* 190128 수정 */
+.table_style td {height:36px; text-align:center; /*color:#000; yckim 231102*/ word-wrap:break-word;word-break:break-all;}
 .table_style tr {border-bottom:1px solid #dcdcdc; background:#fff;}
 .table_style .border_r {border-right:1px solid #dcdcdc !important;}
 .table_style tr.bor_bn {border-bottom:none;} /* 210128 border 관련 추가 */

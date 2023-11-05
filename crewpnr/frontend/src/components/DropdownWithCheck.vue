@@ -1,11 +1,10 @@
 <template>
     <div class="custom-select">
         <div class="select-trigger" @click="toggleDropdown">
-            <select>
-                <!-- <option value="">{{ selectedOptions.length > 0 ? selectedOptions.join(', ') : 'All (Select options)' }} -->
-                <!-- <option value="">{{ selectedOptions.length > 0 ? selectedOptions.map((item)=> item.label).join(', ') : 'All (Select options)' }}</option> -->
-                <option value="">예약상태</option>
-            </select>
+            <!-- <select>
+                <option value="">{{ selectedOptions.length > 0 ? selectedOptions.map((item)=> item.label).join(', ') : 'All (Select options)' }}</option>
+            </select> -->
+            <span style="margin: 10px"><slot></slot></span> <label><img src="/images/bo/btn_arrow-down.png"></label>
         </div>
         <div class="dropdown" v-if="isDropdownOpen">
             <label v-for="option in options" :key="option.value" class="option">
@@ -23,7 +22,7 @@ export default {
             type: Array,
             required: true
         },
-        bindedOptions: []
+        bindedOptions: [],
     },
     data() {
         return {
@@ -58,7 +57,11 @@ export default {
 .select-trigger {
     cursor: pointer;
     border: 1px solid #ccc;
-    
+    /* yckim 추가 */
+    height: 20px;
+    background: #fff;
+    text-align: center;
+    padding: 5px;
 }
 
 .dropdown {

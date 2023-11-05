@@ -50,7 +50,7 @@ import { RouterLink } from 'vue-router'
           <li class="m"><RouterLink to="/index.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
           <li class="m"><RouterLink to="/reservations.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
           <li class="m"><RouterLink to="/failhistories.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
-          <li class="m"><RouterLink to="/test.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
+          <!-- <li class="m"><RouterLink to="/test.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li> -->
         </ul>
       </div>
     </div>

@@ -78,26 +78,30 @@
                             <th>출발시간</th>
                             <th>도착시간</th>
                             <th><select v-model="classOption">
-                                <option value="">Class(All)</option>
-                                <option v-for="option in classOptions" :key="option" :value="option">
-                                    {{ option }}</option>
-                            </select></th>
+                                    <option value="">Class(All)</option>
+                                    <option v-for="option in classOptions" :key="option" :value="option">
+                                        {{ option }}</option>
+                                </select></th>
                             <th><select v-model="paxCntOption" style="width:90pt">
-                                <option value="">좌석수(All)</option>
-                                <option v-for="option in paxCntOptions" :key="option" :value="option">
-                                    {{ option }}</option>
-                            </select></th>
+                                    <option value="">좌석수(All)</option>
+                                    <option v-for="option in paxCntOptions" :key="option" :value="option">
+                                        {{ option }}</option>
+                                </select></th>
                             <th>PNR</th>
                             <th>Segment STS</th>
-                            <th><div style="display: flex; justify-content: center; align-items: center;">
-                                <Dropdown :options="statusOptions" :bindedOptions="selectedStatus" @select="handleSelection" />
-                            </div></th>
+                            <th>
+                                <div style="display: flex; justify-content: center; align-items: center;">
+                                    <Dropdown :options="statusOptions" :bindedOptions="selectedStatus"
+                                        @select="handleSelection">예약상태</Dropdown>
+                                </div>
+                            </th>
                             <th>선택 <input type="checkbox" v-model="selectAll" @change="selectAllItems" /></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in filteredRows" :key="item.id" @click="handleRowClick(item)" @mouseover="handleMouseOver(item.id)" @mouseout="handleMouseOut(item.id)"
-                            :class="{ active: highlightedRowId === item.id, 'inactive-row': item.status === 'CANCELLED' }">
+                        <tr v-for="item in filteredRows" :key="item.id" @click="handleRowClick(item)"
+                            @mouseover="handleMouseOver(item.id)" @mouseout="handleMouseOut(item.id)"
+                            :class="{ active: highlightedRowId === item.id, 'cancel-row': 'CANCELLED' === item.status, 'click-row': isExcept(item.status) === false }">
                             <td>{{ item.id }}</td>
                             <td>{{ item.fltnum }}</td>
                             <td>{{ item.depDate }}</td>
@@ -107,7 +111,7 @@
                             <td>{{ item.arrivalDateTime }}</td>
                             <td>{{ item.fareClass }}</td>
                             <td>{{ item.paxCount }}</td>
-                            <td v-if="item.status === 'CANCELLED'" :style="{ color: 'lightgray' }">{{ item.pnrnumber }}</td>
+                            <td v-if="item.status === 'CANCELLED'">{{ item.pnrnumber }}</td>
                             <td v-else :style="{ color: isExcept(item.status) ? 'red' : '' }">{{ item.pnrnumber }}</td>
                             <td>{{ item.segmentStatus }}</td>
                             <td>{{ statusTitle(item.status) }}</td>
@@ -258,6 +262,9 @@ export default {
                 this.showMessage('Warning', '선택된 예약은 20개 미만이어야 합니다.');
                 return;
             }
+            if(confirm("선택한 PNR을 일괄 취소 하시겠습니까?") == false){
+                return;
+            }
             const jsonData = {
                 pnrNumber: this.selectedItems.map(item => item.pnrnumber),
             };
@@ -298,7 +305,8 @@ export default {
             let strSts = this.statusOptions.find((el) => { return el.value === sts });
             return (strSts == null || strSts == "undefined" ? 'undefined' : strSts.label);
         },
-        isExcept(sts) {
+        //체크박스(PNR취소)가 필요없는 상태 들..
+        isExcept(sts) { 
             if (sts == 'TIME_CHANGE' || sts == 'SCHEDULE_CHANGE' || sts == 'CANCELLED') {
                 return true;
             } else {
@@ -361,7 +369,7 @@ export default {
             this.modalVisible = false;
         },
         handleRowClick(item) {
-            if(this.isExcept(item.status)){
+            if (this.isExcept(item.status)) {
                 return;
             }
             this.selectedPNR = item.pnrnumber;
@@ -408,12 +416,13 @@ tr.active {
     /* 선택된 행의 배경 색상 변경 */
 }
 
-.inactive-row {
-    /* td 스타일로 인해 tr에 스타일은 무시됨. 결국 의미없음. */
+.cancel-row {
+    /* PNR 취소된 row 회색처리 */
     color: lightgray;
 }
 
-.table_style {
+.click-row {
+    /* PNR 취소 대상만 row 클릭가능 */
     cursor: pointer;
 }
 
