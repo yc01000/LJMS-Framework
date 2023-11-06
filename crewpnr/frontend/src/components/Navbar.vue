@@ -44,7 +44,7 @@ import { RouterLink } from 'vue-router'
 export default {
   data() {
     return {
-      gnbLeft: 0,
+      gnbLeft: -240,
       gnbCloseLeft: 0,
       scrHWidth: 'auto',
       isFixed: false,
