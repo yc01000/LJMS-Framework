@@ -30,18 +30,6 @@
                     <input class="inputPort" id="qModel_stnto" maxlength="3" name="qModel.stnto" placeholder="CJU"
                         type="text" value="" />
                 </li>
-                <!-- <li>
-                    <div style="display: flex; align-items: center;">
-                        <label>Fare Class</label>
-                        <input id="qModel_fareclass" maxlength="4" name="qModel.fareclass" placeholder="U1" type="text"
-                            value="">
-                    </div>
-                </li>
-                <li>
-                    <label>Passenger Count</label>
-                    <input class="inputnumber" id="qModel_paxcnt" maxlength="4" name="qModel.paxcnt" placeholder=""
-                        type="text" value="">
-                </li> -->
                 <li>
                     <label>Class</label>
                     <select v-model="classOption">
@@ -62,8 +50,7 @@
         </div>
         <div class="btn_wrap">
             <a href="javascript://" class="btnTypeD" @click="search">조회</a>&nbsp;
-            <download-excel class="btnTypeC" :data="this.items" worksheet="My Worksheet" name="filename.xls">엑셀로
-                내보내기</download-excel>
+            <button class="btnTypeD" @click="initialize">초기화</button>
         </div>
 
         <table class="table_style">
@@ -82,7 +69,8 @@
             <tbody>
                 <tr v-for="item in items" :key="item.seq">
                     <td>{{ item.seq }}</td>
-                    <td>{{ item.depDate.substring(0,4) + '-' + item.depDate.substring(4,6) + '-' + item.depDate.slice(6) }}</td>
+                    <td>{{ item.depDate.substring(0, 4) + '-' + item.depDate.substring(4, 6) + '-' + item.depDate.slice(6) }}
+                    </td>
                     <td>{{ item.fltNum }}</td>
                     <td>{{ item.stnfrCode }}</td>
                     <td>{{ item.stntoCode }}</td>
@@ -92,6 +80,11 @@
                 </tr>
             </tbody>
         </table>
+        <div class="btn_wrap right">
+            <download-excel class="btnTypeC" :data="this.items" worksheet="My Worksheet" name="filename.xls">엑셀
+                다운로드</download-excel>
+        </div>
+
     </div>
     <div>
         <MessageBox ref="msg_box" />
@@ -129,6 +122,15 @@ export default {
     methods: {
         showMessage(title, msg) {
             this.$refs.msg_box.showPopup(title, msg);
+        },
+        initialize() {
+            this.selectedDate1 = ref(new Date());
+            this.selectedDate2 = ref(new Date());
+            document.getElementById('qModel_stnfr').value = '';
+            document.getElementById('qModel_stnto').value = '';
+            this.classOption = '';
+            this.paxCntOption = '';
+            this.items = [];
         },
         search() {
             if (this.fieldValidation() == false) {
