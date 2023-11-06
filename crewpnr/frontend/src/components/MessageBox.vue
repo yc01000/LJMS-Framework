@@ -6,7 +6,7 @@
         <div class="popup">
           <h2 style="text-align: left; color: #6e2c00;">{{ this.title }}</h2>
           <div style="font-size:16px; padding:30px 0 10px 0;">
-            <p>{{ this.msg }}</p>
+            <p><span v-html="this.msg"></span></p>
           </div>
           <br>
           <!-- 팝업을 닫는 이벤트를 처리하는 closePopup 메소드를 호출합니다 -->

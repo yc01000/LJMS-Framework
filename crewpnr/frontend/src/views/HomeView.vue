@@ -117,6 +117,10 @@ export default {
                     url = 'https://stg-crewpnr.jinair.com/crew/createBookingsForGum';
                     uploadfile = this.GumUploadFile;
                 }
+                if(uploadfile == null){
+                    this.showMessage('Warning', '선택된 파일이 없습니다.<br>업로드할 파일을 선택해 주세요.');
+                    return;
+                }
                 const formData = new FormData();
                 formData.append('file', uploadfile);
 
@@ -127,17 +131,19 @@ export default {
                 });
 
                 if (response.status === 200) {
-                    this.showMessage('uploaded', '전송이 완료되었습니다.');
+                    this.GenUploadFile = this.GumUploadFile = null;
+                    this.showMessage('Uploaded', '업로드 완료되었습니다.<br>PNR 생성 완료 후 EMAIL로 안내 됩니다.');
                 } else {
-                    this.showMessage('error', '전송이 실패하였습니다.');
+                    this.showMessage('Error', '전송이 실패하였습니다.');
                 }
             } catch (error) {
                 console.error(error);
-                this.showMessage('error', error);
-            }
+                this.showMessage('Error', error);
+            } 
         },
     },
 };
+
 </script>
   
 <style scoped>

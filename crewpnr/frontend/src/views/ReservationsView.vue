@@ -32,13 +32,13 @@
                             <input class="inputPort" id="qModel_stnto" maxlength="3" v-model="stnto" placeholder="CJU"
                                 type="text" />
                         </li>
-
-                        <!-- <li>
-                            <div style="display: flex; justify-content: left; align-items: center;">
-                                <label>예약상태</label>
-                                <Dropdown :options="statusOptions" :bindedOptions="selectedStatus"
-                                    @select="handleSelection" />
-                            </div>
+                        <li>
+                            <label>예약상태</label>
+                            <select v-model="selectedStatus">
+                                <option value="">All (Select an option)</option>
+                                <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                                    {{ option.label }}</option>
+                            </select>
                         </li>
                         <li>
                             <label>Class</label>
@@ -53,16 +53,15 @@
                                 <option v-for="option in paxCntOptions" :key="option" :value="option">
                                     {{ option }}</option>
                             </select>
-                        </li> -->
+                        </li>
 
                     </ul>
                 </div>
                 <div class="btn_wrap">
                     <button class="btnTypeD" @click="search">조회</button>&nbsp;
-                    <download-excel class="btnTypeC" :data="this.items" worksheet="My Worksheet" name="filename.xls">엑셀로
-                        내보내기</download-excel>
+                    <button class="btnTypeD" @click="initialize">초기화</button>
                 </div>
-                <div class="btn_wrap">
+                <div class="popLayer">
                     <!-- Modal 컴포넌트를 사용하고 isVisible, title, content 프로퍼티를 전달합니다 -->
                     <CancelBooking v-if="modalVisible" :is-visible="modalVisible" :strItin="selectedItin"
                         :strPnr="selectedPNR" @close="closeModal" />
@@ -77,24 +76,11 @@
                             <th>도착지</th>
                             <th>출발시간</th>
                             <th>도착시간</th>
-                            <th><select v-model="classOption">
-                                    <option value="">Class(All)</option>
-                                    <option v-for="option in classOptions" :key="option" :value="option">
-                                        {{ option }}</option>
-                                </select></th>
-                            <th><select v-model="paxCntOption" style="width:90pt">
-                                    <option value="">좌석수(All)</option>
-                                    <option v-for="option in paxCntOptions" :key="option" :value="option">
-                                        {{ option }}</option>
-                                </select></th>
+                            <th>Class</th>
+                            <th>좌석수</th>
                             <th>PNR</th>
-                            <th>Segment STS</th>
-                            <th>
-                                <div style="display: flex; justify-content: center; align-items: center;">
-                                    <Dropdown :options="statusOptions" :bindedOptions="selectedStatus"
-                                        @select="handleSelection">예약상태</Dropdown>
-                                </div>
-                            </th>
+                            <!-- <th>Segment STS</th> -->
+                            <th>예약상태</th>
                             <th>선택 <input type="checkbox" v-model="selectAll" @change="selectAllItems" /></th>
                         </tr>
                     </thead>
@@ -111,21 +97,22 @@
                             <td>{{ item.arrivalDateTime }}</td>
                             <td>{{ item.fareClass }}</td>
                             <td>{{ item.paxCount }}</td>
-                            <td v-if="item.status === 'CANCELLED'">{{ item.pnrnumber }}</td>
-                            <td v-else :style="{ color: isExcept(item.status) ? 'red' : '' }">{{ item.pnrnumber }}</td>
-                            <td>{{ item.segmentStatus }}</td>
+                            <td v-if="item.status === 'CANCELLED'">{{ item.pnrnumber }}</td> <!-- 취소일때는 그냥 글자 회색 -->
+                            <td v-else :style="{ color: isExcept(item.status) ? 'red' : '' }">{{ item.pnrnumber }}</td> <!--Accept 버튼 일때는 글자 빨강색 -->
+                            <!-- <td>{{ item.segmentStatus }}</td> -->
                             <td>{{ statusTitle(item.status) }}</td>
-                            <td v-if="item.status === 'CANCELLED'" onclick="event.cancelBubble=true"></td>
+                            <td v-if="item.status === 'CANCELLED'" onclick="event.cancelBubble=true"></td> <!-- 취소일때는 그냥 빈칸 -->
                             <td v-else-if="isExcept(item.status) === false" onclick="event.cancelBubble=true"><input
-                                    type="checkbox" v-model="selectedItems" :value="item" /></td>
-                            <td v-else onclick="event.cancelBubble=true"><button
-                                    @click="acceptSchedule(item.pnrnumber)">Accept</button></td>
+                                    type="checkbox" v-model="selectedItems" :value="item" /></td> <!-- 체크박스 -->
+                            <td v-else onclick="event.cancelBubble=true"><button @click="acceptSchedule(item.pnrnumber)">Accept</button></td> <!-- 대기일때 버튼 -->
                         </tr>
                     </tbody>
                 </table>
-                <div class="btn_wrap">
+                <div class="btn_wrap right" >
                     <button class="btnTypeA" @click="pnrCancel">PNR 취소</button>&nbsp;
+                    <download-excel class="btnTypeC" :data="this.items" worksheet="My Worksheet" name="filename.xls">엑셀 다운로드</download-excel>
                 </div>
+
             </div>
             <div>
                 <MessageBox ref="msg_box" />
@@ -163,11 +150,10 @@ export default {
             selectedDate2: ref(new Date()),
             stnfr: "",
             stnto: "",
-            selectedStatus: [], //예약상태 statusOptions의 선택값
+            selectedStatus: '', //예약상태 statusOptions의 선택값
             statusOptions: [
                 { value: "CONFIRMED", label: "완료" },
-                { value: "WAITLISTED_HL", label: "대기(HL)" },
-                { value: "WAITLISTED_KL", label: "대기(KL)" },
+                { value: "WAITLISTED", label: "대기" },
                 { value: "NO_OP", label: "비운항" },
                 { value: "SCHEDULE_CHANGE", label: "여정 변경" },
                 { value: "TIME_CHANGE", label: "시간 변경" },
@@ -193,18 +179,27 @@ export default {
         filteredRows() {
             this.selectAll = false; //조건이 바뀌므로 전체선택 초기화
             this.selectedItems = []; //조건이 바뀌므로 선택 초기화
-            let selStatusValues = this.selectedStatus.map(item => item.value); //예약상태 필터
 
             return this.items.filter(row => {
                 let result = true;
-                if (selStatusValues.length != 0) {
-                    if (selStatusValues.includes(row.status) == false) {
+                //예약상태 필터
+                if ((this.selectedStatus == "" || row.status == this.selectedStatus) == false) {
+                    if(row.status == null || row.status == "undefined") { //서버에서 status 노드가 빠지는 경우가 간혹 있음.
+                        return false;
+                    } 
+                    // WAITLISTED_KL, WAITLISTED_HL 은 포함.
+                    if(this.selectedStatus == "WAITLISTED" && row.status.indexOf("WAITLISTED") == 0){
+                        return true;
+                    }
+                    else{
                         return false;
                     }
                 }
+                //클래스 필터
                 if ((this.classOption == "" || row.fareClass == this.classOption) == false) {
                     return false;
                 }
+                //좌석수 필터
                 if ((this.paxCntOption == "" || row.paxCount == this.paxCntOption) == false) {
                     return false;
                 }
@@ -302,7 +297,17 @@ export default {
                 });
         },
         statusTitle(sts) {
-            let strSts = this.statusOptions.find((el) => { return el.value === sts });
+            // 필터된 대기 표시는 HL, KL 모두 라벨로 표시해야 함.
+            let statusLabels = [
+                { value: "CONFIRMED", label: "완료" },
+                { value: "WAITLISTED_HL", label: "대기(HL)" },
+                { value: "WAITLISTED_KL", label: "대기(KL)" },
+                { value: "NO_OP", label: "비운항" },
+                { value: "SCHEDULE_CHANGE", label: "여정 변경" },
+                { value: "TIME_CHANGE", label: "시간 변경" },
+                { value: "CANCELLED", label: "취소" }
+            ];
+            let strSts = statusLabels.find((el) => { return el.value === sts });
             return (strSts == null || strSts == "undefined" ? 'undefined' : strSts.label);
         },
         //체크박스(PNR취소)가 필요없는 상태 들..
@@ -312,6 +317,16 @@ export default {
             } else {
                 return false;
             }
+        },
+        initialize() {
+            this.selectedDate1 = ref(new Date());
+            this.selectedDate2 = ref(new Date());
+            this.stnfr = "";
+            this.stnto = "";
+            this.selectedStatus = '';
+            this.classOption = '';
+            this.paxCntOption = '';
+            this.items = [];
         },
         search() {
             if (this.fieldValidation() == false) {
