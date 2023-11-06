@@ -8,10 +8,8 @@
                         <div class="header_util" style="text-align: left;">
                             <h2 class="sub_title">예약(일부) 취소</h2>
                         </div>
-
                         <h2>PNR : {{ strPnr }} / {{ strItin }}</h2>
                         <br>
-
                         <table class="table_style">
                             <thead>
                                 <tr>
@@ -33,7 +31,7 @@
                             </tbody>
                         </table>
                         <div class="btn_wrap">
-                            <button class="btnTypeC" @click="SelectedCommit">일부 취소</button>&nbsp;
+                            <button class="btnTypeC" @click="SelectedSubmit">일부 취소</button>&nbsp;
                             <!-- 모달을 닫는 이벤트를 처리하는 closePopup 메소드를 호출합니다 -->
                             <button class="btnTypeD" @click="closeModal">Close</button>
                         </div>
@@ -71,7 +69,7 @@ export default {
         showMessage(title, msg) {
             this.$refs.msg_box.showPopup(title, msg);
         },
-        SelectedCommit() {
+        SelectedSubmit() {
             let guestIdList = [];
             for (let item of this.items.filter(item => item.selected)) {
                 guestIdList.push(item.guestId);
@@ -94,8 +92,10 @@ export default {
                 .then((data) => {
                     console.log("splitPnr result: ", data);
                     this.loading = false;
-                    //this.showMessage('Inform', '처리가 완료되었습니다.');
-                    alert('처리가 완료되었습니다.');
+                    // if(data.all.message == 'SUCCESS'){
+                    //     alert('처리가 완료되었습니다.');
+                    // }
+                    alert('처리결과: ' + JSON.stringify(data, null, 2));
                 })
                 .catch((error) => {
                     console.error('전송 중 오류가 발생했습니다.', error);
