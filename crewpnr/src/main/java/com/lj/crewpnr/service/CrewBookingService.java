@@ -47,6 +47,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CrewBookingService {
@@ -1277,12 +1278,32 @@ public class CrewBookingService {
         retrieveBookingRQ.setPnrNumber(pnrNumber);
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
 
-        FlightSegmentDetailsType flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().get(0);
-        Long oldSegmentId = Long.parseLong(flightSegment.getSegmentId());
+        // 대체될 Seg Status 목록
+        var STATUSES_WILL_BE_REPLACING = Arrays.asList(ReservationStatusDetailsType.TIME_CHANGE, ReservationStatusDetailsType.SCHEDULE_CHANGE);
+
+        FlightSegmentDetailsType flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
+                .filter(t -> STATUSES_WILL_BE_REPLACING.contains(t.getSegmentStatus()))
+                .findFirst()
+                .orElse(null);
+        if(flightSegment == null) {
+            throw new RuntimeException("There's no segment to accept");
+        }
+
+        Long oldSegmentId = null;
         PnrActionType action = null;
         if(ReservationStatusDetailsType.TIME_CHANGE.equals(flightSegment.getSegmentStatus())) {
+            oldSegmentId = Long.parseLong(retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
+                    .filter(t -> ReservationStatusDetailsType.TIME_CHANGE_FROM_CONFIRMED.equals(t.getSegmentStatus()))
+                    .findFirst()
+                    .orElse(null)
+                    .getSegmentId());
             action = PnrActionType.ACCEPT_TC;
         } else if(ReservationStatusDetailsType.SCHEDULE_CHANGE.equals(flightSegment.getSegmentStatus())) {
+            oldSegmentId = Long.parseLong(retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
+                    .filter(t -> ReservationStatusDetailsType.WAS_CONFIRMED.equals(t.getSegmentStatus()))
+                    .findFirst()
+                    .orElse(null)
+                    .getSegmentId());
             action = PnrActionType.ACCEPT_SC;
         } else if(ReservationStatusDetailsType.WAITLISTED.equals(flightSegment.getSegmentStatus())) {
             action = PnrActionType.ACCEPT_WL;
