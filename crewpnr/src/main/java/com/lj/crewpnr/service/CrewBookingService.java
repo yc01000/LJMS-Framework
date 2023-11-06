@@ -956,6 +956,7 @@ public class CrewBookingService {
                 put("CONFIRMED_FROM_WAITLIST", "WAITLISTED_KL");
                 put("CANCELLED", "CANCELLED");
                 put("TIME_CHANGE", "TIME_CHANGE");
+                put("TIME_CHANGE_FROM_CONFIRMED", "TIME_CHANGE");
                 put("SCHEDULE_CHANGE", "SCHEDULE_CHANGE");
                 put("WAS_CONFIRMED", "NO_OP");
                 put("WAS_WAITLISTED", "NO_OP");
