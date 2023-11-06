@@ -22,32 +22,20 @@ import com.lj.crewpnr.vo.booking.ReservationSummaryCriteriaVO;
 import com.lj.crewpnr.vo.booking.ReservationSummaryVO;
 import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
-import com.lj.crewpnr.vo.excel.PaxInfoVO;
 //import com.lj.sso.ssocore.security.vo.UserInfoVO;
 //import com.lj.sso.ssocore.util.PrincipalUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class CrewBookingService {
@@ -616,7 +604,7 @@ public class CrewBookingService {
         return result;
     }
 
-    public ResultMapVO cancelReservation(String pnrNumber) {
+    public ResultMapVO cancelReservations(String pnrNumber) {
         if (StringUtils.isBlank(pnrNumber)) {
             return ResultMapVO.simpleErrorCode("PNR null");
         }
@@ -645,22 +633,27 @@ public class CrewBookingService {
 
         //WK/SC, WL/SC
         //TK/TC, TL/TC
-        final List<ReservationStatusDetailsType> REJECT_NEEDED_STATUSES = Arrays.asList(
-                ReservationStatusDetailsType.WAS_CONFIRMED,
-                ReservationStatusDetailsType.WAITLISTED,
+        final var STATUSES_REJECT_NEEDED = Arrays.asList(
                 ReservationStatusDetailsType.TIME_CHANGE,
-                ReservationStatusDetailsType.TIME_CHANGE_FROM_CONFIRMED,
                 ReservationStatusDetailsType.SCHEDULE_CHANGE);
         boolean needRejectFirst = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
-                .anyMatch(t -> REJECT_NEEDED_STATUSES.contains(t.getSegmentStatus()));
+                .anyMatch(t -> STATUSES_REJECT_NEEDED.contains(t.getSegmentStatus()));
         if(needRejectFirst) {
-            FlightSegmentDetailsType flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().get(0);
-            Long oldSegmentId = Long.parseLong(flightSegment.getSegmentId());
+            final var STATUSES_WILL_BE_REJECTED = Arrays.asList(
+                    ReservationStatusDetailsType.WAS_CONFIRMED,
+                    ReservationStatusDetailsType.WAS_WAITLISTED,
+                    ReservationStatusDetailsType.TIME_CHANGE_FROM_CONFIRMED,
+                    ReservationStatusDetailsType.TIME_CHANGE_FROM_WAITLIST);
+
+            final var flightSegmentWillBeRejected = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
+                    .filter(t -> STATUSES_WILL_BE_REJECTED.contains(t.getSegmentStatus()))
+                    .findFirst()
+                    .orElse(null);
 
             ItineraryChangeType itineraryChange = new ItineraryChangeType();
             SegmentChangeType segmentChange = new SegmentChangeType();
             segmentChange.setPnrActionType(PnrActionType.REJECT_SC);
-            segmentChange.getOldSegmentId().add(oldSegmentId);
+            segmentChange.getOldSegmentId().add(Long.parseLong(flightSegmentWillBeRejected.getSegmentId()));
             itineraryChange.getSegmentChangeType().add(segmentChange);
 
             RejectScRQ rejectScRQ = new RejectScRQ();
@@ -721,10 +714,10 @@ public class CrewBookingService {
         return ResultMapVO.simpleResult("message", "SUCCESS");
     }
 
-    public ResultMapVO cancelReservation(List<String> pnrNumbers) {
+    public ResultMapVO cancelReservations(List<String> pnrNumbers) {
         List<Object> results = new ArrayList<>();
         for(String pnrNumber: pnrNumbers) {
-            results.add(ResultMapVO.getResult(cancelReservation(pnrNumber)));
+            results.add(ResultMapVO.getResult(cancelReservations(pnrNumber)));
         }
         return ResultMapVO.simpleResult("results", results);
     }
@@ -1280,12 +1273,11 @@ public class CrewBookingService {
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
 
         // 대체될 Seg Status 목록
-        var STATUSES_WILL_BE_REPLACING = Arrays.asList(
+        final var STATUSES_WILL_BE_REPLACING = Arrays.asList(
                 ReservationStatusDetailsType.TIME_CHANGE,
-                ReservationStatusDetailsType.SCHEDULE_CHANGE
-        );
+                ReservationStatusDetailsType.SCHEDULE_CHANGE);
 
-        FlightSegmentDetailsType flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
+        final var flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
                 .filter(t -> STATUSES_WILL_BE_REPLACING.contains(t.getSegmentStatus()))
                 .findFirst()
                 .orElse(null);
@@ -1302,21 +1294,24 @@ public class CrewBookingService {
             action = PnrActionType.ACCEPT_WL;
         }
 
-        var STATUSES_WILL_BE_REPLACED = Arrays.asList(
+        final var STATUSES_WILL_BE_REPLACED = Arrays.asList(
                 ReservationStatusDetailsType.TIME_CHANGE_FROM_CONFIRMED,
                 ReservationStatusDetailsType.TIME_CHANGE_FROM_WAITLIST,
                 ReservationStatusDetailsType.WAS_CONFIRMED);
 
-        Long oldSegmentId = Long.parseLong(retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
+        final String oldSegmentId = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
                 .filter(t -> STATUSES_WILL_BE_REPLACED.contains(t.getSegmentStatus()))
                 .findFirst()
-                .orElse(null)
-                .getSegmentId());
+                .orElse(new FlightSegmentDetailsType())
+                .getSegmentId();
+        if(StringUtils.isBlank(oldSegmentId)) {
+            throw new RuntimeException("There's no segment to be replaced");
+        }
 
         ItineraryChangeType itineraryChange = new ItineraryChangeType();
         SegmentChangeType segmentChange = new SegmentChangeType();
         segmentChange.setPnrActionType(action);
-        segmentChange.getOldSegmentId().add(oldSegmentId);
+        segmentChange.getOldSegmentId().add(Long.parseLong(oldSegmentId));
         itineraryChange.getSegmentChangeType().add(segmentChange);
 
         String errors = null;

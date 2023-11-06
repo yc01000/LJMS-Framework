@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -79,7 +78,7 @@ public class CrewPNRController {
 
     @RequestMapping("/crew/cancelReservation")
     public String cancelReservation(@RequestBody Map<String, Object> params) throws Exception {
-        ResultMapVO result = crewBookingService.cancelReservation((List<String>) params.get("pnrNumber"));
+        ResultMapVO result = crewBookingService.cancelReservations((List<String>) params.get("pnrNumber"));
         return WebUtils.toJson(result);
     }
 
