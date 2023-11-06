@@ -10,13 +10,13 @@
 
   <div class="btn_wrap">
     <input type="file" ref="fileInput1" @change="handleFileChange1" />
-    <a href="#" @click="uploadFile1" class="btnTypeA">엑셀 업로드 (국내선 PNR 생성 요청)</a>
+    <a href="#" @click="uploadFile1" class="btnTypeA">엑셀 업로드 (PNR 생성 요청)</a>
     <br><br>
     <input type="file" ref="fileInput2" @change="handleFileChange2" />
     <a href="#" @click="uploadFile2" class="btnTypeA">엑셀 업로드 (GUM PNR 생성 요청)</a>
     <br><br>
     <a href="https://imagesstg.jinair.com/eForm/crewpnr_example.xlsx" class="btnTypeC">엑셀 형식 다운로드</a>
-    <a href="#" class="btnTypeC" @click="downloadExcelGum">엑셀 형식 다운로드 (GUM)</a>
+    <a href="https://imagesstg.jinair.com/eForm/crewpnr_gum_example.xlsx" class="btnTypeC">엑셀 형식 다운로드 (GUM)</a>
   </div>
   <div>
     <MessageBox ref="msg_box" />

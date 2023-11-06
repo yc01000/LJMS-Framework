@@ -32,18 +32,22 @@ public class CommonService {
         if(StringUtils.equals(fileType,"CMM")){
             List<CrewPNRExcelVO> crewPNRExcelTempList = this.readCmmExcelFile(file);
 
-            List<PaxInfoVO> paxInfoList = new ArrayList<>();
-            PaxInfoVO paxInfoVO = new PaxInfoVO();
+
 
             for (CrewPNRExcelVO crewVO : crewPNRExcelTempList) {
+                List<PaxInfoVO> paxInfoList = new ArrayList<>();
+                PaxInfoVO paxInfoVO = new PaxInfoVO();
+                crewPNRExcelVO = new CrewPNRExcelVO();
+
                 crewPNRExcelVO.setFltNumber(crewVO.getFltNumber());
                 crewPNRExcelVO.setBoardPoint(crewVO.getBoardPoint());
                 crewPNRExcelVO.setOffPoint(crewVO.getOffPoint());
                 crewPNRExcelVO.setFlightDate(crewVO.getFlightDate());
                 crewPNRExcelVO.setFareClass(crewVO.getFareClass());
+                crewPNRExcelVO.setEmailAddress(crewVO.getEmailAddress());
+                crewPNRExcelVO.setCellNumber(crewVO.getCellNumber());
 
                 for (int i = 0; i < crewVO.getPaxCount(); i++) {
-                    paxInfoVO.setMiddleName(crewVO.getMiddleName());
                     paxInfoVO.setGivenName(crewVO.getGivenName());
                     paxInfoVO.setSurName(crewVO.getSurName());
                     paxInfoVO.setNamePrefix(crewVO.getNamePrefix());
@@ -82,8 +86,9 @@ public class CommonService {
                 crewPNRExcelVO.setOffPoint(crewPNRExcelGumTempList.get(i).getOffPoint());
                 crewPNRExcelVO.setFlightDate(crewPNRExcelGumTempList.get(i).getFlightDate());
                 crewPNRExcelVO.setFareClass(crewPNRExcelGumTempList.get(i).getFareClass());
+                crewPNRExcelVO.setEmailAddress(crewPNRExcelGumTempList.get(i).getEmailAddress());
+                crewPNRExcelVO.setCellNumber(crewPNRExcelGumTempList.get(i).getCellNumber());
 
-                paxInfoVO.setMiddleName(crewPNRExcelGumTempList.get(i).getMiddleName());
                 paxInfoVO.setGivenName(crewPNRExcelGumTempList.get(i).getGivenName());
                 paxInfoVO.setSurName(crewPNRExcelGumTempList.get(i).getSurName());
                 paxInfoVO.setNamePrefix(crewPNRExcelGumTempList.get(i).getNamePrefix());
@@ -124,6 +129,12 @@ public class CommonService {
                 CrewPNRExcelVO crewPNRExcelVO = new CrewPNRExcelVO();
                 Row row = worksheet.getRow(i);
                 rowNo = row.getRowNum();
+
+                if(row.getFirstCellNum() == -1)
+                    continue;
+
+                if(row.getLastCellNum() == -1)
+                    continue;
 
                 Iterator<Cell> cellIterator = row.iterator();
 
@@ -286,6 +297,12 @@ public class CommonService {
                 Row row = worksheet.getRow(i);
                 rowNo = row.getRowNum();
 
+                if(row.getFirstCellNum() == -1)
+                    continue;
+
+                if(row.getLastCellNum() == -1)
+                    continue;
+
                 Iterator<Cell> cellIterator = row.iterator();
 
                 if (rowNo == 0) {
@@ -369,35 +386,28 @@ public class CommonService {
                                 crewPNRExcelGUMVO.setSurName(cellValue);
                             }
                             break;
-                        case 8: // middleName
-                            if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "middleName";
-                            } else {
-                                crewPNRExcelGUMVO.setMiddleName(cellValue);
-                            }
-                            break;
-                        case 9: // namePrefix
+                        case 8: // namePrefix
                             if (StringUtils.isBlank(cellValue)) {
                                 emptyFields += "namePrefix";
                             } else {
                                 crewPNRExcelGUMVO.setNamePrefix(cellValue);
                             }
                             break;
-                        case 10: // gender
+                        case 9: // gender
                             if (StringUtils.isBlank(cellValue)) {
                                 emptyFields += "gender";
                             } else {
                                 crewPNRExcelGUMVO.setGender(cellValue);
                             }
                             break;
-                        case 11: // emailAddress
+                        case 10: // emailAddress
                             if (StringUtils.isBlank(cellValue)) {
                                 emptyFields += "emailAddress";
                             } else {
                                 crewPNRExcelGUMVO.setEmailAddress(cellValue);
                             }
                             break;
-                        case 12: // cellNumber
+                        case 11: // cellNumber
                             if (StringUtils.isBlank(cellValue)) {
                                 emptyFields += "cellNumber";
                             } else {

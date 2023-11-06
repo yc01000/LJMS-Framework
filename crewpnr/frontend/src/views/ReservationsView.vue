@@ -32,7 +32,8 @@
                             <input class="inputPort" id="qModel_stnto" maxlength="3" v-model="stnto" placeholder="CJU"
                                 type="text" />
                         </li>
-                        <li>
+
+                        <!-- <li>
                             <div style="display: flex; justify-content: left; align-items: center;">
                                 <label>예약상태</label>
                                 <Dropdown :options="statusOptions" :bindedOptions="selectedStatus"
@@ -52,7 +53,8 @@
                                 <option v-for="option in paxCntOptions" :key="option" :value="option">
                                     {{ option }}</option>
                             </select>
-                        </li>
+                        </li> -->
+
                     </ul>
                 </div>
                 <div class="btn_wrap">
@@ -75,11 +77,21 @@
                             <th>도착지</th>
                             <th>출발시간</th>
                             <th>도착시간</th>
-                            <th>Class</th>
-                            <th>좌석수</th>
+                            <th><select v-model="classOption">
+                                <option value="">Class(All)</option>
+                                <option v-for="option in classOptions" :key="option" :value="option">
+                                    {{ option }}</option>
+                            </select></th>
+                            <th><select v-model="paxCntOption" style="width:90pt">
+                                <option value="">좌석수(All)</option>
+                                <option v-for="option in paxCntOptions" :key="option" :value="option">
+                                    {{ option }}</option>
+                            </select></th>
                             <th>PNR</th>
                             <th>Segment STS</th>
-                            <th>예약상태</th>
+                            <th><div style="display: flex; justify-content: center; align-items: center;">
+                                <Dropdown :options="statusOptions" :bindedOptions="selectedStatus" @select="handleSelection" />
+                            </div></th>
                             <th>선택 <input type="checkbox" v-model="selectAll" @change="selectAllItems" /></th>
                         </tr>
                     </thead>
