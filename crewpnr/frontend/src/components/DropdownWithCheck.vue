@@ -4,9 +4,10 @@
             <!-- <select>
                 <option value="">{{ selectedOptions.length > 0 ? selectedOptions.map((item)=> item.label).join(', ') : 'All (Select options)' }}</option>
             </select> -->
-            <span style="margin: 10px"><slot></slot></span> <label><img src="/images/bo/btn_arrow-down.png"></label>
+            <label><span style="margin: 5px; font-weight: normal; color:black"><slot></slot></span><img src="/images/bo/btn_arrow-down.png"></label>
         </div>
         <div class="dropdown" v-if="isDropdownOpen">
+            <span style="margin: 5px;"></span>
             <label v-for="option in options" :key="option.value" class="option">
                 <input type="checkbox" :value="option" v-model="selectedOptions">
                 {{ option.label }}
@@ -56,7 +57,7 @@ export default {
 
 .select-trigger {
     cursor: pointer;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     /* yckim 추가 */
     height: 20px;
     background: #fff;
