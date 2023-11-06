@@ -1279,7 +1279,10 @@ public class CrewBookingService {
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
 
         // 대체될 Seg Status 목록
-        var STATUSES_WILL_BE_REPLACING = Arrays.asList(ReservationStatusDetailsType.TIME_CHANGE, ReservationStatusDetailsType.SCHEDULE_CHANGE);
+        var STATUSES_WILL_BE_REPLACING = Arrays.asList(
+                ReservationStatusDetailsType.TIME_CHANGE,
+                ReservationStatusDetailsType.SCHEDULE_CHANGE
+        );
 
         FlightSegmentDetailsType flightSegment = retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
                 .filter(t -> STATUSES_WILL_BE_REPLACING.contains(t.getSegmentStatus()))
@@ -1289,25 +1292,25 @@ public class CrewBookingService {
             throw new RuntimeException("There's no segment to accept");
         }
 
-        Long oldSegmentId = null;
         PnrActionType action = null;
         if(ReservationStatusDetailsType.TIME_CHANGE.equals(flightSegment.getSegmentStatus())) {
-            oldSegmentId = Long.parseLong(retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
-                    .filter(t -> ReservationStatusDetailsType.TIME_CHANGE_FROM_CONFIRMED.equals(t.getSegmentStatus()))
-                    .findFirst()
-                    .orElse(null)
-                    .getSegmentId());
             action = PnrActionType.ACCEPT_TC;
         } else if(ReservationStatusDetailsType.SCHEDULE_CHANGE.equals(flightSegment.getSegmentStatus())) {
-            oldSegmentId = Long.parseLong(retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
-                    .filter(t -> ReservationStatusDetailsType.WAS_CONFIRMED.equals(t.getSegmentStatus()))
-                    .findFirst()
-                    .orElse(null)
-                    .getSegmentId());
             action = PnrActionType.ACCEPT_SC;
         } else if(ReservationStatusDetailsType.WAITLISTED.equals(flightSegment.getSegmentStatus())) {
             action = PnrActionType.ACCEPT_WL;
         }
+
+        var STATUSES_WILL_BE_REPLACED = Arrays.asList(
+                ReservationStatusDetailsType.TIME_CHANGE_FROM_CONFIRMED,
+                ReservationStatusDetailsType.TIME_CHANGE_FROM_WAITLIST,
+                ReservationStatusDetailsType.WAS_CONFIRMED);
+
+        Long oldSegmentId = Long.parseLong(retrieveBookingRS.getItinerary().get(0).getFlightSegmentDetails().stream()
+                .filter(t -> STATUSES_WILL_BE_REPLACED.contains(t.getSegmentStatus()))
+                .findFirst()
+                .orElse(null)
+                .getSegmentId());
 
         ItineraryChangeType itineraryChange = new ItineraryChangeType();
         SegmentChangeType segmentChange = new SegmentChangeType();
