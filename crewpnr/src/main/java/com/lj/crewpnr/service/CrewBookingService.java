@@ -534,7 +534,8 @@ public class CrewBookingService {
             }
             if(targetOD == null || targetTrip == null || targetSegment == null || targetSegmentAvailability == null) {
                 LoggerUtils.e(LOGGER, "targetSegmentAvailability is null, fareClass: {}", criteria.toString());
-                continue;
+                insertCrewPnrLog(criteria, "Availability: {no flight data}");
+                return ResultMapVO.simpleErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
             }
 
             /** pricing */
