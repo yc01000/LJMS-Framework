@@ -1,6 +1,5 @@
 package com.lj.core.util;
 
-import com.lj.core.common.util.BinderUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
