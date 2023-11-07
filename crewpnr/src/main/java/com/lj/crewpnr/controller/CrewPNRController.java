@@ -46,17 +46,33 @@ public class CrewPNRController {
 
     @RequestMapping("/crew/createBookings")
     public String createBookings(@RequestParam("file") MultipartFile file) throws Exception {
-        //ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(file,"CMM");
-        List<CrewPNRExcelVO> crewPNRExcelList = commonService.readExcelFile(file, "CMM");
-        ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(crewPNRExcelList);
-        return ResultMapVO.toJson(resultMapVO);
+        ResultMapVO excelResult = commonService.readExcelFile(file, "CMM");
+
+        String errorMessage = excelResult.get("errorMessage", String.class);
+
+        if(errorMessage != null){
+            return ResultMapVO.toJson( ResultMapVO.simpleError(excelResult.get("errorMessage", String.class)));
+        }
+
+        List<CrewPNRExcelVO> crewPNRExcelList = excelResult.get("excelData", List.class);
+        ResultMapVO createResult = crewBookingService.createBookingsAsync(crewPNRExcelList);
+
+        return ResultMapVO.toJson(createResult);
     }
 
     @RequestMapping("/crew/createBookingsForGum")
     public String createBookingsForGUM(@RequestParam("file") MultipartFile file) throws Exception {
-        List<CrewPNRExcelVO> crewPNRExcelList = commonService.readExcelFile(file, "GUM");
-        ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(crewPNRExcelList);
-        return ResultMapVO.toJson(resultMapVO);
+        ResultMapVO excelResult = commonService.readExcelFile(file, "GUM");
+
+        String errorMessage = excelResult.get("errorMessage", String.class);
+
+        if(errorMessage != null){
+            return ResultMapVO.toJson( ResultMapVO.simpleError(excelResult.get("errorMessage", String.class)));
+        }
+
+        List<CrewPNRExcelVO> crewPNRExcelList = excelResult.get("excelData", List.class);
+        ResultMapVO createResult = crewBookingService.createBookingsAsync(crewPNRExcelList);
+        return ResultMapVO.toJson(createResult);
     }
 
     @RequestMapping("/crew/getReservationSummary")

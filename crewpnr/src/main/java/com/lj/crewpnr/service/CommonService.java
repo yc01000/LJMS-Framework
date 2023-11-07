@@ -1,5 +1,6 @@
 package com.lj.crewpnr.service;
 
+import com.lj.crewpnr.vo.ResultMapVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
 import com.lj.crewpnr.vo.excel.PaxInfoVO;
 import org.apache.commons.io.FilenameUtils;
@@ -24,9 +25,10 @@ import java.util.List;
 public class CommonService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BookingService.class);
 
-    public List<CrewPNRExcelVO> readExcelFile(MultipartFile file, String fileType){
+    public ResultMapVO readExcelFile(MultipartFile file, String fileType){
         CrewPNRExcelVO crewPNRExcelVO = new CrewPNRExcelVO();
         List<CrewPNRExcelVO> crewPNRExcelList = new ArrayList<>();
+        ResultMapVO excelReadResult = new ResultMapVO();
 
         //엑셀파일 읽기(일반/괌 분기)
         if(StringUtils.equals(fileType,"CMM")){
@@ -35,6 +37,11 @@ public class CommonService {
 
 
             for (CrewPNRExcelVO crewVO : crewPNRExcelTempList) {
+                if (StringUtils.equals(crewVO.getResult(), "N")) {
+                    excelReadResult.put("errorMessage", crewVO.getResultMsg());
+                    return excelReadResult;
+                }
+
                 List<PaxInfoVO> paxInfoList = new ArrayList<>();
                 PaxInfoVO paxInfoVO = new PaxInfoVO();
                 crewPNRExcelVO = new CrewPNRExcelVO();
@@ -67,6 +74,11 @@ public class CommonService {
             int gumListCnt = crewPNRExcelGumTempList.size();
             int previousSeq = crewPNRExcelGumTempList.get(0).getGroupSeq();
             for (int i = 0; i < gumListCnt; i++) {
+                if (StringUtils.equals(crewPNRExcelGumTempList.get(i).getResult(), "N")) {
+                    excelReadResult.put("errorMessage", crewPNRExcelGumTempList.get(i).getResultMsg());
+                    return excelReadResult;
+                }
+
                 PaxInfoVO paxInfoVO = new PaxInfoVO();
 
                 //groupSeq 가 이전과 다를 경우, 새로운 groupSeq 로 간주하여 이전 데이터를 List에 담고 초기화
@@ -102,11 +114,13 @@ public class CommonService {
                 }
             }
         }
-        return crewPNRExcelList;
+        excelReadResult.put("excelData", crewPNRExcelList);
+        return excelReadResult;
     }
 
     public List<CrewPNRExcelVO> readCmmExcelFile(MultipartFile file) {
         List<CrewPNRExcelVO> dataList = new ArrayList<>();
+        CrewPNRExcelVO crewPNRExcelVO = null;
 
         Workbook workbook = null;
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
@@ -126,7 +140,7 @@ public class CommonService {
             int rowNo;
 
             for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
-                CrewPNRExcelVO crewPNRExcelVO = new CrewPNRExcelVO();
+                crewPNRExcelVO = new CrewPNRExcelVO();
                 Row row = worksheet.getRow(i);
                 rowNo = row.getRowNum();
 
@@ -246,11 +260,11 @@ public class CommonService {
                     if (!emptyFields.equals("")) {
                         crewPNRExcelVO.setResult("N");
                         crewPNRExcelVO.setResultMsg(i + "행 " + emptyFields + " null" );
-//                        dataList.add(crewPNRExcelVO);
-//                        return dataList;
+                        dataList.add(crewPNRExcelVO);
+                        return dataList;
                     }
                 }
-
+                crewPNRExcelVO.setResult("Y");
                 dataList.add(crewPNRExcelVO);
 
                 emptyFields = "";
@@ -266,7 +280,9 @@ public class CommonService {
         } finally {
             try {
                 if (workbook != null) workbook.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
+                crewPNRExcelVO.setResult("N");
+                crewPNRExcelVO.setResultMsg("잘못된 형식의 파일입니다. 파일을 다시 확인해 주세요.");
             }
         }
         return dataList;
@@ -274,7 +290,7 @@ public class CommonService {
 
     public List<CrewPNRExcelVO> readGumExcelFile(MultipartFile file) {
         List<CrewPNRExcelVO> dataList = new ArrayList<>();
-
+        CrewPNRExcelVO crewPNRExcelGUMVO = null;
         Workbook workbook = null;
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 
@@ -293,7 +309,7 @@ public class CommonService {
             int rowNo;
 
             for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
-                CrewPNRExcelVO crewPNRExcelGUMVO = new CrewPNRExcelVO();
+                crewPNRExcelGUMVO = new CrewPNRExcelVO();
                 Row row = worksheet.getRow(i);
                 rowNo = row.getRowNum();
 
@@ -420,11 +436,11 @@ public class CommonService {
                     if (!emptyFields.equals("")) {
                         crewPNRExcelGUMVO.setResult("N");
                         crewPNRExcelGUMVO.setResultMsg(i + "행 " + emptyFields + " null" );
-//                        dataList.add(crewPNRExcelGUMVO);
-//                        return dataList;
+                        dataList.add(crewPNRExcelGUMVO);
+                        return dataList;
                     }
                 }
-
+                crewPNRExcelGUMVO.setResult("Y");
                 dataList.add(crewPNRExcelGUMVO);
 
                 emptyFields = "";
@@ -442,7 +458,9 @@ public class CommonService {
         } finally {
             try {
                 if (workbook != null) workbook.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
+                crewPNRExcelGUMVO.setResult("N");
+                crewPNRExcelGUMVO.setResultMsg("잘못된 형식의 파일입니다. 파일을 다시 확인해 주세요.");
             }
         }
         return dataList;
