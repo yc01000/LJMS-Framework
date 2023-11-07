@@ -39,7 +39,7 @@
                 </div>
             </div>
             <div>
-                <MessageBox ref="msg_box" />
+                <MessageBox ref="msg_box" @postAction="onPostMessageBox"/>
             </div>
         </div>
     </div>
@@ -66,10 +66,19 @@ export default {
         };
     },
     methods: {
-        showMessage(title, msg) {
-            this.$refs.msg_box.showPopup(title, msg);
+        //메시지박스 닫힌 후 이벤트 처리
+        onPostMessageBox(action) {
+            console.log('onPostMessageBox action:', action);
+            if(action === 'closeModal'){
+                this.closeModal();
+            }
+        },
+        // 메시지 박스 : 타이틀, 메시지, 후속액션, 컨펌 또는 alert.
+        showMessage(title, msg, action='', isConfirmMsg=false) {
+            this.$refs.msg_box.showPopup(title, msg, action, isConfirmMsg);
         },
         SelectedSubmit() {
+            let strMsg = ""; // Promise로 인해 this.$refs.msg_box 가 null 로 찍히므로 finally에서 메시지박스 호출.
             let guestIdList = [];
             for (let item of this.items.filter(item => item.selected)) {
                 guestIdList.push(item.guestId);
@@ -90,21 +99,26 @@ export default {
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    console.log("splitPnr result: ", data);
+                    console.log("SelectedSubmit result: ", data);
                     this.loading = false;
-                    // if(data.all.message == 'SUCCESS'){
+                    // if(data.result == 'SUCCESS'){
                     //     alert('처리가 완료되었습니다.');
                     // }
-                    alert('처리결과: ' + JSON.stringify(data, null, 2));
+                    //alert('처리결과: ' + JSON.stringify(data, null, 2));
+                    if(data.result == 'SUCCESS'){
+                        strMsg = '처리가 완료되었습니다.';
+                    }
+                    else{
+                        strMsg = JSON.stringify(data, null, 2);
+                    }
                 })
                 .catch((error) => {
                     console.error('전송 중 오류가 발생했습니다.', error);
                     this.loading = false;
-                    //this.showMessage('Error', error);
-                    alert('전송 중 오류가 발생했습니다.' + error);
+                    strMsg = error;
                 })
                 .finally(() => {
-                    this.closeModal();
+                    this.showMessage('Inform', strMsg, 'closeModal');
                 });
         },
         closeModal() {
@@ -112,15 +126,21 @@ export default {
             this.$emit('close'); // 부모 컴포넌트에 이벤트를 전달하여 모달을 닫습니다
         },
         search() {
+            let strMsg = ""; // Promise로 인해 this.$refs.msg_box 가 null 로 찍히므로 finally에서 메시지박스 호출.
             fetch('https://stg-crewpnr.jinair.com/crew/retrieveBooking?pnrNumber=' + this.strPnr)
                 .then((response) => response.json())
                 .then((data) => {
-                    this.items = data.all.getGuestDetails;
+                    this.items = data.result;
                     console.log(this.items);
                 })
                 .catch((error) => {
                     console.error('데이터를 불러오는 중 오류가 발생했습니다.', error);
-                    this.showMessage('Error', error);
+                    strMsg = error;
+                })
+                .finally(() => {
+                    if(strMsg !== ''){
+                        this.showMessage('Inform', strMsg, 'closeModal');
+                    }
                 });
 
         },

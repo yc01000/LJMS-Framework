@@ -61,7 +61,7 @@
                     <button class="btnTypeD" @click="search">조회</button>&nbsp;
                     <button class="btnTypeD" @click="initialize">초기화</button>
                 </div>
-                <div class="popLayer">
+                <div class="btn_wrap">
                     <!-- Modal 컴포넌트를 사용하고 isVisible, title, content 프로퍼티를 전달합니다 -->
                     <CancelBooking v-if="modalVisible" :is-visible="modalVisible" :strItin="selectedItin"
                         :strPnr="selectedPNR" @close="closeModal" />
@@ -109,13 +109,13 @@
                     </tbody>
                 </table>
                 <div class="btn_wrap right" >
-                    <button class="btnTypeA" @click="pnrCancel">PNR 취소</button>&nbsp;
+                    <button class="btnTypeA" @click="checkPnrCancel">PNR 취소</button>&nbsp;
                     <download-excel class="btnTypeC" :data="this.items" worksheet="My Worksheet" name="filename.xls">엑셀 다운로드</download-excel>
                 </div>
 
             </div>
             <div>
-                <MessageBox ref="msg_box" />
+                <MessageBox ref="msg_box" @postAction="onPostMessageBox"/>
             </div>
         </div>
     </div>
@@ -224,9 +224,18 @@ export default {
                 this.selectedItems = [];
             }
         },
-        showMessage(title, msg) {
-            console.log('refs.msg_box:', this.$refs.msg_box);
-            this.$refs.msg_box.showPopup(title, msg);
+        //메시지박스 닫힌 후 이벤트 처리
+        onPostMessageBox(action) {
+            console.log('onPostMessageBox action:', action);
+            if(action === 'search'){
+                this.search();
+            }else if(action === 'pnrCancel'){
+                this.pnrCancel();
+            }
+        },
+        // 메시지 박스 : 타이틀, 메시지, 후속액션, 컨펌 또는 alert.
+        showMessage(title, msg, action='', isConfirmMsg=false) {
+            this.$refs.msg_box.showPopup(title, msg, action, isConfirmMsg);
         },
         handleSelection(selectedOptions) { //검색조건의 예약상태 리스트. 조회시, 콤보박스 컴포넌트 체크내용과 화면에서 동일하게 유지 하기위해..,
             this.selectedStatus = selectedOptions;
@@ -234,21 +243,22 @@ export default {
         //Accept버튼 처리.
         acceptSchedule(pnr) {
             console.log("pnr:", pnr);
+            this.loading = true;
             fetch('https://stg-crewpnr.jinair.com/crew/acceptSchedule?pnrNumber=' + pnr)
                 .then((response) => response.json())
                 .then((data) => {
+                    this.loading = false;
                     console.log("acceptSchedule result: ", data);
-                    this.showMessage('Inform', '처리가 완료되었습니다.');
+                    this.showMessage('Inform', '처리가 완료되었습니다.<br>' + data.result);
                 })
                 .catch((error) => {
+                    this.loading = false;
                     console.error('전송 중 오류가 발생했습니다.', error);
                     this.showMessage('Error', error);
                 });
         },
-        // PNR 취소 버튼 클릭. 선택된 PNR 처리.
-        pnrCancel() {
-            let errMsg = ""; // Promise로 인해 this.$refs.msg_box 가 null 로 찍히므로 finally에서 메시지박스 호출.
-            let successMsg = ""; // Promise로 인해 this.$refs.msg_box 가 null 로 찍히므로 finally에서 메시지박스 호출.
+        // PNR 취소 버튼 클릭. Confirm 메시지박스 비동기처리..
+        checkPnrCancel() {
             if (this.selectedItems.length == 0) {
                 this.showMessage('Warning', '선택된 예약이 없습니다.');
                 return;
@@ -257,9 +267,12 @@ export default {
                 this.showMessage('Warning', '선택된 예약은 20개 미만이어야 합니다.');
                 return;
             }
-            if(confirm("선택한 PNR을 일괄 취소 하시겠습니까?") == false){
-                return;
-            }
+            this.showMessage('Confirm', '선택한 PNR을 일괄 취소 하시겠습니까?', 'pnrCancel', true);
+        },
+        // 선택된 PNR 처리.
+        pnrCancel() {
+            let errMsg = ""; // Promise로 인해 this.$refs.msg_box 가 null 로 찍히므로 finally에서 메시지박스 호출.
+            let successMsg = ""; // Promise로 인해 this.$refs.msg_box 가 null 로 찍히므로 finally에서 메시지박스 호출.
             const jsonData = {
                 pnrNumber: this.selectedItems.map(item => item.pnrnumber),
             };
@@ -278,7 +291,7 @@ export default {
                 .then((data) => {
                     this.loading = false;
                     console.log("cancelReservation result: ", data);
-                    successMsg = '처리가 완료되었습니다.\n' + data.all.result;
+                    successMsg = '처리가 완료되었습니다.<br>' + data.result;
                 })
                 .catch((error) => {
                     this.loading = false;
@@ -290,9 +303,7 @@ export default {
                         this.showMessage('Error', errMsg);
                     }
                     if (successMsg !== "") {
-                        //this.showMessage('Inform', successMsg);
-                        alert(successMsg);
-                        this.search();
+                        this.showMessage('Inform', successMsg, 'search');
                     }
                 });
         },
@@ -349,13 +360,16 @@ export default {
                 .then((data) => {
                     this.loading = false;
                     console.log("response:", data)
-                    if (data.all.Error !== undefined) {
+                    if (data.error !== undefined) {
                         this.items = [];
-                        errMsg = data.all.Error;
+                        errMsg = data.error;
                     }
                     else {
+                        if(data.result.length >= 100){
+                            errMsg = '결과 값이 100건을 초과하였습니다.<br>검색조건을 수정하여 조회 하십시요.';
+                        }
                         // 순번을 추가한 JSON 데이터
-                        const itemsWithIndex = data.all.summaryResult.map((item, index) => {
+                        const itemsWithIndex = data.result.map((item, index) => {
                             return {
                                 id: index + 1, // 순번을 1부터 시작하려면 index + 1을 사용
                                 ...item,
@@ -403,10 +417,6 @@ export default {
                 depEndDate: document.getElementById('qModel_dateto').value,
                 stnfrCode: document.getElementById('qModel_stnfr').value.toUpperCase(),
                 stntoCode: document.getElementById('qModel_stnto').value.toUpperCase(),
-                // depStartDate: this.selectedDate1.format("yyyy-MM-dd"),
-                // depEndDate: this.selectedDate2.format("yyyy-MM-dd"),
-                // stnfrCode: this.stnfr.toUpperCase(),
-                // stntoCode: this.stnfr.toUpperCase(),
             };
             return JSON.stringify(jsonData, null, 2);
         },
