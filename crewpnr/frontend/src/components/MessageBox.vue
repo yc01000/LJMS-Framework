@@ -10,7 +10,8 @@
           </div>
           <br>
           <!-- 팝업을 닫는 이벤트를 처리하는 closePopup 메소드를 호출합니다 -->
-          <button @click="closePopup" class="btnTypeD">Close</button>
+          <div v-if="isConfirmMsg == true"><button @click="closePopup" class="btnTypeD">YES</button>&nbsp;&nbsp;<button @click="cancelClosePopup" class="btnTypeE">NO</button></div>
+          <div v-else><button @click="closePopup" class="btnTypeD">Close</button></div>
         </div>
       </div>
     </div>
@@ -23,7 +24,9 @@ export default {
     return {
       isVisible: false, // 팝업 레이어의 표시 여부를 저장하는 데이터 속성
       title: Object,
-      msg: Object
+      msg: Object,
+      actionName: '',
+      isConfirmMsg: false, // alert: false, confirm: true
     };
   },
   props: {
@@ -33,14 +36,22 @@ export default {
     this.showPopup;
   },
   methods: {
-    showPopup(strTitle, strMsg) {
+    showPopup(strTitle, strMsg, strActionName, isconfirm) {
       this.title = strTitle;
       this.msg = strMsg;
+      this.actionName = strActionName;
+      this.isConfirmMsg = isconfirm;
       // 팝업 레이어를 표시하는 메소드
       this.isVisible = true;
     },
     closePopup() {
-      // 팝업 레이어를 닫는 메소드
+      // 팝업 레이어를 닫는 메소드, 후속 액션명
+      this.$emit('postAction', this.actionName);
+      this.isVisible = false;
+    },
+    cancelClosePopup() {
+      // 취소
+      this.$emit('postAction', '');
       this.isVisible = false;
     },
   },

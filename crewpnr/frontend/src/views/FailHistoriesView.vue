@@ -149,10 +149,10 @@ export default {
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    if (data.list.length == 0) {
+                    if (data.result.length == 0) {
                         this.showMessage('warnning', '조회된 데이터가 없습니다.');
                     }
-                    this.items = data.list;
+                    this.items = data.result;
                     console.log("response data:", data)
                 })
                 .catch((error) => {
