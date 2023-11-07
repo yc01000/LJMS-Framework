@@ -8,6 +8,7 @@ public class CrewPnrLogVO {
     private String stntoCode;
     private String fareClass;
     private int paxCnt;
+    private String rgstDttm;
     private String errorValue;
 
     public int getSeq() {
@@ -64,6 +65,14 @@ public class CrewPnrLogVO {
 
     public void setPaxCnt(int paxCnt) {
         this.paxCnt = paxCnt;
+    }
+
+    public String getRgstDttm() {
+        return rgstDttm;
+    }
+
+    public void setRgstDttm(String rgstDttm) {
+        this.rgstDttm = rgstDttm;
     }
 
     public String getErrorValue() {
