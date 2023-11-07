@@ -1,6 +1,7 @@
 package com.lj.crewpnr.vo;
 
 import com.google.gson.Gson;
+import com.lj.core.util.WebUtils;
 import com.lj.crewpnr.common.Constants.ERROR_CODE;
 import org.apache.commons.lang3.StringUtils;
 
@@ -122,7 +123,7 @@ public class ResultMapVO {
 			return new Gson().toJson(obj);
 		}
 
-//		return WebUtils.toJson(result.getAll());
-		return new Gson().toJson(result.getAll());
+		return WebUtils.toJson(result.getAll());
+//		return new Gson().toJson(result.getAll());
 	}
 }
