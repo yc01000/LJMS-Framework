@@ -49,14 +49,14 @@ public class CrewPNRController {
         //ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(file,"CMM");
         List<CrewPNRExcelVO> crewPNRExcelList = commonService.readExcelFile(file, "CMM");
         ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(crewPNRExcelList);
-        return WebUtils.toJson(resultMapVO);
+        return ResultMapVO.toJson(resultMapVO);
     }
 
     @RequestMapping("/crew/createBookingsForGum")
     public String createBookingsForGUM(@RequestParam("file") MultipartFile file) throws Exception {
         List<CrewPNRExcelVO> crewPNRExcelList = commonService.readExcelFile(file, "GUM");
         ResultMapVO resultMapVO = crewBookingService.createBookingsAsync(crewPNRExcelList);
-        return WebUtils.toJson(resultMapVO);
+        return ResultMapVO.toJson(resultMapVO);
     }
 
     @RequestMapping("/crew/getReservationSummary")
@@ -65,39 +65,32 @@ public class CrewPNRController {
 //        criteriaVO.setDepEndDate("2023-09-27");
 //        criteriaVO.setStnfrCode("GMP");
 //        criteriaVO.setStntoCode("CJU");
-        ResultMapVO reservationSummaryList = crewBookingService.getReservationSummary(criteriaVO);
-        return WebUtils.toJson(reservationSummaryList);
+        return ResultMapVO.toJson(crewBookingService.getReservationSummary(criteriaVO));
     }
 
     @RequestMapping("/crew/retrieveBooking")
     public String retrieveBooking(String pnrNumber) throws Exception {
-        ResultMapVO result = crewBookingService.retrieveBooking(pnrNumber);
-        return WebUtils.toJson(result);
+        return ResultMapVO.toJson(crewBookingService.retrieveBooking(pnrNumber));
     }
-
 
     @RequestMapping("/crew/cancelReservation")
     public String cancelReservation(@RequestBody Map<String, Object> params) throws Exception {
-        ResultMapVO result = crewBookingService.cancelReservations((List<String>) params.get("pnrNumber"));
-        return WebUtils.toJson(result);
+        return ResultMapVO.toJson(crewBookingService.cancelReservations((List<String>) params.get("pnrNumber")));
     }
 
     @RequestMapping("/crew/splitPnr")
     public String splitPnr(@RequestBody RetrieveChangeGateVO retrieveChangeGateVO) throws Exception {
-        ResultMapVO result = crewBookingService.splitPnr(retrieveChangeGateVO);
-        return WebUtils.toJson(result);
+        return ResultMapVO.toJson(crewBookingService.splitPnr(retrieveChangeGateVO));
     }
     @RequestMapping("/crew/getCreateBookingFailLog")
     public String getCreatePNRHistory(@RequestBody CrewPNRLogCriteriaVO criteriaVO) throws Exception {
-
 //        criteriaVO.setStnfrCode("GMP");
 //        criteriaVO.setStntoCode("CJU");
 //        criteriaVO.setBrdStrtDt("20230904");
 //        criteriaVO.setBrdEndDt("20230904");
 //        criteriaVO.setFareClass("U1");
 //        criteriaVO.setPaxCount(5);
-
-        return WebUtils.toJson(crewBookingMapper.getCreateBookingFailLog(criteriaVO));
+        return ResultMapVO.toJson(ResultMapVO.simpleResult("result", crewBookingMapper.getCreateBookingFailLog(criteriaVO)));
     }
 
     @RequestMapping("/crew/getSummaryListExcel")
@@ -197,6 +190,6 @@ public class CrewPNRController {
 
     @RequestMapping("/crew/acceptSchedule")
     public String acceptSchedule(String pnrNumber) {
-        return WebUtils.toJson(crewBookingService.acceptSchedule(pnrNumber));
+        return ResultMapVO.toJson(crewBookingService.acceptSchedule(pnrNumber));
     }
 }

@@ -22,8 +22,6 @@ import com.lj.crewpnr.vo.booking.ReservationSummaryCriteriaVO;
 import com.lj.crewpnr.vo.booking.ReservationSummaryVO;
 import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
-//import com.lj.sso.ssocore.security.vo.UserInfoVO;
-//import com.lj.sso.ssocore.util.PrincipalUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -190,7 +188,7 @@ public class CrewBookingService {
                     ResultMapVO availabilityResult = this.searchAvailabilities(criteria);
 
                     if (ResultMapVO.hasErrors(availabilityResult)) {
-                        String errorValue = availabilityResult.getErrorCode();
+                        String errorValue = availabilityResult.getError();
                         LoggerUtils.e(LOGGER, "AvailabilityService.searchAvailabilities:{} {}:errorCode={}",
                                 "", "" + (logSeq++), errorValue);
 
@@ -363,10 +361,10 @@ public class CrewBookingService {
     public ResultMapVO searchAvailabilities(AvailabilityCriteriaVO criteria) {
         if(criteria == null) {
             LoggerUtils.e(LOGGER, "availabilityCriteria is null");
-            return ResultMapVO.simpleErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
+            return ResultMapVO.simpleError(ERROR_CODE.SERVER_ERROR_OCCURRED);
         } else if(CollectionUtils.isEmpty(criteria.getAvailabilitySearches())) {
             LoggerUtils.e(LOGGER, "availabilityCriteria.availabilitySearches is empty");
-            return ResultMapVO.simpleErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
+            return ResultMapVO.simpleError(ERROR_CODE.SERVER_ERROR_OCCURRED);
         }
 
         IbsSoapProperty property = new IbsSoapProperty("TEST");
@@ -420,7 +418,7 @@ public class CrewBookingService {
             availabilityRQs.add(targetRQ);
         }
         if(CollectionUtils.isEmpty(availabilityRQs)) {
-            return ResultMapVO.simpleErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
+            return ResultMapVO.simpleError(ERROR_CODE.SERVER_ERROR_OCCURRED);
         }
 
         /** RQ 수만큼 avail 조회 */
@@ -468,7 +466,7 @@ public class CrewBookingService {
         }
 
         if(CollectionUtils.isEmpty(ods)) {
-            return ResultMapVO.simpleErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
+            return ResultMapVO.simpleError(ERROR_CODE.SERVER_ERROR_OCCURRED);
         }
 
         List<FlightSegmentDetailsType> flightSegments = new ArrayList<>();
@@ -523,7 +521,7 @@ public class CrewBookingService {
             if(targetOD == null || targetTrip == null || targetSegment == null || targetSegmentAvailability == null) {
                 LoggerUtils.e(LOGGER, "targetSegmentAvailability is null, fareClass: {}", criteria.toString());
                 insertCrewPnrLog(criteria, "Availability: {no flight data}");
-                return ResultMapVO.simpleErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
+                return ResultMapVO.simpleError(ERROR_CODE.SERVER_ERROR_OCCURRED);
             }
 
             /** pricing */
@@ -545,7 +543,7 @@ public class CrewBookingService {
             }
             if(targetPricing == null) {
                 LoggerUtils.e(LOGGER, "targetPricing is null, tripIndex: {}, fareClass: {}", targetTrip.getTripIndex().longValue(), search.getFareClass());
-                return ResultMapVO.simpleErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
+                return ResultMapVO.simpleError(ERROR_CODE.SERVER_ERROR_OCCURRED);
             }
 
             /** 조회 시의 pax type이 모두 존재하는 지 확인 */
@@ -564,7 +562,7 @@ public class CrewBookingService {
             for(boolean hasPaxPricing: hasPaxPricings) {
                 if(!hasPaxPricing) {
                     LoggerUtils.e(LOGGER, "targetPaxPricing is null");
-                    return ResultMapVO.simpleErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
+                    return ResultMapVO.simpleError(ERROR_CODE.SERVER_ERROR_OCCURRED);
                 }
             }
 
@@ -581,7 +579,7 @@ public class CrewBookingService {
             }
             if(targetPricingComponent == null) {
                 LoggerUtils.e(LOGGER, "targetPricingComponent is null, fareLevel: {}", fareLevel);
-                return ResultMapVO.simpleErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
+                return ResultMapVO.simpleError(ERROR_CODE.SERVER_ERROR_OCCURRED);
             }
 
             int pricingUnitID = targetOD.getPricingUnitID();
@@ -606,7 +604,7 @@ public class CrewBookingService {
 
     public ResultMapVO cancelReservations(String pnrNumber) {
         if (StringUtils.isBlank(pnrNumber)) {
-            return ResultMapVO.simpleErrorCode("PNR null");
+            return ResultMapVO.simpleError("PNR null");
         }
 
         BookingChannelType channel = new BookingChannelType();
@@ -625,10 +623,8 @@ public class CrewBookingService {
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
         String errors = errors(retrieveBookingRS);
         if (StringUtils.isNotBlank(errors)) {
-            ResultMapVO result = new ResultMapVO();
             LoggerUtils.e(LOGGER, "CrewBookingAPI#rejectSchedule.request: errorCode={}", errors);
-            result.put("Error", errors);
-            return result;
+            return ResultMapVO.simpleError(errors);
         }
 
         //WK/SC, WL/SC
@@ -668,10 +664,8 @@ public class CrewBookingService {
 
             errors = errors(rejectScRS);
             if (StringUtils.isNotBlank(errors)) {
-                ResultMapVO result = new ResultMapVO();
                 LoggerUtils.e(LOGGER, "CrewBookingAPI#rejectSchedule.request: errorCode={}", errors);
-                result.put("Error", errors);
-                return result;
+                return ResultMapVO.simpleError(errors);
             }
         }
 
@@ -691,7 +685,7 @@ public class CrewBookingService {
         CancelBookingRS cancelBookingRS = cancelBooking.request(cancelBookingRQ, property);
         errors = errors(cancelBookingRS);
         if (StringUtils.isNotBlank(errors)) {
-            return ResultMapVO.simpleErrorCode(errors);
+            return ResultMapVO.simpleError(errors);
         }
 
         String agencyCode = cancelBookingRS.getAgencyCode();
@@ -708,18 +702,23 @@ public class CrewBookingService {
         SaveModifyBookingRS saveModifyBookingRS = saveModifyBooking.request(saveModifyBookingRQ, property);
         errors = errors(saveModifyBookingRS);
         if (StringUtils.isNotBlank(errors)) {
-            return ResultMapVO.simpleErrorCode(errors);
+            return ResultMapVO.simpleError(errors);
         }
 
-        return ResultMapVO.simpleResult("message", "SUCCESS");
+        return ResultMapVO.simpleResult("result", "SUCCESS");
     }
 
     public ResultMapVO cancelReservations(List<String> pnrNumbers) {
-        List<Object> results = new ArrayList<>();
+        int allCount = 0;
+        int successCount = 0;
         for(String pnrNumber: pnrNumbers) {
-            results.add(ResultMapVO.getResult(cancelReservations(pnrNumber)));
+            allCount++;
+            if(!ResultMapVO.hasErrors(cancelReservations(pnrNumber))) {
+                successCount++;
+            }
         }
-        return ResultMapVO.simpleResult("results", results);
+        String result = "총 %d건 중 %d건 성공, %d건 실패".formatted(allCount, successCount, (allCount - successCount));
+        return ResultMapVO.simpleResult("result", result);
     }
 
     public ResultMapVO retrieveBooking(String pnrNumber){
@@ -742,16 +741,16 @@ public class CrewBookingService {
 
         String errors = errors(retrieveBookingRS);
         if (StringUtils.isNotBlank(errors)) {
-            return ResultMapVO.simpleErrorCode(errors);
+            return ResultMapVO.simpleError(errors);
         }
 
         result.put("getGuestDetails", retrieveBookingRS.getGuestDetails());
 
-        return result;
+        return ResultMapVO.simpleResult("result", retrieveBookingRS.getGuestDetails());
     }
 
     public ResultMapVO splitPnr(RetrieveChangeGateVO retrieveChangeGateVO){
-        ResultMapVO result = new ResultMapVO();
+//        ResultMapVO result = new ResultMapVO();
         SplitPnrRQ splitPnrRQ = new SplitPnrRQ();
 
         IbsSoapProperty property = new IbsSoapProperty("TEST");
@@ -771,7 +770,7 @@ public class CrewBookingService {
         SplitPnrRS splitPnrRS = splitReservation.request(splitPnrRQ, property);
         String errors = errors(splitPnrRS);
         if (StringUtils.isNotBlank(errors)) {
-            return ResultMapVO.simpleErrorCode(errors);
+            return ResultMapVO.simpleError(errors);
         }
 //        result.put("parentPNR", splitPnrRS.getParentPNR());
 //        result.put("childPNR", splitPnrRS.getChildPNR());
@@ -784,7 +783,7 @@ public class CrewBookingService {
         CancelBookingRS cancelBookingRS = cancelBooking.request(cancelBookingRQ, property);
         errors = errors(cancelBookingRS);
         if (StringUtils.isNotBlank(errors)) {
-            return ResultMapVO.simpleErrorCode(errors);
+            return ResultMapVO.simpleError(errors);
         }
 
         // 탑승객 분리와 동시에 Child PNR 취소 - SaveModifyBooking
@@ -800,16 +799,15 @@ public class CrewBookingService {
         SaveModifyBookingRS saveModifyBookingRS = saveModifyBooking.request(saveModifyBookingRQ, property);
         errors = errors(saveModifyBookingRS);
         if (StringUtils.isNotBlank(errors)) {
-            return ResultMapVO.simpleErrorCode(errors);
+            return ResultMapVO.simpleError(errors);
         }
 
-        result.put("message", "SUCCESS");
-        return result;
+//        result.put("message", "SUCCESS");
+//        return result;
+        return ResultMapVO.simpleResult("result", "SUCCESS");
     }
 
     public ResultMapVO getReservationSummary(ReservationSummaryCriteriaVO criteriaVO) {
-        ResultMapVO resultMapVO = new ResultMapVO();
-
         //로그인 유저의 부서 코드로 agency Code 세팅
         String agencyCode = getAgencyCode();
 //        if(agencyCode == null){
@@ -821,12 +819,10 @@ public class CrewBookingService {
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
-
         BookingChannelKeyType bookingChannelKeyType = new BookingChannelKeyType();
         bookingChannelKeyType.setChannel(Constants.IBS_CHANNEL.CHANNEL);
         bookingChannelKeyType.setChannelType(Constants.IBS_CHANNEL.CHANNEL_TYPE);
         bookingChannelKeyType.setLocale(Constants.IBS_CHANNEL.LOCALE);
-
 
         RetrieveReservationSummaryRQ req = new RetrieveReservationSummaryRQ();
 
@@ -848,8 +844,7 @@ public class CrewBookingService {
         String errors = errors(retrieveReservationSummaryRS);
         if (StringUtils.isNotBlank(errors)) {
             LoggerUtils.e(LOGGER, "CrewBookingAPI#RetrieveReservationSummary.request: errorCode={}", errors);
-            resultMapVO.put("Error", errors);
-            return resultMapVO;
+            return ResultMapVO.simpleError(errors);
         }
 
         List<ReservationSummaryVO> reservationSummaryVOList = new ArrayList<>();
@@ -1061,137 +1056,8 @@ public class CrewBookingService {
         }
         reservationSummaryVOList.sort(Comparator.comparing(ReservationSummaryVO::getDepDate));
 
-        resultMapVO.put("summaryResult", reservationSummaryVOList);
-        return resultMapVO;
+        return ResultMapVO.simpleResult("result", reservationSummaryVOList);
     }
-
-//    public ResultMapVO getReservationSummary(ReservationSummaryCriteriaVO criteriaVO) {
-//        ResultMapVO resultMapVO = new ResultMapVO();
-//
-//        //로그인 유저의 부서 코드로 agency Code 세팅
-//        String agencyCode = getAgencyCode();
-////        if(agencyCode == null){
-////            resultMapVO.put("message", "Agency Code null");
-////            return resultMapVO;
-////        }
-//
-//        IbsSoapProperty property = new IbsSoapProperty("TEST");
-//        property.setUsername("jinair");
-//        property.setPassword("jinatiflyapi");
-//
-//
-//        BookingChannelKeyType bookingChannelKeyType = new BookingChannelKeyType();
-//        bookingChannelKeyType.setChannel(Constants.IBS_CHANNEL.CHANNEL);
-//        bookingChannelKeyType.setChannelType(Constants.IBS_CHANNEL.CHANNEL_TYPE);
-//        bookingChannelKeyType.setLocale(Constants.IBS_CHANNEL.LOCALE);
-//
-//
-//        RetrieveReservationSummaryRQ req = new RetrieveReservationSummaryRQ();
-//
-//        req.setFlightStartDate(DateUtils.xmlGregorianCalendar(criteriaVO.getDepStartDate(),"yyyy-MM-dd"));
-//        req.setFlightEndDate( DateUtils.xmlGregorianCalendar(criteriaVO.getDepEndDate(),"yyyy-MM-dd"));
-//        req.setAirlineCode(airlineCode);
-//        req.setBoardPoint(criteriaVO.getStnfrCode());
-//        req.setOffPoint(criteriaVO.getStntoCode());
-//        req.setAgencyCode(agencyCode);
-//
-//        req.setPnrType(PNRType.NORMAL);
-//        req.setBookingChannel(bookingChannelKeyType);
-//        req.setActivePnrNumber(100);
-//        req.setPastPnrNumber(100);
-//        req.setIsUnFlownPassengersOnly(false);
-//        req.setIsCancelledRequired(true);
-//
-//        RetrieveReservationSummaryRS retrieveReservationSummaryRS = retrieveReservationSummaryRequest.request(req, property);
-//        String errors = errors(retrieveReservationSummaryRS);
-//        if (StringUtils.isNotBlank(errors)) {
-//            LoggerUtils.e(LOGGER, "CrewBookingAPI#RetrieveReservationSummary.request: errorCode={}", errors);
-//            resultMapVO.put("Error", errors);
-//            return resultMapVO;
-//        }
-//
-//        String isFltData = null;
-//
-//        List<ReservationSummaryVO> reservationSummaryVOList = new ArrayList<>();
-//        List<PnrSummary> summaries = new ArrayList<>();
-//
-//        // 지난 예약 포함
-//        summaries.addAll(retrieveReservationSummaryRS.getPnrSummary());
-//        summaries.addAll(retrieveReservationSummaryRS.getPnrSummaryPast());
-//
-//        for (var pnrSummary : summaries) {
-//            ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
-//            int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
-//            String pnrStatus = pnrSummary.getPnrStatus();
-//
-//            //segmentStatus, fareClass, paxCount 조회 조건 필터링
-//            for (var fltSegment : pnrSummary.getFlightSegmentSummaryDetails()) {
-//                isFltData = "Y";
-//                String critSegStatus = criteriaVO.getSegmentStatus();
-//                String critFareClass = criteriaVO.getFareClass();
-//                String critPaxCnt = criteriaVO.getPaxCount();
-//
-//                String fltSegFareClass = null;
-//                String rsFareClass = fltSegment.getFareBasis();
-//                if(StringUtils.isNotBlank(rsFareClass)) {
-//                    boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
-//                    if (fromKorea)
-//                        fltSegFareClass = rsFareClass.substring(0, 2);
-//                    else
-//                        fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
-//
-//
-//                    if (null != critSegStatus && !critSegStatus.isEmpty()) {
-//                        if (!StringUtils.equals(fltSegment.getSegmentStatus(), critSegStatus)) {
-//                            isFltData = "N";
-//                            continue;
-//                        }
-//                    }
-//                    if (null != critFareClass && !critFareClass.isEmpty()) {
-//                        if (!StringUtils.equals(fltSegFareClass, critFareClass)) {
-//                            isFltData = "N";
-//                            continue;
-//                        }
-//                    }
-//                    if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
-//                        if (paxCnt != Integer.parseInt(critPaxCnt)) {
-//                            isFltData = "N";
-//                            continue;
-//                        }
-//                    }
-//                }
-//                reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
-//                reservationSummaryVO.setFltnum(fltSegment.getAirlineCode()+ fltSegment.getFlightNumber());
-//
-//                String depTime = DateUtils.string(fltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd(E)");
-//
-//                reservationSummaryVO.setDepDate(depTime);
-//                reservationSummaryVO.setStnfrCode(fltSegment.getBoardPoint());
-//                reservationSummaryVO.setStntoCode(fltSegment.getOffPoint());
-//
-//                XMLGregorianCalendar depDateUtc = fltSegment.getScheduledDepartureDateTime();
-//                XMLGregorianCalendar arrDateUtc = fltSegment.getScheduledArrivalDateTime();
-//
-//                String depDateTime = depDateUtc.getHour() + ":" + String.format("%02d", depDateUtc.getMinute());
-//                String arrDateTime = arrDateUtc.getHour() + ":" + String.format("%02d",arrDateUtc.getMinute());
-//
-//                reservationSummaryVO.setDepartureDateTime(depDateTime);
-//
-//                reservationSummaryVO.setArrivalDateTime(arrDateTime);
-//                reservationSummaryVO.setFareClass(fltSegFareClass);
-//                reservationSummaryVO.setSegmentStatus(fltSegment.getSegmentStatus());
-//                reservationSummaryVO.setPnrStatus(pnrStatus);
-//            }
-//            if ("Y".equals(isFltData)) {
-//                reservationSummaryVO.setPaxCount(paxCnt);
-//                reservationSummaryVOList.add(reservationSummaryVO);
-//            }
-//        }
-//        reservationSummaryVOList.sort(Comparator.comparing(ReservationSummaryVO::getDepDate));
-//
-//        resultMapVO.put("summaryResult", reservationSummaryVOList);
-//        return resultMapVO;
-//    }
 
     public int insertCrewPnrLog(AvailabilityCriteriaVO criteria, String errorValue) {
         CrewPnrLogVO crewPnrLogVO = new CrewPnrLogVO();
@@ -1212,6 +1078,9 @@ public class CrewBookingService {
         }
 
         String errorCode = IBSDomainUtils.errorCode(object);
+        if(StringUtils.equals(errorCode, "WS_1007")) {
+            return "조회된 예약 내역이 없습니다.";
+        }
 //        if(StringUtils.equals(errorCode, "BKG_RETRIEVE_01")) {
 //            return "agt.req.msg.no.reservation";
 //        } else if(StringUtils.equals(errorCode, "INVENTORY_1020")) {
@@ -1282,7 +1151,8 @@ public class CrewBookingService {
                 .findFirst()
                 .orElse(null);
         if(flightSegment == null) {
-            throw new RuntimeException("There's no segment to accept");
+            LoggerUtils.e(LOGGER, "CrewBookingAPI#acceptSchedule.request: errorCode={}", "There's no segment to accept");
+            return ResultMapVO.simpleError("There's no segment to accept");
         }
 
         PnrActionType action = null;
@@ -1305,7 +1175,8 @@ public class CrewBookingService {
                 .orElse(new FlightSegmentDetailsType())
                 .getSegmentId();
         if(StringUtils.isBlank(oldSegmentId)) {
-            throw new RuntimeException("There's no segment to be replaced");
+            LoggerUtils.e(LOGGER, "CrewBookingAPI#acceptSchedule.request: errorCode={}", "There's no segment to be replaced");
+            return ResultMapVO.simpleError("There's no segment to be replaced");
         }
 
         ItineraryChangeType itineraryChange = new ItineraryChangeType();
@@ -1325,7 +1196,6 @@ public class CrewBookingService {
             acceptScRQ.setIPAddress("127.0.0.1");
             acceptScRQ.getItineraryChangeType().add(itineraryChange);
             AcceptScRS acceptScRS = acceptSc.request(acceptScRQ, property);
-
             errors = errors(acceptScRS);
         } else {
             AcceptWlRQ acceptWlRQ = new AcceptWlRQ();
@@ -1337,17 +1207,14 @@ public class CrewBookingService {
             acceptWlRQ.setIPAddress("127.0.0.1");
             acceptWlRQ.getItineraryChangeType().add(itineraryChange);
             AcceptWlRS acceptWlRS = acceptWl.request(acceptWlRQ, property);
-
             errors = errors(acceptWlRS);
         }
         if(StringUtils.isNotBlank(errors)) {
-            ResultMapVO result = new ResultMapVO();
             LoggerUtils.e(LOGGER, "CrewBookingAPI#acceptSchedule.request: errorCode={}", errors);
-            result.put("Error", errors);
-            return result;
+            return ResultMapVO.simpleError(errors);
         }
 
-        return ResultMapVO.simpleResult("message", "SUCCESS");
+        return ResultMapVO.simpleResult("result", "SUCCESS");
     }
 
     public ResultMapVO rejectSchedule(String pnrNumber) {
@@ -1421,13 +1288,11 @@ public class CrewBookingService {
 
         String errors = errors(rejectScRS);
         if(StringUtils.isNotBlank(errors)) {
-            ResultMapVO result = new ResultMapVO();
             LoggerUtils.e(LOGGER, "CrewBookingAPI#rejectSchedule.request: errorCode={}", errors);
-            result.put("Error", errors);
-            return result;
+            return ResultMapVO.simpleError(errors);
         }
 
-        return ResultMapVO.simpleResult("message", "SUCCESS");
+        return ResultMapVO.simpleResult("result", "SUCCESS");
     }
 
     public ResultMapVO acceptWaitlisted(String pnrNumber) {
@@ -1467,13 +1332,11 @@ public class CrewBookingService {
 
         String errors = errors(acceptWlRS);
         if(StringUtils.isNotBlank(errors)) {
-            ResultMapVO result = new ResultMapVO();
             LoggerUtils.e(LOGGER, "CrewBookingAPI#acceptSchedule.request: errorCode={}", errors);
-            result.put("Error", errors);
-            return result;
+            return ResultMapVO.simpleError(errors);
         }
 
-        return ResultMapVO.simpleResult("message", "SUCCESS");
+        return ResultMapVO.simpleResult("result", "SUCCESS");
     }
 
     public String getAgencyCode(){

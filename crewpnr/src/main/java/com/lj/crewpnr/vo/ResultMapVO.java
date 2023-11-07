@@ -1,5 +1,6 @@
 package com.lj.crewpnr.vo;
 
+import com.google.gson.Gson;
 import com.lj.crewpnr.common.Constants.ERROR_CODE;
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,18 +9,18 @@ import java.util.Map;
 
 public class ResultMapVO {
 
-	private String errorCode;
+	private String error;
 
 	private Object[] errorArguments;
 
 	private Map<String, Object> resultMap = new HashMap<>();
 
-	public String getErrorCode() {
-		return errorCode;
+	public String getError() {
+		return error;
 	}
 
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
+	public void setError(String error) {
+		this.error = error;
 	}
 
 	public Object[] getErrorArguments() {
@@ -64,7 +65,7 @@ public class ResultMapVO {
 		}
 
 		if(ResultMapVO.hasErrors(other)) {
-			this.setErrorCode(other.getErrorCode());
+			this.setError(other.getError());
 			this.setErrorArguments(other.getErrorArguments());
 		}
 
@@ -75,19 +76,19 @@ public class ResultMapVO {
 		resultMap.remove(key);
 	}
 
-	public static ResultMapVO simpleErrorCode(ResultMapVO result) {
+	public static ResultMapVO simpleError(ResultMapVO result) {
 		if(result == null) {
 			ResultMapVO newResult = new ResultMapVO();
-			newResult.setErrorCode(ERROR_CODE.SERVER_ERROR_OCCURRED);
+			newResult.setError(ERROR_CODE.SERVER_ERROR_OCCURRED);
 			return newResult;
 		}
 
-		return simpleErrorCode(result.getErrorCode(), result.getErrorArguments());
+		return simpleError(result.getError(), result.getErrorArguments());
 	}
 
-	public static ResultMapVO simpleErrorCode(String errorCode, Object... errorArguments) {
+	public static ResultMapVO simpleError(String error, Object... errorArguments) {
 		ResultMapVO resultMap = new ResultMapVO();
-		resultMap.setErrorCode(errorCode);
+		resultMap.setError(error);
 		resultMap.setErrorArguments(errorArguments);
 		return resultMap;
 	}
@@ -99,18 +100,29 @@ public class ResultMapVO {
 	}
 
 	public static boolean hasErrors(ResultMapVO result) {
-		return result == null || StringUtils.isNotBlank(result.getErrorCode());
+		return result == null || StringUtils.isNotBlank(result.getError());
 	}
 
 	public static Map<String, Object> getResult(ResultMapVO result) {
 		if(hasErrors(result)) {
-			ResultMapVO newResult = simpleErrorCode(result);
+			ResultMapVO newResult = simpleError(result);
 			Map<String, Object> newMap = new HashMap<>();
-			newMap.put("errorCode", newResult.getErrorCode());
+			newMap.put("errorCode", newResult.getError());
 			newMap.put("errorArguments", newResult.getErrorArguments());
 			return newMap;
 		}
 
 		return result.getAll();
+	}
+
+	public static String toJson(ResultMapVO result) {
+		if(StringUtils.isNotBlank(result.getError())) {
+			Map<String, Object> obj = new HashMap<>();
+			obj.put("error", result.getError());
+			return new Gson().toJson(obj);
+		}
+
+//		return WebUtils.toJson(result.getAll());
+		return new Gson().toJson(result.getAll());
 	}
 }
