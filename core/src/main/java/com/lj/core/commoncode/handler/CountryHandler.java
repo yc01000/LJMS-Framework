@@ -1,8 +1,8 @@
 package com.lj.core.commoncode.handler;
 
-import com.lj.core.util.CodeConstants;
-import com.lj.core.util.CodeConstants.CountryOption;
-import com.lj.core.util.CodeConstants.YNCode;
+import com.lj.core.common.util.CodeConstants;
+import com.lj.core.common.util.CodeConstants.CountryOption;
+import com.lj.core.common.util.CodeConstants.YNCode;
 import com.lj.core.commoncode.service.CmmCodeService;
 import com.lj.core.commoncode.vo.CodeInfoVO;
 import com.lj.core.commoncode.vo.CountryInfoVO;
@@ -13,15 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <pre>

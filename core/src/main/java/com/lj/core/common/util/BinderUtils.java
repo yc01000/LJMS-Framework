@@ -1,13 +1,13 @@
-package com.lj.core.util;
+package com.lj.core.common.util;
 
 import com.lj.core.common.util.CodeConstants.BrowserType;
 import com.lj.core.common.util.CodeConstants.OSType;
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -29,6 +29,7 @@ import java.util.Map;
  *  @version : 1.0
  *  @desc    : WebData Binding 처리용 Util 클래스
  */
+@Deprecated
 public class BinderUtils {
 	private static final Logger	LOGGER	= LoggerFactory.getLogger(BinderUtils.class);
 

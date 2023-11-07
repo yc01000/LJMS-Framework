@@ -1,6 +1,6 @@
 package com.lj.core.integration.soap.interceptor;
 
-import com.lj.core.util.BinderUtils;
+import com.lj.core.common.util.BinderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.WebServiceClientException;
