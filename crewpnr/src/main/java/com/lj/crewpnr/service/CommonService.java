@@ -277,12 +277,15 @@ public class CommonService {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("IOException", e);
             }
-        } finally {
+        } catch (Exception e) {
+            crewPNRExcelVO.setResult("N");
+            crewPNRExcelVO.setResultMsg("잘못된 형식의 파일입니다. 파일을 다시 확인해 주세요.");
+            dataList.add(crewPNRExcelVO);
+        }
+        finally {
             try {
                 if (workbook != null) workbook.close();
-            } catch (Exception e) {
-                crewPNRExcelVO.setResult("N");
-                crewPNRExcelVO.setResultMsg("잘못된 형식의 파일입니다. 파일을 다시 확인해 주세요.");
+            } catch (IOException e) {
             }
         }
         return dataList;
@@ -455,12 +458,14 @@ public class CommonService {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("IOException", e);
             }
+        } catch (Exception e) {
+            crewPNRExcelGUMVO.setResult("N");
+            crewPNRExcelGUMVO.setResultMsg("잘못된 형식의 파일입니다. 파일을 다시 확인해 주세요.");
+            dataList.add(crewPNRExcelGUMVO);
         } finally {
             try {
                 if (workbook != null) workbook.close();
-            } catch (Exception e) {
-                crewPNRExcelGUMVO.setResult("N");
-                crewPNRExcelGUMVO.setResultMsg("잘못된 형식의 파일입니다. 파일을 다시 확인해 주세요.");
+            } catch (IOException e) {
             }
         }
         return dataList;
