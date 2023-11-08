@@ -86,8 +86,9 @@ public class CrewBookingService {
             final List<CrewPNRExcelVO> fileFinalized = crewPNRExcelList;
             new Thread(() -> createBookings(fileFinalized)).start();
 
-            result.put("service", service);
-            result.put("key", key);
+//            result.put("service", service);
+//            result.put("key", key);
+            result.put("result", "SUCCESS");
         }
         catch(Exception ex){
             result = new ResultMapVO();
