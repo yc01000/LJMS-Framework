@@ -1,6 +1,7 @@
 package com.lj.crewpnr.controller;
 
 import com.lj.core.util.WebUtils;
+import com.lj.sso.ssocore.util.PrincipalUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -18,8 +19,8 @@ public class UserController {
     @RequestMapping("/user/userinfo")
     @ResponseBody
     public String userinfo() {
-        return "{\"userName\": \"No SSO Mode\"}";
-//        return WebUtils.toJson(PrincipalUtils.user());
+//        return "{\"userName\": \"No SSO Mode\"}";
+        return WebUtils.toJson(PrincipalUtils.user());
     }
 
     @RequestMapping("/user/signout")

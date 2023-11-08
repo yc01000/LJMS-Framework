@@ -1,4 +1,4 @@
-package com.lj.sso.ssocore.common.util;
+package com.lj.sso.ssocore.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

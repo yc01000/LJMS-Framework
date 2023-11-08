@@ -1,7 +1,7 @@
 package com.lj.crewpnr.service;
 
 import com.google.gson.Gson;
-import com.lj.core.common.util.RandomUtils;
+import com.lj.core.util.RandomUtils;
 import com.lj.core.commoncode.handler.CodeHandler;
 import com.lj.core.integration.soap.ibs.IbsSoapProperty;
 import com.lj.core.integration.soap.ibs.api.booking.*;

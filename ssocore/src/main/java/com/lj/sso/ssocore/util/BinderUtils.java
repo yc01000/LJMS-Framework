@@ -1,21 +1,15 @@
-package com.lj.core.common.util;
+package com.lj.sso.ssocore.util;
 
-import com.lj.core.common.util.CodeConstants.BrowserType;
-import com.lj.core.common.util.CodeConstants.OSType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -29,7 +23,6 @@ import java.util.Map;
  *  @version : 1.0
  *  @desc    : WebData Binding 처리용 Util 클래스
  */
-@Deprecated
 public class BinderUtils {
 	private static final Logger	LOGGER	= LoggerFactory.getLogger(BinderUtils.class);
 
@@ -101,9 +94,9 @@ public class BinderUtils {
 			}
 		}
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("[Field List = {}]", names);
-		}
+//		if (LOGGER.isDebugEnabled()) {
+//			LOGGER.debug("[Field List = {}]", names);
+//		}
 
 		if (CollectionUtils.isEmpty(names)) {
 			return null;
@@ -176,109 +169,6 @@ public class BinderUtils {
 		fileName	= fileName.replaceAll("&", "");
 
 		return fileName;
-	}
-
-	/**
-	 * jhbang (2018. 1. 10. 오전 9:41:49)<br/>
-	 * desc   :  브라우저별 파일 다운로드명 인코딩
-	 * 
-	 * @param fileName
-	 * @param browser
-	 * @return
-	 * @throws UnsupportedEncodingException 
-	 */
-	public static String getEncodedFilename(String fileName, String browser) throws UnsupportedEncodingException {
-		String	encFileName	= "";
-
-		if (StringUtils.isEmpty(fileName)) {
-			return encFileName;
-		}
-
-		if (BrowserType.MSIE.equals(browser)) {
-			encFileName	= URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
-		} else if (BrowserType.CHROME.equals(browser)) {
-			StringBuffer	sb	= new StringBuffer(1024);
-
-			for (int i = 0; i < fileName.length(); i++) {
-				char	c	= fileName.charAt(i);
-
-				if ('~' < c) {
-					sb.append(URLEncoder.encode("" + c, "UTF-8"));
-				} else {
-					sb.append(c);
-				}
-			}
-
-			encFileName	= sb.toString();
-		} else if (BrowserType.FIREFOX.equals(browser)) {
-			encFileName	= new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
-
-			if (!OSType.WINDOWS.equals(getOSType())) {
-				encFileName	= new String(fileName.getBytes(), "ISO-8859-1");
-			}
-		} else if (BrowserType.SAFARI.equals(browser)) {
-			encFileName	= new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
-		} else {
-			encFileName	= new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
-		}
-
-		return encFileName;
-	}
-
-	/**
-	 * jhbang (2018. 1. 10. 오전 10:16:01)<br/>
-	 * desc   :  브라우저 유형 조회
-	 * 
-	 * @param request
-	 * @return
-	 */
-	public static String getBrowserType(HttpServletRequest request) {
-		String	browserType	= "";
-
-		if (null == request) {
-			return browserType;
-		}
-
-		String	userAgent	= StringUtils.defaultIfEmpty(request.getHeader("User-Agent"), "");
-
-		if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
-			browserType	= BrowserType.MSIE;
-		} else if (userAgent.contains("Chrome")) {
-			browserType	= BrowserType.CHROME;
-		} else if (userAgent.contains("Firefox")) {
-			browserType	= BrowserType.FIREFOX;
-		} else if (userAgent.contains("Opera")) {
-			browserType	= BrowserType.OPERA;
-		} else {
-			browserType	= BrowserType.SAFARI;
-		}
-
-		return browserType;
-	}
-
-	/**
-	 * jhbang (2018. 2. 5. 오후 7:22:17)<br/>
-	 * desc   :  OS 유형 조회
-	 * 
-	 * @return
-	 */
-	public static String getOSType() {
-		String	osType	= "";
-		String	os		= StringUtils.defaultIfEmpty(System.getProperty("os.name"), "").toLowerCase(Locale.ENGLISH);
-
-		if (-1 < os.indexOf("win")) {
-			osType	= OSType.WINDOWS;
-		} else if (-1 < os.indexOf("mac")) {
-			osType	= OSType.MAC;
-		} else if ((-1 < os.indexOf("nix")) || (-1 < os.indexOf("nux")) || (-1 < os.indexOf("aix"))) {
-			osType	= OSType.UNIX;
-		} else if (-1 < os.indexOf("sunos")) {
-			osType	= OSType.SOLARIS;
-		} else {
-			osType	= OSType.UNKNOWN;
-		}
-
-		return osType;
 	}
 
 	/**

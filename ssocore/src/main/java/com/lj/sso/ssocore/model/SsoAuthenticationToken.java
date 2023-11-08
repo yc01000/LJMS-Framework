@@ -1,10 +1,7 @@
-package com.lj.sso.ssocore.security;
+package com.lj.sso.ssocore.model;
 
 import java.util.Collection;
 
-import jakarta.annotation.Resource;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

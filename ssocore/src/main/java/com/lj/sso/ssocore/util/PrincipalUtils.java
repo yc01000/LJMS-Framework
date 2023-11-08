@@ -1,6 +1,6 @@
 package com.lj.sso.ssocore.util;
 
-import com.lj.sso.ssocore.security.SsoAuthenticationToken;
+import com.lj.sso.ssocore.model.SsoAuthenticationToken;
 import com.lj.sso.ssocore.security.vo.UserInfoVO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;

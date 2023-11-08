@@ -1,8 +1,9 @@
 package com.lj.sso.ssocore.security;
 
 import com.google.gson.Gson;
-import com.lj.sso.ssocore.common.util.BinderUtils;
-import com.lj.sso.ssocore.common.util.SsoConstants;
+import com.lj.sso.ssocore.model.SsoAuthenticationToken;
+import com.lj.sso.ssocore.util.BinderUtils;
+import com.lj.sso.ssocore.util.SsoConstants;
 import com.lj.sso.ssocore.security.vo.UserInfoVO;
 import com.lj.sso.ssocore.security.vo.UserTokenVO;
 import com.lj.sso.ssocore.service.SsoOAuthService;

@@ -8,7 +8,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.lj.sso.ssocore.common.util.SsoConstants.YNCode;
+import com.lj.sso.ssocore.util.SsoConstants.YNCode;
 
 /**
  * 

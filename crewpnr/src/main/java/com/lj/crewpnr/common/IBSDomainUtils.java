@@ -1,6 +1,6 @@
 package com.lj.crewpnr.common;
 
-import com.lj.core.common.util.CodeConstants.AccessChannelCode;
+import com.lj.core.util.CodeConstants.AccessChannelCode;
 import com.lj.core.commoncode.handler.CityAirportHandler;
 import com.lj.core.commoncode.handler.CountryHandler;
 import com.lj.core.commoncode.vo.CityAirportInfoVO;

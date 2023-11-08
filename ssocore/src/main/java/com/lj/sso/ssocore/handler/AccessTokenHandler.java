@@ -1,4 +1,4 @@
-package com.lj.sso.ssocore.security;
+package com.lj.sso.ssocore.handler;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lj.sso.ssocore.service.SSOKmsMasterKeyService;
-import com.lj.sso.ssocore.common.util.BinderUtils;
+import com.lj.sso.ssocore.util.BinderUtils;
 import com.lj.sso.ssocore.security.vo.UserTokenVO;
 
 /**

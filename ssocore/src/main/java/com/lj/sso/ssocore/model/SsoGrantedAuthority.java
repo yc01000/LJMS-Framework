@@ -1,4 +1,4 @@
-package com.lj.sso.ssocore.security;
+package com.lj.sso.ssocore.model;
 
 import org.springframework.security.core.GrantedAuthority;
 
