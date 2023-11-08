@@ -19,7 +19,6 @@ public class UserController {
     @RequestMapping("/user/userinfo")
     @ResponseBody
     public String userinfo() {
-//        return "{\"userName\": \"No SSO Mode\"}";
         return WebUtils.toJson(PrincipalUtils.user());
     }
 

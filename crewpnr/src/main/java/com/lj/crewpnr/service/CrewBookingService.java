@@ -1,6 +1,7 @@
 package com.lj.crewpnr.service;
 
 import com.google.gson.Gson;
+import com.lj.core.commoncode.vo.CodeInfoVO;
 import com.lj.core.util.RandomUtils;
 import com.lj.core.commoncode.handler.CodeHandler;
 import com.lj.core.integration.soap.ibs.IbsSoapProperty;
@@ -22,6 +23,8 @@ import com.lj.crewpnr.vo.booking.ReservationSummaryCriteriaVO;
 import com.lj.crewpnr.vo.booking.ReservationSummaryVO;
 import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
+import com.lj.sso.ssocore.security.vo.UserInfoVO;
+import com.lj.sso.ssocore.util.PrincipalUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -1341,15 +1344,15 @@ public class CrewBookingService {
     }
 
     public String getAgencyCode(){
-//        UserInfoVO loginUser = PrincipalUtils.user();
-//        CodeInfoVO codeInfoVO = null;
-//        String agencyCode = null;
-//
-//        codeInfoVO = codeHandler.getCodeInfo("CMM209", loginUser.getDepartment());
-//
-//        if(codeInfoVO != null){
-//            agencyCode = codeInfoVO.getAddInfo1();
-//        }
-        return "20024620";
+        UserInfoVO loginUser = PrincipalUtils.user();
+        CodeInfoVO codeInfoVO = null;
+        String agencyCode = null;
+
+        codeInfoVO = codeHandler.getCodeInfo("CMM209", loginUser.getDepartment());
+
+        if(codeInfoVO != null){
+            agencyCode = codeInfoVO.getAddInfo1();
+        }
+        return agencyCode;
     }
 }
