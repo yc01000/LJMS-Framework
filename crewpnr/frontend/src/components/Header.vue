@@ -32,7 +32,16 @@ export default {
       fetch('https://stg-crewpnr.jinair.com/user/userinfo')
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
+          if(!!data.error) {
+            if(!!data.redirect_uri) {
+              location.href = data.redirect_uri;
+            }
+
+            alert(data.error);
+            return;
+          }
+
+          console.log(this.userinfo);
           this.userinfo = data;
         })
         .catch(() => {
