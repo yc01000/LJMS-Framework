@@ -4,54 +4,82 @@ import { RouterLink } from 'vue-router'
 
 <template>
   <!--왼쪽 고정메뉴 펼침-->
-  <div class="gnb_area" style="left: -240px;">
+  <div class="gnb_area" :style="{ left: gnbLeft + 'px' }">
     <div class="gnb_inner">
-      <div class="nav_header"> <a href="#" class="pin"></a> <i></i> <a href="#" class="close_nav"></a></div>
+      <div class="nav_header">
+        <a href="#" class="pin"></a>
+        <i></i>
+        <a href="javascript://" class="close_nav" @click="closeNav"></a>
+      </div>
       <div class="menu">
         <ul>
-          <li class="m"><a href="/MVT/MvtSkd" class="sub" title="MVT관리 (KE BASE)"> <i class="fa fa-road"></i>
-              <p>MVT관리 (KE BASE11111111111111111111111111111111111111111111)</p>
-            </a></li>
-          <li class="m" id="menu_1"><a href="javascript:showSubMenu('menu_1')" class="sub" title="FLT PLAN DATA"> <i
-                class="fa fa-plane"></i>
-              <p>FLT PLAN DATA</p>
-            </a><a href="javascript://" class="arrow">arrow</a>
-            <ul class="mList">
-              <li class="mn"><a href="/CSV/CsvSkd"> CSV 관리</a></li>
-            </ul>
+          <li class="m">
+            <RouterLink to="/index.html" class="sub" title="예약 생성"><i class="fa fa-road"></i> <p>예약 생성</p></RouterLink>
           </li>
-          <li class="m" id="menu_2"><a href="javascript:showSubMenu('menu_2')" class="sub" title="PLAN DATA 관리"> <i
-                class="fa fa-calendar"></i>
-              <p>PLAN DATA 관리</p>
-            </a><a href="javascript://" class="arrow">arrow</a>
-            <ul class="mList">
-              <li class="mn"><a href="/Plan/MultiMtow"> Multi–MTOW</a></li>
-              <li class="mn"><a href="/Plan/SOW"> SOW</a></li>
-              <li class="mn"><a href="/Plan/Suffix"> Suffix</a></li>
-              <li class="mn"><a href="/Plan/CityPair"> City Pair</a></li>
-              <li class="mn"><a href="/Plan/Desk"> Desk 관리</a></li>
-              <li class="mn"><a href="/Plan/Payload"> Payload</a></li>
-              <li class="mn"><a href="/Plan/RegSow"> 기번별 SOW</a></li>
-            </ul>
+          <li class="m" id="menu_1">
+            <RouterLink to="/reservations" class="sub" title="예약 조회"><i class="fa fa-road"></i> <p>예약 조회</p></RouterLink>
           </li>
-          <li class="m"><a href="/Plan/Test" class="sub" title="CARI OUT UPLOAD"> <i class="fa fa-road"></i>
-              <p>CARI OUT UPLOAD</p>
-            </a></li>
+          <li class="m" id="menu_2">
+            <RouterLink to="/failhistories" class="sub" title="예약 생성 실패 이력 조회"><i class="fa fa-road"></i> <p>예약 생성 실패 이력 조회</p></RouterLink>
+          </li>
         </ul>
       </div>
     </div>
   </div>
   <!--//왼쪽 고정메뉴 펼침-->
 
-  <div class="gnb_area_close" style="left: 0px;">
-      <div class="nav_header"><a href="#" class="open_nav"></a></div>
+  <div class="gnb_area_close" :style="{ left: gnbCloseLeft + 'px' }">
+      <div class="nav_header"><a href="javascript://" class="open_nav" @click="openNav"></a></div>
       <div class="menu">
         <ul id="closeMenu">
-          <li class="m"><RouterLink to="/index.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
-          <li class="m"><RouterLink to="/reservations.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
-          <li class="m"><RouterLink to="/failhistories.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li>
-          <!-- <li class="m"><RouterLink to="/test.html" class="sub" title="PLAN DATA 관리"><i class="fa fa-road"></i></RouterLink></li> -->
+          <li class="m"><RouterLink to="/index.html" class="sub" title="예약 생성"><i class="fa fa-road"></i></RouterLink></li>
+          <li class="m"><RouterLink to="/reservations" class="sub" title="예약 조회"><i class="fa fa-road"></i></RouterLink></li>
+          <li class="m"><RouterLink to="/failhistories" class="sub" title="예약 생성 실패 이력 조회"><i class="fa fa-road"></i></RouterLink></li>
         </ul>
       </div>
     </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      gnbLeft: -240,
+      gnbCloseLeft: 0,
+      scrHWidth: 'auto',
+      isFixed: false,
+      tableColumns: ['Column 1', 'Column 2', 'Column 3'], // Define your table columns
+    };
+  },
+  methods: {
+    openNav() {
+      this.gnbCloseLeft = -40;
+      this.gnbLeft = 0;
+    },
+    closeNav() {
+      this.gnbCloseLeft = 0;
+      this.gnbLeft = -240;
+      this.isFixed = false;
+      this.scrHWidth = 'auto';
+    },
+    toggleFixed() {
+      this.isFixed = !this.isFixed;
+      this.scrHWidth = this.isFixed ? `${window.innerWidth - 310}px` : 'auto';
+      this.tbWidthChk();
+    },
+    tbWidthChk() {
+      // Function to update table column widths
+      const thElements = document.querySelectorAll('.sc_table_wrap th');
+      thElements.forEach((th) => {
+        th.style.width = getComputedStyle(th).width;
+      });
+    },
+  },
+  mounted() {
+    window.addEventListener('resize', this.tbWidthChk);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.tbWidthChk);
+  },
+};
+</script>
