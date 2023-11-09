@@ -109,7 +109,7 @@ public class CrewBookingService {
         //로그인 유저의 부서 코드로 agency Code 세팅
         String agencyCode = null;
         try {
-            codeHandler.getCodeInfo("CMM209", form.getLoginUser().getDepartment()).getAddInfo1();
+            agencyCode = codeHandler.getCodeInfo("CMM209", form.getLoginUser().getDepartment()).getAddInfo1();
         } catch (Exception e) {
             return ResultMapVO.simpleError("there is no agency code. please check the common code CMM209");
         }
