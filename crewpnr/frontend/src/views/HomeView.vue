@@ -129,13 +129,15 @@ export default {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-
-                if (response.status === 200) {
-                    this.GenUploadFile = this.GumUploadFile = null;
+                console.log('response:', response);
+                this.GenUploadFile = this.GumUploadFile = null;
+                if (response.data.result == 'SUCCESS'){
                     this.showMessage('Uploaded', '업로드 완료되었습니다.<br>PNR 생성 완료 후 EMAIL로 안내 됩니다.');
-                } else {
-                    this.showMessage('Error', '전송이 실패하였습니다.');
                 }
+                else{
+                    this.showMessage('Error', response.data.error);
+                }
+
             } catch (error) {
                 console.error(error);
                 this.showMessage('Error', error);

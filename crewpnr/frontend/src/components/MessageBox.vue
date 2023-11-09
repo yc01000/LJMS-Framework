@@ -51,7 +51,7 @@ export default {
     },
     cancelClosePopup() {
       // 취소
-      this.$emit('postAction', '');
+      //this.$emit('postAction', '');
       this.isVisible = false;
     },
   },
