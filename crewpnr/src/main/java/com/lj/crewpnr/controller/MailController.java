@@ -18,7 +18,7 @@ public class MailController {
 
     @RequestMapping(value="/mail/createBookingsResult", produces="text/html;charset=utf-8")
     @ResponseBody
-    public String createBookingsResults(String q) {
+    public String createBookingsResult(String q) {
         String contents = "";
         try {
             CreateBookingsResultVO result = new Gson().fromJson(new String(Base64.decodeBase64(q.getBytes(StandardCharsets.UTF_8))), CreateBookingsResultVO.class);
@@ -31,7 +31,7 @@ public class MailController {
                     <br>- 성공: %d건
                     <br>- 실패: %d건
                 </li>
-                <li>결과 확인: %s/reservations</li>
+                <li>결과 확인: %s</li>
             </ol>
             """.formatted(
                     result.getDateStart(),
@@ -39,7 +39,7 @@ public class MailController {
                     result.getAllCount(),
                     result.getSuccessCount(),
                     result.getFailureCount(),
-                    serverEndpoint);
+                    serverEndpoint + "/reservations");
         } catch(Exception e) {
             contents = "Server error occured.";
         }

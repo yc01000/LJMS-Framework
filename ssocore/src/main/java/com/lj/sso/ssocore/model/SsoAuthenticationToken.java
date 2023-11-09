@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.lj.sso.ssocore.security.vo.UserInfoVO;
+import com.lj.sso.ssocore.model.UserInfoVO;
 
 /**
  * <pre>

@@ -1,4 +1,4 @@
-package com.lj.sso.ssocore.security.vo;
+package com.lj.sso.ssocore.model;
 
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ import java.io.Serializable;
  *  @version : 1.0
  *  @desc    :
  */
-public class UserTokenVO implements Serializable{
+public class UserToken implements Serializable {
 
 	/**
 	 * serialVersionUID

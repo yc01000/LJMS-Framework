@@ -1,7 +1,7 @@
 package com.lj.core.util;
 
-import com.lj.core.common.util.CodeConstants.BrowserType;
-import com.lj.core.common.util.CodeConstants.OSType;
+import com.lj.core.util.CodeConstants.BrowserType;
+import com.lj.core.util.CodeConstants.OSType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

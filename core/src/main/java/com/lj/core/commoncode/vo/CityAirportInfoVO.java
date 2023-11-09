@@ -1,6 +1,6 @@
 package com.lj.core.commoncode.vo;
 
-import com.lj.core.common.util.CodeConstants.YNCode;
+import com.lj.core.util.CodeConstants.YNCode;
 
 import java.io.Serializable;
 import java.util.Map;

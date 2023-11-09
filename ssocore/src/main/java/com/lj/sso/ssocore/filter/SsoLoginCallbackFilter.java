@@ -1,12 +1,12 @@
-package com.lj.sso.ssocore.security;
+package com.lj.sso.ssocore.filter;
 
 import com.google.gson.Gson;
 import com.lj.sso.ssocore.model.SsoAuthenticationToken;
 import com.lj.sso.ssocore.util.BinderUtils;
 import com.lj.sso.ssocore.util.SsoConstants;
-import com.lj.sso.ssocore.security.vo.UserInfoVO;
-import com.lj.sso.ssocore.security.vo.UserTokenVO;
-import com.lj.sso.ssocore.service.SsoOAuthService;
+import com.lj.sso.ssocore.model.UserInfoVO;
+import com.lj.sso.ssocore.model.UserToken;
+import com.lj.sso.ssocore.service.OAuthClientService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,7 +47,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 	private final static Logger LOGGER = LoggerFactory.getLogger(SsoLoginCallbackFilter.class);
 
 	@Autowired
-	private SsoOAuthService ssoOAuthService;
+	private OAuthClientService oauthClientService;
 
 	@Value("${sso.default-return-uri}")
 	private String defaultReturnUri;
@@ -95,7 +95,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		String tokenResponse = ssoOAuthService.requestAccessToken(code);
+		String tokenResponse = oauthClientService.requestAccessToken(code);
 		LOGGER.info("{}|token: {}", uuid, tokenResponse);
 		if(StringUtils.isBlank(tokenResponse)) {
 			LOGGER.error("-|{}|empty access token", uuid);
@@ -103,7 +103,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		UserTokenVO token = new Gson().fromJson(tokenResponse, UserTokenVO.class);
+		UserToken token = new Gson().fromJson(tokenResponse, UserToken.class);
 		if(token == null) {
 			LOGGER.error("-|{}|액세스 토큰 없음으로 인한 실패", uuid);
 			filterChain.doFilter(request, response);
@@ -111,7 +111,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 		}
 
 		// access token이 있는 경우 사용자 정보 확인
-		String userinfoResponse = ssoOAuthService.requestUserInfo(token);
+		String userinfoResponse = oauthClientService.requestUserInfo(token);
 		LOGGER.info("{}|userinfo: {}", uuid, userinfoResponse);
 		if(StringUtils.isBlank(userinfoResponse)) {
 			LOGGER.error("-|{}|empty userinfo", uuid);
@@ -123,7 +123,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 			String errorDescription = errorResponse.get("error_description");
 			if(StringUtils.equalsIgnoreCase(error, "invalid_token")) {
 				if(StringUtils.equalsIgnoreCase(errorDescription, "Access token expired")) {
-					token = ssoOAuthService.requestRefreshToken(token);
+					token = oauthClientService.requestRefreshToken(token);
 					if(token == null) {
 						LOGGER.error("-|{}|리프레시 토큰을 통한 갱신 실패", uuid);
 						filterChain.doFilter(request, response);

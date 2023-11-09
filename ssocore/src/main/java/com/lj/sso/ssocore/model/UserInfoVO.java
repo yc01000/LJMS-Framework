@@ -1,12 +1,12 @@
-package com.lj.sso.ssocore.security.vo;
+package com.lj.sso.ssocore.model;
+
+import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
 
 /**
  * 

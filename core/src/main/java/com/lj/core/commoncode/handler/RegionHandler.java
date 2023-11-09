@@ -1,8 +1,8 @@
 package com.lj.core.commoncode.handler;
 
-import com.lj.core.common.util.CodeConstants;
-import com.lj.core.common.util.CodeConstants.RegionOption;
-import com.lj.core.common.util.CodeConstants.YNCode;
+import com.lj.core.util.CodeConstants;
+import com.lj.core.util.CodeConstants.RegionOption;
+import com.lj.core.util.CodeConstants.YNCode;
 import com.lj.core.commoncode.service.CmmCodeService;
 import com.lj.core.commoncode.vo.RegionInfoVO;
 import jakarta.annotation.PostConstruct;

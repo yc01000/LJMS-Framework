@@ -1,7 +1,7 @@
 package com.lj.sso.ssocore.service;
 
 import com.google.gson.Gson;
-import com.lj.sso.ssocore.security.vo.UserTokenVO;
+import com.lj.sso.ssocore.model.UserToken;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -18,10 +18,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 
-@Service("SsoOAuthService")
-public class SsoOAuthService {
+// for oauth client
+@Service
+public class OAuthClientService {
 
-	private static final Logger LOGGER	= LoggerFactory.getLogger(SsoOAuthService.class);
+	private static final Logger LOGGER	= LoggerFactory.getLogger(OAuthClientService.class);
 
 	@Value(("${sso.oauth.endpoint.token}"))
 	private String tokenUri;
@@ -66,16 +67,16 @@ public class SsoOAuthService {
 	 * @param
 	 * @return String
 	 */
-	public UserTokenVO requestRefreshToken(UserTokenVO userToken) {
+	public UserToken requestRefreshToken(UserToken userToken) {
 		String credentials = clientId + ":" + clientSecret;
 		String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes()));
 
 		String param = "grant_type=refresh_token&scope=" + scope + "&refresh_token=" + userToken.getRefresh_token();
 		String httpResponse = requestOAuthService(tokenUri, HttpMethod.POST, "application/x-www-form-urlencoded", encodedCredentials, param);
 
-		UserTokenVO newUserToken = new UserTokenVO();
+		UserToken newUserToken = new UserToken();
 		try {
-			newUserToken = new Gson().fromJson(httpResponse, UserTokenVO.class);
+			newUserToken = new Gson().fromJson(httpResponse, UserToken.class);
 		} catch (Exception e) {
 			LOGGER.error(ExceptionUtils.getStackTrace(e));
 			return null;
@@ -91,7 +92,7 @@ public class SsoOAuthService {
 	 * @param
 	 * @return String
 	 */
-	public String requestUserInfo(UserTokenVO userToken) {
+	public String requestUserInfo(UserToken userToken) {
 		String param = "?access_token=" + userToken.getAccess_token();
 
 		String httpResponse = requestOAuthService(userinfoUri, HttpMethod.GET, null, null, param);

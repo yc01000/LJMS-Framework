@@ -23,7 +23,7 @@ import com.lj.crewpnr.vo.booking.ReservationSummaryCriteriaVO;
 import com.lj.crewpnr.vo.booking.ReservationSummaryVO;
 import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
-import com.lj.sso.ssocore.security.vo.UserInfoVO;
+import com.lj.sso.ssocore.model.UserInfoVO;
 import com.lj.sso.ssocore.util.PrincipalUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
