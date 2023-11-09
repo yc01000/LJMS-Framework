@@ -56,21 +56,20 @@
         <table class="table_style">
             <thead>
                 <tr>
-                    <th>Seq</th>
-                    <th>Departure Date</th>
-                    <th>Flight Number</th>
-                    <th>Origin Station</th>
-                    <th>Destination Station</th>
+                    <th>생성일시</th>
+                    <th>출발일자</th>
+                    <th>항공편</th>
+                    <th>출발지</th>
+                    <th>도착지</th>
                     <th>Fare Class</th>
-                    <th>Passenger Count</th>
+                    <th>좌석수</th>
                     <th width="40%">Error Value</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="item in items" :key="item.seq">
-                    <td>{{ item.seq }}</td>
-                    <td>{{ item.depDate.substring(0, 4) + '-' + item.depDate.substring(4, 6) + '-' + item.depDate.slice(6) }}
-                    </td>
+                    <td>{{ item.rgstDttm }}</td>
+                    <td>{{ item.depDate.substring(0, 4) + '-' + item.depDate.substring(4, 6) + '-' + item.depDate.slice(6) }}</td>
                     <td>{{ item.fltNum }}</td>
                     <td>{{ item.stnfrCode }}</td>
                     <td>{{ item.stntoCode }}</td>
@@ -150,7 +149,7 @@ export default {
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.result.length == 0) {
-                        this.showMessage('warnning', '조회된 데이터가 없습니다.');
+                        this.showMessage('Warnning', '조회된 데이터가 없습니다.');
                     }
                     this.items = data.result;
                     console.log("response data:", data)
