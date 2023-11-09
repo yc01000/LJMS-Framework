@@ -86,8 +86,11 @@ public class CrewBookingService {
             String service = "CREATE_BOOKINGS";
             String key = RandomUtils.generate(10);
 
-            final List<CrewPNRExcelVO> fileFinalized = crewPNRExcelList;
-            new Thread(() -> createBookings(fileFinalized)).start();
+            final CreateBookingsFormVO form = new CreateBookingsFormVO();
+            form.setCrewPNRExcelList(crewPNRExcelList);
+            form.setLoginUser(PrincipalUtils.user());
+//            final List<CrewPNRExcelVO> fileFinalized = crewPNRExcelList;
+            new Thread(() -> createBookings(form)).start();
 
 //            result.put("service", service);
 //            result.put("key", key);
@@ -100,11 +103,16 @@ public class CrewBookingService {
         return result;
     }
 
-    public ResultMapVO createBookings(List<CrewPNRExcelVO> crewPNRExcelList){
+    public ResultMapVO createBookings(CreateBookingsFormVO form) {
         ResultMapVO resultMapVO = new ResultMapVO();
 
         //로그인 유저의 부서 코드로 agency Code 세팅
-        String agencyCode = getAgencyCode();
+        String agencyCode = null;
+        try {
+            codeHandler.getCodeInfo("CMM209", form.getLoginUser().getDepartment()).getAddInfo1();
+        } catch (Exception e) {
+            return ResultMapVO.simpleError("there is no agency code. please check the common code CMM209");
+        }
 //        if(agencyCode == null){
 //            resultMapVO.put("message", "Agency Code null");
 //            return resultMapVO;
@@ -114,7 +122,7 @@ public class CrewBookingService {
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
-
+        var crewPNRExcelList = form.getCrewPNRExcelList();
 
         AvailabilityCriteriaVO criteria = null;
 
