@@ -338,6 +338,12 @@ public class IBSDomainUtils {
 			error = ((AirAvailabilityRS) object).getErrorType();
 		} else if(object instanceof RetrieveReservationSummaryRS) {
 			error = ((RetrieveReservationSummaryRS) object).getErrorType();
+		} else if(object instanceof AcceptScRS) {
+			error = ((AcceptScRS) object).getErrorType();
+		} else if(object instanceof RejectScRS) {
+			error = ((RejectScRS) object).getErrorType();
+		} else if(object instanceof AcceptWlRS) {
+			error = ((AcceptWlRS) object).getErrorType();
 		} else {
 			error = new ErrorType();
 			error.setErrorCode("UNEXPECTED_RESPONSE_TYPE");
