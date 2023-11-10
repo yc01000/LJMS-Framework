@@ -11,6 +11,8 @@ public class CreateBookingsFormVO {
 
     private UserInfoVO loginUser;
 
+    private String agencyCode;
+
     public List<CrewPNRExcelVO> getCrewPNRExcelList() {
         return crewPNRExcelList;
     }
@@ -25,5 +27,13 @@ public class CreateBookingsFormVO {
 
     public void setLoginUser(UserInfoVO loginUser) {
         this.loginUser = loginUser;
+    }
+
+    public String getAgencyCode() {
+        return agencyCode;
+    }
+
+    public void setAgencyCode(String agencyCode) {
+        this.agencyCode = agencyCode;
     }
 }

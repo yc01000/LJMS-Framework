@@ -89,7 +89,16 @@ public class CrewBookingService {
             final CreateBookingsFormVO form = new CreateBookingsFormVO();
             form.setCrewPNRExcelList(crewPNRExcelList);
             form.setLoginUser(PrincipalUtils.user());
-//            final List<CrewPNRExcelVO> fileFinalized = crewPNRExcelList;
+
+            //로그인 유저의 부서 코드로 agency Code 세팅
+            String agencyCode = null;
+            try {
+                agencyCode = codeHandler.getCodeInfo("CMM209", form.getLoginUser().getDepartment()).getAddInfo1();
+                form.setAgencyCode(agencyCode);
+            } catch (Exception e) {
+                return ResultMapVO.simpleError("there is no agency code. please check the common code CMM209");
+            }
+
             new Thread(() -> createBookings(form)).start();
 
 //            result.put("service", service);
@@ -106,21 +115,11 @@ public class CrewBookingService {
     public ResultMapVO createBookings(CreateBookingsFormVO form) {
         ResultMapVO resultMapVO = new ResultMapVO();
 
-        //로그인 유저의 부서 코드로 agency Code 세팅
-        String agencyCode = null;
-        try {
-            agencyCode = codeHandler.getCodeInfo("CMM209", form.getLoginUser().getDepartment()).getAddInfo1();
-        } catch (Exception e) {
-            return ResultMapVO.simpleError("there is no agency code. please check the common code CMM209");
-        }
-//        if(agencyCode == null){
-//            resultMapVO.put("message", "Agency Code null");
-//            return resultMapVO;
-//        }
-
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
+
+        String agencyCode = form.getAgencyCode();
 
         var crewPNRExcelList = form.getCrewPNRExcelList();
 
