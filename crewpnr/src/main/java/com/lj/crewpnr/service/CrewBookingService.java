@@ -837,11 +837,18 @@ public class CrewBookingService {
 
         RetrieveReservationSummaryRQ req = new RetrieveReservationSummaryRQ();
 
+        if(StringUtils.isNotEmpty(criteriaVO.getFltNum())){
+            req.setFlightNumber(Integer.valueOf(criteriaVO.getFltNum()));
+        }
+        if(StringUtils.isNotEmpty(criteriaVO.getStnfrCode()) && StringUtils.isNotEmpty(criteriaVO.getStntoCode())){
+            req.setBoardPoint(criteriaVO.getStnfrCode());
+            req.setOffPoint(criteriaVO.getStntoCode());
+        }
+
         req.setFlightStartDate(DateUtils.xmlGregorianCalendar(criteriaVO.getDepStartDate(),"yyyy-MM-dd"));
         req.setFlightEndDate( DateUtils.xmlGregorianCalendar(criteriaVO.getDepEndDate(),"yyyy-MM-dd"));
         req.setAirlineCode(airlineCode);
-        req.setBoardPoint(criteriaVO.getStnfrCode());
-        req.setOffPoint(criteriaVO.getStntoCode());
+
         req.setAgencyCode(agencyCode);
 
         req.setPnrType(PNRType.NORMAL);
