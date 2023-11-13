@@ -421,9 +421,11 @@ export default {
             this.modalVisible = true;
         },
         // CancelBooking 모달페이지 클로즈
-        closeModal() {
+        closeModal(isSubmit) {
             this.modalVisible = false;
-            this.search();
+            if(isSubmit === true){
+                this.search();
+            }
         },
         handleRowClick(item) {
             if (this.isExcept(item.status)) {
