@@ -3,7 +3,7 @@
 
 <mapper namespace="com.lj.crewpnr.mapper.pssdb.PSSDBSampleMapper">
 
-	<select id="select" parameterType="string" resultType="com.lj.crewpnr.model.TBIndvMbr">
+	<select id="select" parameterType="string" resultType="com.lj.crewpnr.vo.sample.TBIndvMbr">
 		/* com.lj.crewpnr.mapper.pssdb.PSSDBSampleMapper.select */
 		SELECT * FROM TB_INDV_MBR WHERE ID = UPPER(#{id})
 	</select>

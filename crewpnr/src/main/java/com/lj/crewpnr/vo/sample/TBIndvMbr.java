@@ -1,4 +1,4 @@
-package com.lj.crewpnr.model;
+package com.lj.crewpnr.vo.sample;
 
 import java.util.Date;
 

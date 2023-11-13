@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,7 +22,8 @@ import java.util.List;
 
 @Service
 public class CommonService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BookingService.class);
+
+    private final Logger LOGGER = LoggerFactory.getLogger(CommonService.class);
 
     public ResultMapVO readExcelFile(MultipartFile file, String fileType){
         CrewPNRExcelVO crewPNRExcelVO = new CrewPNRExcelVO();

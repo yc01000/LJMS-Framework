@@ -4,38 +4,23 @@ import com.lj.core.commoncode.handler.CityAirportHandler;
 import com.lj.core.commoncode.handler.CodeHandler;
 import com.lj.core.commoncode.handler.CountryHandler;
 import com.lj.core.commoncode.handler.RegionHandler;
-import com.lj.core.mail.service.MailService;
-import com.lj.core.mail.vo.MailInfoVO;
 import com.lj.core.util.WebUtils;
 import com.lj.crewpnr.common.IBSDomainUtils;
-import com.lj.crewpnr.mapper.pssdb.PSSDBSampleMapper;
-import com.lj.crewpnr.service.BookingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.lj.crewpnr.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.sql.SQLException;
 
 @Controller
 public class SampleController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SampleController.class);
-
     @Autowired
-    private BookingService bookingService;
-
-    @Autowired
-    private MailService mailService;
-
-    @Autowired
-    private PSSDBSampleMapper pssdbSampleMapper;
+    private SampleService sampleService;
 
     @Autowired
     private CodeHandler codeHandler;
@@ -56,30 +41,27 @@ public class SampleController {
     @RequestMapping("/sample/ibs")
     @ResponseBody
     public String test(String pnrNo) throws SQLException {
-        return bookingService.retrieve(pnrNo);
+        return sampleService.retrieveBooking(pnrNo);
     }
 
     // http://localhost:8080/sample/pssdb?id=LAEVUS124
     @RequestMapping("/sample/pssdb")
     @ResponseBody
     public String testPSSDB(String id) throws SQLException {
-        return WebUtils.toJson(pssdbSampleMapper.select(id));
+        return sampleService.selectFromPSSDB(id);
+    }
+
+    // http://localhost:8080/sample/intdb?staffNum=LAEVUS124
+    @RequestMapping("/sample/intdb")
+    @ResponseBody
+    public String sampleINTDB(String staffNum) throws SQLException {
+        return sampleService.selectFromINTDB(staffNum);
     }
 
     @RequestMapping("/sample/email")
     @ResponseBody
-    @ResponseStatus(value= HttpStatus.NO_CONTENT)
-    public void sampleEmail(String email) {
-        MailInfoVO mail = new MailInfoVO();
-        mail.setMailContentsType(MailInfoVO.MailContentType.URL);
-        mail.setTaskId(74);
-        mail.setReceiverEmail(email);
-        mail.setReceiverName(email);
-        mail.setMailTitle("[JINAIR] 정보주체 이외로 부터 수집한 개인정보의 수집 출처 안내");
-//        mail.setMailContents("https://stgwww.jinair.com/HOM/templates/milk_partners_join.html");
-        mail.setMailContents("https://stgwww.jinair.com/mail/authcode?q=AQICAHjUTEIVn2DkoovB9aHnGU%2BcDTaEKrmcE98cBwl6kRwymgGZ19tnz3Wwf3PYO8P0OU3mAAAAaDBmBgkqhkiG9w0BBwagWTBXAgEAMFIGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMDf2MooC8e6JDtctzAgEQgCVGJak9iYQVqAGC9kfQoJmaywGUG%2BD3ZjWMaBdMZsZkWZVAG7kK");
-        mail.setReceiverId("laevus");
-        mailService.send(mail);
+    public String sampleEmail(String email) {
+        return sampleService.sendMail(email);
     }
 
     // http://localhost:8080/sample/commoncode/codes/AGT001/01
