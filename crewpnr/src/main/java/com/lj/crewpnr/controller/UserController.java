@@ -1,6 +1,6 @@
 package com.lj.crewpnr.controller;
 
-import com.lj.core.util.WebUtils;
+import com.lj.crewpnr.vo.ResultMapVO;
 import com.lj.sso.ssocore.util.PrincipalUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,7 @@ public class UserController {
     @RequestMapping("/user/userinfo")
     @ResponseBody
     public String userinfo() {
-        return WebUtils.toJson(PrincipalUtils.user());
+        return ResultMapVO.toJson(ResultMapVO.simpleResult("result", PrincipalUtils.user()));
     }
 
     @RequestMapping("/user/signout")

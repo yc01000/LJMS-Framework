@@ -50,6 +50,7 @@ logging:
         hikari:
           pool:
             HikariPool: INFO
+            PoolBase: INFO
     org:
       springframework:
         boot:

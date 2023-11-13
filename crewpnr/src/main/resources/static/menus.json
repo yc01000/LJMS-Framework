@@ -1,0 +1,17 @@
+[
+  {
+    "path": "/index.html",
+    "icon": "fa fa-plane",
+    "name": "예약 생성"
+  },
+  {
+    "path": "/reservations",
+    "icon": "fa fa-search",
+    "name": "예약 조회"
+  },
+  {
+    "path": "/failhistories",
+    "icon": "fa fa-question",
+    "name": "예약 생성 실패 이력 조회"
+  }
+]
