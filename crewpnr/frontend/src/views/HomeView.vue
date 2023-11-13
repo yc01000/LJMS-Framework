@@ -49,10 +49,9 @@
                 <tr>
                     <td></td>
                     <td>
-                        <a href="https://imagesstg.jinair.com/eForm/crewpnr_example.xlsx" class="btnTypeC">엑셀 형식 다운로드</a>
+                        <a :href="sampleFile" class="btnTypeC">엑셀 형식 다운로드</a>
                         &nbsp;
-                        <a href="https://imagesstg.jinair.com/eForm/crewpnr_gum_example.xlsx" class="btnTypeC">엑셀 형식
-                            다운로드(GUM)</a>
+                        <a :href="sampleFileGUM" class="btnTypeC">엑셀 형식 다운로드(GUM)</a>
                     </td>
                     <td>
                     </td>
@@ -75,6 +74,8 @@ export default {
     },
     data() {
         return {
+            sampleFile: import.meta.env.VITE_ASSETS_ENDPOINT + '/eForm/crewpnr_example.xlsx',
+            sampleFileGUM: import.meta.env.VITE_ASSETS_ENDPOINT + '/eForm/crewpnr_gum_example.xlsx',
             GenUploadFile: null,
             GumUploadFile: null,
         };
