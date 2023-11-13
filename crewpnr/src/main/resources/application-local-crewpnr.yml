@@ -36,6 +36,7 @@ sso:
     s3:
       region: ap-northeast-2
       key-id: e4303df7-fd91-4c6b-a9a5-1413343bac0e
+  using-dummy-login: true
 
 # ibs 사용 시 정의해줘야 하는 properties
 ibs:

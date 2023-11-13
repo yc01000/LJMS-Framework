@@ -30,6 +30,9 @@ import java.util.Map;
 @Configuration
 public class SecurityConfig {
 
+    @Value("${sso.using-dummy-login}")
+    private boolean usingDummyLogin;
+
     @Bean
     public SsoLoginCallbackFilter ssoLoginCallbackFilter() {
         return new SsoLoginCallbackFilter();
@@ -42,10 +45,12 @@ public class SecurityConfig {
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests(c -> c.anyRequest().hasRole("USER"))
                 .addFilterBefore(ssoLoginCallbackFilter, WebAsyncManagerIntegrationFilter.class)
-                .addFilterBefore(new DummyUserFilter(), SsoLoginCallbackFilter.class)
                 .authenticationProvider(authenticationProvider())
                 .httpBasic(c -> c.authenticationEntryPoint(authenticationEntryPoint()))
                 .logout(logout -> logout.logoutUrl("/logout").invalidateHttpSession(true));
+        if(usingDummyLogin) {
+            http.addFilterBefore(new DummyUserFilter(), SsoLoginCallbackFilter.class);
+        }
 
         return http.build();
     }
