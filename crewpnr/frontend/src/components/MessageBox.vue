@@ -1,7 +1,5 @@
 <template>
   <div v-if="isVisible" class="modal-overlay">
-    <div @click.self="preventModalClose">
-      <div>
         <!-- 팝업 레이어 -->
         <div class="popup">
           <h2 style="text-align: left; color: #6e2c00;">{{ this.title }}</h2>
@@ -12,9 +10,7 @@
           <!-- 팝업을 닫는 이벤트를 처리하는 closePopup 메소드를 호출합니다 -->
           <div v-if="isConfirmMsg == true"><button @click="closePopup" class="btnTypeD">YES</button>&nbsp;&nbsp;<button @click="cancelClosePopup" class="btnTypeE">NO</button></div>
           <div v-else><button @click="closePopup" class="btnTypeD">Close</button></div>
-        </div>
       </div>
-    </div>
   </div>
 </template>
   
@@ -23,9 +19,9 @@ export default {
   data() {
     return {
       isVisible: false, // 팝업 레이어의 표시 여부를 저장하는 데이터 속성
-      title: Object,
-      msg: Object,
-      actionName: '',
+      title: '',
+      msg: '',
+      action: [], //actionName, params로 등록하고 후속 액션을 사용할 수도 있음.
       isConfirmMsg: false, // alert: false, confirm: true
     };
   },
@@ -36,17 +32,17 @@ export default {
     this.showPopup;
   },
   methods: {
-    showPopup(strTitle, strMsg, strActionName, isconfirm) {
+    showPopup(strTitle, strMsg, objAction, isconfirm) {
       this.title = strTitle;
       this.msg = strMsg;
-      this.actionName = strActionName;
+      this.action = objAction;
       this.isConfirmMsg = isconfirm;
       // 팝업 레이어를 표시하는 메소드
       this.isVisible = true;
     },
     closePopup() {
       // 팝업 레이어를 닫는 메소드, 후속 액션명
-      this.$emit('postAction', this.actionName);
+      this.$emit('postAction', this.action);
       this.isVisible = false;
     },
     cancelClosePopup() {

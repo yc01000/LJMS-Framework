@@ -62,9 +62,8 @@
                     <button class="btnTypeD" @click="initialize">초기화</button>
                 </div>
                 <div class="btn_wrap">
-                    <!-- Modal 컴포넌트를 사용하고 isVisible, title, content 프로퍼티를 전달합니다 -->
-                    <CancelBooking v-if="modalVisible" :is-visible="modalVisible" :strItin="selectedItin"
-                        :strPnr="selectedPNR" @close="closeModal" />
+                    <!-- Modal 컴포넌트를 사용하고 selectedItin, selectedPNR 프로퍼티를 전달합니다 -->
+                    <CancelBooking v-if="modalVisible" :strItin="selectedItin" :strPnr="selectedPNR" @close="closeModal" />
                 </div>
                 <table class="table_style">
                     <thead>
@@ -86,8 +85,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="item in filteredRows" :key="item.id" @click="handleRowClick(item)"
-                            @mouseover="handleMouseOver(item.id)" @mouseout="handleMouseOut(item.id)"
-                            :class="{ active: highlightedRowId === item.id, 'cancel-row': 'CANCELLED' === item.status, 'click-row': isExcept(item.status) === false }">
+                            :class="{ cancelRow: item.status === 'CANCELLED', clickRow: isExcept(item.status) === false }">
                             <td>{{ item.id }}</td>
                             <td>{{ item.fltnum }}</td>
                             <td>{{ item.depDate }}</td>
@@ -97,17 +95,13 @@
                             <td>{{ item.arrivalDateTime }}</td>
                             <td>{{ item.fareClass }}</td>
                             <td>{{ item.paxCount }}</td>
-                            <td v-if="item.status === 'CANCELLED'">{{ item.pnrnumber }}</td> <!-- 취소일때는 그냥 글자 회색 -->
-                            <td v-else :style="{ color: isExcept(item.status) ? 'red' : '' }">{{ item.pnrnumber }}</td>
-                            <!--Accept 버튼 일때는 글자 빨강색 -->
-                            <!-- <td>{{ item.segmentStatus }}</td> -->
-                            <td>{{ statusTitle(item.status) }}</td>
-                            <td v-if="item.status === 'CANCELLED'" onclick="event.cancelBubble=true"></td>
+                            <td v-if="isChangeStatus(item.status) === true" style='color: red'>{{ item.pnrnumber }}</td> 
+                            <td v-else>{{ item.pnrnumber }}</td> 
+                            <td v-if="isChangeStatus(item.status) === true" onclick="event.cancelBubble=true"><button @click="checkAcceptSchedule(item.pnrnumber)">{{ statusTitle(item.status) }}</button></td>
+                            <td v-else>{{ statusTitle(item.status) }}</td>
                             <!-- 취소일때는 그냥 빈칸 -->
-                            <td v-else-if="isExcept(item.status) === false" onclick="event.cancelBubble=true"><input
-                                    type="checkbox" v-model="selectedItems" :value="item" /></td> <!-- 체크박스 -->
-                            <td v-else onclick="event.cancelBubble=true"><button
-                                    @click="acceptSchedule(item.pnrnumber)">Accept</button></td> <!-- 대기일때 버튼 -->
+                            <td v-if="item.status === 'CANCELLED'" onclick="event.cancelBubble=true"></td>
+                            <td v-else onclick="event.cancelBubble=true"><input type="checkbox" v-model="selectedItems" :value="item" /></td> <!-- 체크박스 -->
                         </tr>
                     </tbody>
                 </table>
@@ -146,10 +140,9 @@ export default {
             items: [
                 // {"fltnum":"LJ305","depDate":"2023-08-03(목)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","fareClass":"U1","paxCount":2,"pnrStatus":"ACTIVE","status":"CONFIRMED","statusDisplay":"완료","segmentStatus":"CONFIRMED","pnrnumber":"J36AP3"},{"fltnum":"LJ305","depDate":"2023-08-03(목)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","fareClass":"U1","paxCount":4,"pnrStatus":"ACTIVE","status":"WAITLISTED_HL","segmentStatus":"WAITLISTED","pnrnumber":"FC63NA"},{"fltnum":"LJ305","depDate":"2023-08-03(목)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","fareClass":"U1","paxCount":4,"pnrStatus":"ACTIVE","status":"WAITLISTED_HL","segmentStatus":"WAITLISTED","pnrnumber":"Q627NA"},{"fltnum":"LJ305","depDate":"2023-08-03(목)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"A7AP47"},{"fltnum":"LJ305","depDate":"2023-08-03(목)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"ZAANFA"},{"fltnum":"LJ305","depDate":"2023-08-04(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","fareClass":"U1","paxCount":1,"pnrStatus":"ACTIVE","status":"CONFIRMED","statusDisplay":"완료","segmentStatus":"CONFIRMED","pnrnumber":"ET6A3T"},{"fltnum":"LJ305","depDate":"2023-08-04(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"RW422E"},{"fltnum":"LJ305","depDate":"2023-08-04(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"RQ872E"},{"fltnum":"LJ305","depDate":"2023-08-04(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"Q4L975"},{"fltnum":"LJ305","depDate":"2023-09-10(일)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","fareClass":"U1","paxCount":1,"pnrStatus":"ACTIVE","status":"CONFIRMED","statusDisplay":"완료","segmentStatus":"CONFIRMED","pnrnumber":"Q4G595"},{"fltnum":"LJ305","depDate":"2023-09-10(일)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","fareClass":"U1","paxCount":1,"pnrStatus":"ACTIVE","status":"CONFIRMED","statusDisplay":"완료","segmentStatus":"CONFIRMED","pnrnumber":"V2E77U"},{"fltnum":"LJ305","depDate":"2023-09-10(일)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"D23U6W"},{"fltnum":"LJ305","depDate":"2023-09-10(일)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"N23U6Y"},{"fltnum":"LJ305","depDate":"2023-09-10(일)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"N2E77P"},{"fltnum":"LJ305","depDate":"2023-09-10(일)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":5,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"S38986"},{"fltnum":"LJ305","depDate":"2023-09-10(일)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":5,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"MM7Q23"},{"fltnum":"LJ301","depDate":"2023-09-15(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:05","arrivalDateTime":"22:20","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"AAANJN"},{"fltnum":"LJ301","depDate":"2023-09-15(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:05","arrivalDateTime":"22:20","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"B2E76Z"},{"fltnum":"LJ301","depDate":"2023-09-15(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:05","arrivalDateTime":"22:20","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"T22PRT"},{"fltnum":"LJ301","depDate":"2023-09-15(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:05","arrivalDateTime":"22:20","paxCount":2,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"SB452E"},{"fltnum":"LJ301","depDate":"2023-09-15(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:05","arrivalDateTime":"22:20","paxCount":5,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"A282T7"},{"fltnum":"LJ305","depDate":"2023-10-03(화)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","fareClass":"U1","paxCount":2,"pnrStatus":"ACTIVE","status":"NO_OP","statusDisplay":"비운항","segmentStatus":"WAS_WAITLISTED","pnrnumber":"R2E74Z"},{"fltnum":"LJ305","depDate":"2023-10-03(화)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","fareClass":"U1","paxCount":4,"pnrStatus":"ACTIVE","status":"NO_OP","statusDisplay":"비운항","segmentStatus":"WAS_CONFIRMED","pnrnumber":"T2E75Y"},{"fltnum":"LJ305","depDate":"2023-10-03(화)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"GAANJP"},{"fltnum":"LJ305","depDate":"2023-10-03(화)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"1:30","arrivalDateTime":"2:45","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"L24AP4"},{"fltnum":"LJ311","depDate":"2023-10-05(목)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"6:00","arrivalDateTime":"7:10","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"P5267J"},{"fltnum":"LJ303","depDate":"2023-10-20(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:15","arrivalDateTime":"22:25","paxCount":2,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"BL3TC2"},{"fltnum":"LJ301","depDate":"2023-10-20(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:05","arrivalDateTime":"22:20","paxCount":2,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"FD93BA"},{"fltnum":"LJ303","depDate":"2023-10-20(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:15","arrivalDateTime":"22:25","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"Q4S975"},{"fltnum":"LJ303","depDate":"2023-10-20(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:15","arrivalDateTime":"22:25","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"E23U7L"},{"fltnum":"LJ301","depDate":"2023-10-20(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:05","arrivalDateTime":"22:20","paxCount":2,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"BL3MR2"},{"fltnum":"LJ301","depDate":"2023-10-20(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:05","arrivalDateTime":"22:20","paxCount":2,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"QLA3Z6"},{"fltnum":"LJ303","depDate":"2023-10-20(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:15","arrivalDateTime":"22:25","paxCount":4,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"MP23S7"},{"fltnum":"LJ301","depDate":"2023-10-20(금)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:05","arrivalDateTime":"22:20","paxCount":2,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"EWA3Z7"},{"fltnum":"LJ303","depDate":"2023-10-25(수)","stnfrCode":"GMP","stntoCode":"CJU","departureDateTime":"21:10","arrivalDateTime":"22:20","paxCount":1,"pnrStatus":"CANCELLED","status":"CANCELLED","statusDisplay":"취소","segmentStatus":"CANCELLED","pnrnumber":"BL2RW2"}
             ],
-            modalVisible: false, // 모달의 표시 여부를 저장하는 데이터 속성
+            modalVisible: false, // CancelBooking 모달의 표시 여부를 저장하는 데이터 속성
             selectedPNR: "",
             selectedItin: "",
-            highlightedRowId: null,
             selectedDate1: ref(new Date()),
             selectedDate2: ref(new Date()),
             stnfr: "",
@@ -188,7 +181,7 @@ export default {
                 let result = true;
                 //예약상태 필터
                 if ((this.selectedStatus == "" || row.status == this.selectedStatus) == false) {
-                    if (row.status == null || row.status == "undefined") { //서버에서 status 노드가 빠지는 경우가 간혹 있음.
+                    if (row.status == null || row.status == undefined) { //서버에서 status 노드가 빠지는 경우가 간혹 있음.
                         return false;
                     }
                     // WAITLISTED_KL, WAITLISTED_HL 은 포함.
@@ -217,7 +210,7 @@ export default {
             if (this.selectAll) {
                 this.selectedItems = [...this.filteredRows];
                 this.selectedItems = this.selectedItems.filter(row => {
-                    if (this.isExcept(row.status)) {
+                    if (row.status === 'CANCELLED') {
                         return false;
                     }
                     else {
@@ -235,15 +228,25 @@ export default {
                 this.search();
             } else if (action === 'pnrCancel') {
                 this.pnrCancel();
+            } else if (action.actionName === 'acceptSchedule') {
+                this.acceptSchedule(action.params);
             }
         },
         // 메시지 박스 : 타이틀, 메시지, 후속액션, 컨펌 또는 alert.
-        showMessage(title, msg, action = '', isConfirmMsg = false) {
+        showMessage(title, msg, action = [], isConfirmMsg = false) {
             this.$refs.msg_box.showPopup(title, msg, action, isConfirmMsg);
         },
         //검색조건의 예약상태 리스트. 조회시, 콤보박스 컴포넌트 체크내용과 화면에서 동일하게 유지 하기위해..,
         handleSelection(selectedOptions) {
             this.selectedStatus = selectedOptions;
+        },
+        // Accept버튼 확인 메시지
+        checkAcceptSchedule(pnr) {
+            const actionProp = {
+                    actionName: 'acceptSchedule',
+                    params: pnr,
+                };
+            this.showMessage('Confirm', '변경된 사항으로 수락 하시겠습니까?', actionProp, true);
         },
         //Accept버튼 처리.
         acceptSchedule(pnr) {
@@ -344,11 +347,19 @@ export default {
                 { value: "CANCELLED", label: "취소" }
             ];
             let strSts = statusLabels.find((el) => { return el.value === sts });
-            return (strSts == null || strSts == "undefined" ? 'undefined' : strSts.label);
+            return (strSts == null || strSts == undefined ? 'undefined' : strSts.label);
         },
-        //체크박스(PNR취소)가 필요없는 상태 들..
+        // (CancelBookin)승객부분 취소 팝업이 필요없는 상태 들..
         isExcept(sts) {
             if (sts == 'TIME_CHANGE' || sts == 'SCHEDULE_CHANGE' || sts == 'CANCELLED') {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        // 예약변경으로 인해 Accept가 필요한 상태 들..
+        isChangeStatus(sts) {
+            if (sts == 'TIME_CHANGE' || sts == 'SCHEDULE_CHANGE') {
                 return true;
             } else {
                 return false;
@@ -412,7 +423,7 @@ export default {
                 })
                 .finally(() => {
                     if (errMsg !== "") {
-                        this.showMessage('Error', errMsg);
+                        this.showMessage('Warning', errMsg);
                     }
                 });
         },
@@ -423,7 +434,7 @@ export default {
         // CancelBooking 모달페이지 클로즈
         closeModal(isSubmit) {
             this.modalVisible = false;
-            if(isSubmit === true){
+            if (isSubmit === true) { //그냥 닫지 않았고, 변경이 있었기에 재조회 필요.
                 this.search();
             }
         },
@@ -434,12 +445,6 @@ export default {
             this.selectedPNR = item.pnrnumber;
             this.selectedItin = item.stnfrCode + "-" + item.stntoCode;
             this.showModal();
-        },
-        handleMouseOver(id) {
-            this.highlightedRowId = id;
-        },
-        handleMouseOut(id) {
-            this.highlightedRowId = null;
         },
         generateInputJson() {
             const jsonData = {
@@ -462,21 +467,16 @@ export default {
 
 <style scoped>
 tr:hover {
-    background-color: #f5f5f5;
+    background-color: #ffcccb;
     /* 마우스를 올렸을 때 배경 색상 변경 */
 }
 
-tr.active {
-    background-color: #ffcccb;
-    /* 선택된 행의 배경 색상 변경 */
-}
-
-.cancel-row {
+tr.cancelRow {
     /* PNR 취소된 row 회색처리 */
     color: lightgray;
 }
 
-.click-row {
+tr.clickRow {
     /* PNR 취소 대상만 row 클릭가능 */
     cursor: pointer;
 }
