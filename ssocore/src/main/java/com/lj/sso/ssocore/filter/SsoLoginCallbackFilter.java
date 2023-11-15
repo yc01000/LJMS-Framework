@@ -25,6 +25,7 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +50,10 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 	@Autowired
 	private OAuthClientService oauthClientService;
 
-	@Value("${sso.default-return-uri}")
+	@Value("${server.scheme}://${server.name}")
+	String serverEndpoint;
+
+	@Value("${sso.policies.default-return-uri}")
 	private String defaultReturnUri;
 
 	@Override
@@ -70,9 +74,14 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 
 		String returnUrl = BinderUtils.chompString(request.getParameter("returnUrl"));
 		if(StringUtils.isBlank(returnUrl)) {
-			returnUrl = defaultReturnUri;
-			LOGGER.info("{}|return url is replaced with default return url: {}", uuid, returnUrl);
+			if(StringUtils.isNotBlank(request.getParameter("state"))) {
+				returnUrl = serverEndpoint + new String(Base64.getDecoder().decode(request.getParameter("state")));
+			}
 		}
+		if(StringUtils.isBlank(returnUrl)) {
+			returnUrl = serverEndpoint + defaultReturnUri;
+		}
+		LOGGER.info("{}|return url is replaced with return url: {}", uuid, returnUrl);
 
 		// /sso/callback으로 접근했지만, 이미 principal이 있을 경우 리턴
 		HttpSession session = request.getSession(false);

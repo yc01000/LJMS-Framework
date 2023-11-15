@@ -22,7 +22,8 @@ import org.springframework.security.web.context.request.async.WebAsyncManagerInt
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,26 +79,29 @@ public class SecurityConfig {
 
             private final static Logger	LOGGER = LoggerFactory.getLogger(AuthenticationEntryPoint.class);
 
-            @Value(("${sso.oauth.endpoint.authorize}"))
+            @Value("${sso.oauth.endpoint.authorize}")
             private String authorizeUri;
 
-            @Value(("${sso.oauth.client-id}"))
+            @Value("${sso.oauth.client-id}")
             private String clientId;
 
-            @Value(("${sso.oauth.redirect-uri}"))
+            @Value("${sso.oauth.redirect-uri}")
             private String redirectUri;
 
-            @Value(("${sso.oauth.scope}"))
+            @Value("${sso.oauth.scope}")
             private String scope;
+
+            @Value("${sso.policies.redirection.target-urls}")
+            private List<String> redirectionTargetUrls = new ArrayList<>();
 
             @Override
             public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException {
                 LOGGER.info("request url is: {}", request.getRequestURI());
-                String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&state=%s", authorizeUri, clientId, redirectUri, scope);
+                String state = Base64.getEncoder().encodeToString(request.getRequestURI().getBytes(StandardCharsets.UTF_8));
+                String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&&state=%s", authorizeUri, clientId, redirectUri, state);
                 LOGGER.info("move to sso: {}", uri);
 
-                List<String> pageURIs = Arrays.asList("/", "/reservations", "/failhistories");
-                if(pageURIs.contains(request.getRequestURI())) {
+                if(redirectionTargetUrls.contains(request.getRequestURI())) {
                     new DefaultRedirectStrategy().sendRedirect(request, response, uri);
                     return;
                 }
