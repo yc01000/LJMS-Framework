@@ -44,7 +44,7 @@ public class CrewPNRController {
     @Autowired
     private CommonService commonService;
 
-    @RequestMapping("/crew/createBookings")
+    @RequestMapping(value="/crew/createBookings", method=RequestMethod.POST)
     public String createBookings(@RequestParam("file") MultipartFile file) throws Exception {
         ResultMapVO excelResult = commonService.readExcelFile(file, "CMM");
 
@@ -60,7 +60,7 @@ public class CrewPNRController {
         return ResultMapVO.toJson(createResult);
     }
 
-    @RequestMapping("/crew/createBookingsForGum")
+    @RequestMapping(value="/crew/createBookingsForGum", method=RequestMethod.POST)
     public String createBookingsForGUM(@RequestParam("file") MultipartFile file) throws Exception {
         ResultMapVO excelResult = commonService.readExcelFile(file, "GUM");
 
@@ -75,7 +75,7 @@ public class CrewPNRController {
         return ResultMapVO.toJson(createResult);
     }
 
-    @RequestMapping("/crew/getReservationSummary")
+    @RequestMapping(value="/crew/getReservationSummary", method=RequestMethod.POST)
     public String getReservationSummary(@RequestBody ReservationSummaryCriteriaVO criteriaVO) throws Exception {
 //        criteriaVO.setDepStartDate("2023-09-05");
 //        criteriaVO.setDepEndDate("2023-09-27");
@@ -84,21 +84,21 @@ public class CrewPNRController {
         return ResultMapVO.toJson(crewBookingService.getReservationSummary(criteriaVO));
     }
 
-    @RequestMapping("/crew/retrieveBooking")
+    @RequestMapping(value="/crew/retrieveBooking", method=RequestMethod.GET)
     public String retrieveBooking(String pnrNumber) throws Exception {
         return ResultMapVO.toJson(crewBookingService.retrieveBooking(pnrNumber));
     }
 
-    @RequestMapping("/crew/cancelReservation")
+    @RequestMapping(value="/crew/cancelReservation", method=RequestMethod.POST)
     public String cancelReservation(@RequestBody Map<String, Object> params) throws Exception {
         return ResultMapVO.toJson(crewBookingService.cancelReservations((List<String>) params.get("pnrNumber")));
     }
 
-    @RequestMapping("/crew/splitPnr")
+    @RequestMapping(value="/crew/splitPnr", method=RequestMethod.POST)
     public String splitPnr(@RequestBody RetrieveChangeGateVO retrieveChangeGateVO) throws Exception {
         return ResultMapVO.toJson(crewBookingService.splitPnr(retrieveChangeGateVO));
     }
-    @RequestMapping("/crew/getCreateBookingFailLog")
+    @RequestMapping(value="/crew/getCreateBookingFailLog", method=RequestMethod.POST)
     public String getCreatePNRHistory(@RequestBody CrewPNRLogCriteriaVO criteriaVO) throws Exception {
 //        criteriaVO.setStnfrCode("GMP");
 //        criteriaVO.setStntoCode("CJU");
@@ -109,7 +109,7 @@ public class CrewPNRController {
         return ResultMapVO.toJson(ResultMapVO.simpleResult("result", crewBookingMapper.getCreateBookingFailLog(criteriaVO)));
     }
 
-    @RequestMapping("/crew/getSummaryListExcel")
+    @RequestMapping(value="/crew/getSummaryListExcel", method=RequestMethod.POST)
     public void retrieveSummaryListExcelDown(HttpServletRequest request, HttpServletResponse response, @RequestBody ReservationSummaryCriteriaVO criteriaVO) throws Exception{
 
         //Workbook workbook = new XSSFWorkbook();
@@ -204,7 +204,7 @@ public class CrewPNRController {
         return new ByteArrayInputStream(outputStream.toByteArray());
     }
 
-    @RequestMapping("/crew/acceptSchedule")
+    @RequestMapping(value="/crew/acceptSchedule", method=RequestMethod.GET)
     public String acceptSchedule(String pnrNumber) {
         return ResultMapVO.toJson(crewBookingService.acceptSchedule(pnrNumber));
     }

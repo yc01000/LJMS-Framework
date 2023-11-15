@@ -5,6 +5,7 @@ import com.lj.crewpnr.vo.CreateBookingsResultVO;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +17,7 @@ public class MailController {
     @Value("${server.scheme}://${server.name}")
     String serverEndpoint;
 
-    @RequestMapping(value="/mail/createBookingsResult", produces="text/html;charset=utf-8")
+    @RequestMapping(value="/mail/createBookingsResult", method=RequestMethod.GET, produces="text/html;charset=utf-8")
     @ResponseBody
     public String createBookingsResult(String q) {
         String contents = "";
