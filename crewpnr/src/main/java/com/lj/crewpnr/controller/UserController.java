@@ -28,6 +28,7 @@ public class UserController {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
         request.getSession().invalidate();
-        return "redirect:" + serverEndpoint + "/index.html";
+//        return "redirect:" + serverEndpoint + "/index.html";
+        return "redirect:https://ssostg.jinair.com/logout";
     }
 }

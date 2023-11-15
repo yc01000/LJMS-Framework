@@ -97,14 +97,19 @@ public class SecurityConfig {
             @Override
             public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException {
                 LOGGER.info("request url is: {}", request.getRequestURI());
-                String state = Base64.getEncoder().encodeToString(request.getRequestURI().getBytes(StandardCharsets.UTF_8));
-                String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&&state=%s", authorizeUri, clientId, redirectUri, state);
-                LOGGER.info("move to sso: {}", uri);
 
                 if(redirectionTargetUrls.contains(request.getRequestURI())) {
+                    String continueUrl = request.getRequestURI();
+                    String state = Base64.getEncoder().encodeToString(continueUrl.getBytes(StandardCharsets.UTF_8));
+                    String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&&state=%s", authorizeUri, clientId, redirectUri, state);
                     new DefaultRedirectStrategy().sendRedirect(request, response, uri);
                     return;
                 }
+
+                String continueUrl = request.getHeader("referer");
+                String state = Base64.getEncoder().encodeToString(continueUrl.getBytes(StandardCharsets.UTF_8));
+                String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&&state=%s", authorizeUri, clientId, redirectUri, state);
+                LOGGER.info("move to sso: {}", uri);
 
                 Map<String, Object> results = new HashMap<>();
                 results.put("error", "not signed in");

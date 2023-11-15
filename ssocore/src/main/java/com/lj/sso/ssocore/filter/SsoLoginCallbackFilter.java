@@ -75,11 +75,14 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 		String returnUrl = BinderUtils.chompString(request.getParameter("returnUrl"));
 		if(StringUtils.isBlank(returnUrl)) {
 			if(StringUtils.isNotBlank(request.getParameter("state"))) {
-				returnUrl = serverEndpoint + new String(Base64.getDecoder().decode(request.getParameter("state")));
+				returnUrl = new String(Base64.getDecoder().decode(request.getParameter("state")));
 			}
 		}
 		if(StringUtils.isBlank(returnUrl)) {
-			returnUrl = serverEndpoint + defaultReturnUri;
+			returnUrl = defaultReturnUri;
+		}
+		if(StringUtils.startsWithIgnoreCase(returnUrl, "/")) {
+			returnUrl = serverEndpoint + returnUrl;
 		}
 		LOGGER.info("{}|return url is replaced with return url: {}", uuid, returnUrl);
 
@@ -164,9 +167,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 		if(session == null) {
 			session	= request.getSession(true);
 		}
-		session.setAttribute(SsoConstants.USER_ACCESS_TOKEN, token);
 		session.setAttribute(SsoConstants.SPRING_SECURITY_CONTEXT, context);
-		session.setAttribute(SsoConstants.OAUTH_USER_SESSION, authentication.getPrincipal());
 
 		LOGGER.info("-|{}|sign in complete, returning to : {}", uuid, returnUrl);
 

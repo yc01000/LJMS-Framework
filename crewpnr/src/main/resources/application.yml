@@ -1,33 +1,5 @@
-spring:
-  profiles:
-    active: local-crewpnr
-  datasource:
-    pssdb:
-      jdbc-url: jdbc:oracle:thin:@jindev.cybtexbvxkgj.ap-northeast-2.rds.amazonaws.com:1521:orcl
-      username: stg017
-      password: stg017
-      driver-class-name: oracle.jdbc.driver.OracleDriver
-    emsdb:
-      jdbc-url: jdbc:oracle:thin:@emsdb.cybtexbvxkgj.ap-northeast-2.rds.amazonaws.com:1521:EMSDB
-      username: JINAIR
-      password: AIRJIN
-      driver-class-name: oracle.jdbc.driver.OracleDriver
-
-server:
-  scheme: https
-  name: local-crewpnr.jinair.com
-
 # SSO 클라이언트에서 정의해줘야 하는 sso 관련 properties
 sso:
-  oauth:
-    endpoint:
-      authorize: https://ssostg.jinair.com/oauth/authorize
-      token: https://ssostg.jinair.com/oauth/token
-      userinfo: https://ssostg.jinair.com/oauth/userinfo
-    client-id: local-crewpnr
-    client-secret: a76858d3-7500-475d-9e57-cef18fdf2e36
-    scope: ReadProfile,ReadAll,WriteProfile
-    redirect-uri: https://local-crewpnr.jinair.com/sso/callback
   policies:
     default-return-uri: /
     redirection:
@@ -36,7 +8,3 @@ sso:
         /reservations,
         /failhistories,
         /swagger-ui/index.html
-
-springdoc:
-  swagger-ui:
-    path: /swagger

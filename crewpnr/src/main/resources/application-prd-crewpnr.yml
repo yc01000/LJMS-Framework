@@ -31,12 +31,6 @@ sso:
     client-secret: a76858d3-7500-475d-9e57-cef18fdf2e36
     scope: ReadProfile,ReadAll,WriteProfile
     redirect-uri: https://stg-crewpnr.jinair.com/sso/callback
-  default-return-uri: https://stg-crewpnr.jinair.com/
-  aws:
-    s3:
-      region: ap-northeast-2
-      key-id: e4303df7-fd91-4c6b-a9a5-1413343bac0e
-  using-dummy-login: false
 
 logging:
   level:
