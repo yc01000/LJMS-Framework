@@ -63,7 +63,6 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 		// SSO로부터 redirect된 path가 아니면 리턴
 		final String REDIRECT_PATH = "/sso/callback";
 		if(!StringUtils.contains(request.getRequestURI(), REDIRECT_PATH)) {
-			//LOGGER.info("-|{}|/sso/callback이 아님", uuid);
 			filterChain.doFilter(request, response);
 			return;
 		}
