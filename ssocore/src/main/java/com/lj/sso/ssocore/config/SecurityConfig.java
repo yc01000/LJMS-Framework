@@ -62,22 +62,22 @@ public class SecurityConfig {
         return web -> web.ignoring().requestMatchers(matchers);
     }
 
-    @Bean
-    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("OPTIONS", "GET", "POST"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+//        configuration.setAllowedMethods(Arrays.asList("OPTIONS", "GET", "POST"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, SsoLoginCallbackFilter ssoLoginCallbackFilter) throws Exception {
         http
                 .headers(headers -> headers.frameOptions(f -> f.disable()))
                 .csrf(c -> c.disable())
-                .cors(Customizer.withDefaults())
+//                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(c -> c.anyRequest().hasRole("USER"))
                 .addFilterBefore(ssoLoginCallbackFilter, WebAsyncManagerIntegrationFilter.class)
                 .authenticationProvider(authenticationProvider())
