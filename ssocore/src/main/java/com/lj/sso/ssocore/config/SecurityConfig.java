@@ -7,12 +7,14 @@ import com.lj.sso.ssocore.util.BinderUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
@@ -22,9 +24,12 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -58,10 +63,21 @@ public class SecurityConfig {
     }
 
     @Bean
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("OPTIONS", "GET", "POST"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, SsoLoginCallbackFilter ssoLoginCallbackFilter) throws Exception {
         http
                 .headers(headers -> headers.frameOptions(f -> f.disable()))
                 .csrf(c -> c.disable())
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(c -> c.anyRequest().hasRole("USER"))
                 .addFilterBefore(ssoLoginCallbackFilter, WebAsyncManagerIntegrationFilter.class)
                 .authenticationProvider(authenticationProvider())
@@ -112,19 +128,25 @@ public class SecurityConfig {
             @Value("${sso.policies.redirection.target-urls}")
             private List<String> redirectionTargetUrls;
 
+            @Value("${sso.policies.default-return-uri}")
+            private String defaultReturnUri;
+
             @Override
             public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException {
                 LOGGER.info("request url is: {}", request.getRequestURI());
 
                 if(redirectionTargetUrls.contains(request.getRequestURI())) {
-                    String continueUrl = request.getRequestURI();
-                    String state = Base64.getEncoder().encodeToString(continueUrl.getBytes(StandardCharsets.UTF_8));
+                    String state = Base64.getEncoder().encodeToString(request.getRequestURI().getBytes(StandardCharsets.UTF_8));
                     String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&&state=%s", authorizeUri, clientId, redirectUri, state);
                     new DefaultRedirectStrategy().sendRedirect(request, response, uri);
                     return;
                 }
 
                 String continueUrl = request.getHeader("referer");
+                if(StringUtils.isBlank(continueUrl)) {
+                    continueUrl = defaultReturnUri;
+                }
+
                 String state = Base64.getEncoder().encodeToString(continueUrl.getBytes(StandardCharsets.UTF_8));
                 String uri = String.format("%s?response_type=code&client_id=%s&redirect_uri=%s&&state=%s", authorizeUri, clientId, redirectUri, state);
                 LOGGER.info("move to sso: {}", uri);

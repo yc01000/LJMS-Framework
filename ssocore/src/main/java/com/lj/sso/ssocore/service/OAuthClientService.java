@@ -126,8 +126,6 @@ public class OAuthClientService {
 		LOGGER.debug("requestOAuthService : request url is {}", requestUrl);
 		ResponseEntity<String> response = restTemplate.exchange(requestUrl, httpMethod, request, String.class);
 
-		String httpResponse = (null == response) ? "" : response.getBody();
-
-		return httpResponse;
+        return response.getBody();
 	}
 }
