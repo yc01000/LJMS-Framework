@@ -6,6 +6,7 @@ import com.lj.sso.ssocore.filter.SsoLoginCallbackFilter;
 import com.lj.sso.ssocore.util.BinderUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -25,7 +25,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +36,9 @@ public class SecurityConfig {
     @Value("${sso.using-dummy-login}")
     private boolean usingDummyLogin;
 
+    @Value("${sso.ignoring-urls}")
+    private List<String> ssoIgnoringUrls;
+
     @Bean
     public SsoLoginCallbackFilter ssoLoginCallbackFilter() {
         return new SsoLoginCallbackFilter();
@@ -44,9 +46,15 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers(
-                new AntPathRequestMatcher("/swagger-ui/**"),
-                new AntPathRequestMatcher("/v3/api-docs/**"));
+        if(CollectionUtils.isEmpty(ssoIgnoringUrls)) {
+            return web -> {};
+        }
+
+        var matchers = ssoIgnoringUrls.stream()
+                .map(AntPathRequestMatcher::new)
+                .toList()
+                .toArray(new AntPathRequestMatcher[0]);
+        return web -> web.ignoring().requestMatchers(matchers);
     }
 
     @Bean
@@ -102,7 +110,7 @@ public class SecurityConfig {
             private String scope;
 
             @Value("${sso.policies.redirection.target-urls}")
-            private List<String> redirectionTargetUrls = new ArrayList<>();
+            private List<String> redirectionTargetUrls;
 
             @Override
             public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException {

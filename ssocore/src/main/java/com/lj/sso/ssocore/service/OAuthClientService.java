@@ -24,22 +24,22 @@ public class OAuthClientService {
 
 	private static final Logger LOGGER	= LoggerFactory.getLogger(OAuthClientService.class);
 
-	@Value(("${sso.oauth.endpoint.token}"))
+	@Value("${sso.oauth.endpoint.token}")
 	private String tokenUri;
 
-	@Value(("${sso.oauth.endpoint.userinfo}"))
+	@Value("${sso.oauth.endpoint.userinfo}")
 	private String userinfoUri;
 
-	@Value(("${sso.oauth.client-id}"))
+	@Value("${sso.oauth.client-id}")
 	private String clientId;
 
-	@Value(("${sso.oauth.client-secret}"))
+	@Value("${sso.oauth.client-secret}")
 	private String clientSecret;
 
-	@Value(("${sso.oauth.scope}"))
+	@Value("${sso.oauth.scope}")
 	private String scope;
 
-	@Value(("${sso.oauth.redirect-uri}"))
+	@Value("${sso.oauth.redirect-uri}")
 	private String redirectUri;
 
 	/**

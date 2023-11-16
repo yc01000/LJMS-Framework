@@ -31,6 +31,9 @@ sso:
     client-secret: a76858d3-7500-475d-9e57-cef18fdf2e36
     scope: ReadProfile,ReadAll,WriteProfile
     redirect-uri: https://stg-crewpnr.jinair.com/sso/callback
+  ignoring-urls: >
+    /swagger-ui/**,
+    /v3/api-docs/**
   using-dummy-login: true
 
 # 패키지별 로그 레벨
