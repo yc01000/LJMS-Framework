@@ -7,6 +7,7 @@ import com.lj.core.commoncode.handler.RegionHandler;
 import com.lj.core.util.WebUtils;
 import com.lj.crewpnr.common.IBSDomainUtils;
 import com.lj.crewpnr.service.SampleService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.sql.SQLException;
 
 @Controller
+@Hidden
 public class SampleController {
 
     @Autowired

@@ -18,7 +18,7 @@ public class SpringDocConfig {
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
-                .info(new Info().title("승무원 예약 시스템").version("0.0.1"))
+                .info(new Info().title("승무원 예약 시스템").version("0.0.1").description("운항포털 > 승무원 예약 생성/조회 시스템"))
                 .servers(Arrays.asList(new Server().url(serverEndpoint)));
     }
 }

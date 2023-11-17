@@ -12,6 +12,7 @@ import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 //import com.lj.crewpnr.vo.excel.CreateListExcel;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
 import com.lj.crewpnr.vo.excel.ExcelInfoVO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Tag(name="crew", description="승무원 예약 API")
 public class CrewPNRController {
     @Autowired
     private CrewBookingService crewBookingService;

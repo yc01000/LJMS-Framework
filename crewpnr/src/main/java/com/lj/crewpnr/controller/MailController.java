@@ -2,6 +2,7 @@ package com.lj.crewpnr.controller;
 
 import com.google.gson.Gson;
 import com.lj.crewpnr.vo.CreateBookingsResultVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.nio.charset.StandardCharsets;
 
 @RestController
+@Hidden
 public class MailController {
 
     @Value("${server.scheme}://${server.name}")
