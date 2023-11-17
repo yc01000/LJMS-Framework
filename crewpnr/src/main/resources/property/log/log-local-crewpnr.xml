@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
 	<property name="LOGS_APP_NAME" value="crewpnr" />
+	<property name="DATADOG_LOG_PATH" value="/data/psslog/CREWPNR_LOG" />
+	<property name="LOGFILE_PATH" value="/data/ljmicroservices/logs/crewpnr" />
 	
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<charset>UTF-8</charset>
 			<pattern>logback %d{HH:mm:ss.SSS} [%-10thread{10}] %-5level [%-36logger{36}] - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- DataDog Log Appender -->
+	<appender name="DATADOG_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${DATADOG_LOG_PATH}/${spring.profiles.active}-webapp.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${DATADOG_LOG_PATH}/${spring.profiles.active}-webapp.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>1</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<includeTags>true</includeTags>
+			<customFields>{"host":"${HOSTNAME}", "service":"${dd.service}", "ddsource":"java", "ddtags":"env:${dd.env}"}</customFields>
 		</encoder>
 	</appender>
 
@@ -20,6 +40,24 @@
 		<encoder>
 			<charset>UTF-8</charset>
 			<pattern>{"T":"%d{yyyy-MM-dd HH:mm:ss.SSS}","stage":"${spring.profiles.active}","level":"%level","msg":%msg,"thread":"[%thread]"}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- DataDog Log Appender -->
+	<appender name="appenderLogfileGeneral" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGFILE_PATH}/general-${spring.profiles.active}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGFILE_PATH}/general-${spring.profiles.active}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>1</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<includeTags>true</includeTags>
+			<customFields>{"host":"${HOSTNAME}", "service":"${dd.service}", "ddsource":"java", "ddtags":"env:${dd.env}"}</customFields>
 		</encoder>
 	</appender>
 
@@ -44,9 +82,9 @@
 	<logger name="jdbc.resultset" level="error" />
 
 	<logger name="oracle.jdbc" level="debug" />
-	<!-- application logger -->
-	<logger name="com.lj.crewpnr" additivity="true" level="debug"/>
+
 	<root level="debug">
+		<appender-ref ref="appenderLogfileGeneral" />
 		<appender-ref ref="STDOUT"/>
 	</root>
 </included>

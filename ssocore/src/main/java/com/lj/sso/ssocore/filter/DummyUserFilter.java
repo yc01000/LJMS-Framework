@@ -21,7 +21,7 @@ public class DummyUserFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        boolean developer = StringUtils.startsWith(request.getHeader("user-agent"), "PostmanRuntime") || StringUtils.equals(request.getHeader("referer"), "http://localhost:5173/");
+        boolean developer = StringUtils.startsWith(request.getHeader("user-agent"), "PostmanRuntime") || StringUtils.contains(";http://localhost:5173;https://dssstg.jinair.com;", request.getHeader("origin"));
         if(!developer) {
             filterChain.doFilter(request, response);
             return;

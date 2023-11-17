@@ -1,9 +1,12 @@
 package com.lj.sso.ssocore.config;
 
 import com.google.gson.Gson;
+import com.lj.sso.ssocore.filter.CorsFilter;
 import com.lj.sso.ssocore.filter.DummyUserFilter;
 import com.lj.sso.ssocore.filter.SsoLoginCallbackFilter;
 import com.lj.sso.ssocore.util.BinderUtils;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,6 +29,7 @@ import org.springframework.security.web.context.request.async.WebAsyncManagerInt
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -77,14 +81,15 @@ public class SecurityConfig {
         http
                 .headers(headers -> headers.frameOptions(f -> f.disable()))
                 .csrf(c -> c.disable())
-//                .cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(c -> c.anyRequest().hasRole("USER"))
                 .addFilterBefore(ssoLoginCallbackFilter, WebAsyncManagerIntegrationFilter.class)
+                .addFilterBefore(new CorsFilter(), SsoLoginCallbackFilter.class)
                 .authenticationProvider(authenticationProvider())
                 .httpBasic(c -> c.authenticationEntryPoint(authenticationEntryPoint()))
                 .logout(logout -> logout.logoutUrl("/logout").invalidateHttpSession(true));
         if(usingDummyLogin) {
-            http.addFilterBefore(new DummyUserFilter(), SsoLoginCallbackFilter.class);
+            http.addFilterAfter(new DummyUserFilter(), CorsFilter.class);
         }
 
         return http.build();
