@@ -353,11 +353,11 @@ public class CrewBookingService {
                 MailInfoVO mailInfoVO = new MailInfoVO();
                 mailInfoVO.setMailContentsType(MailInfoVO.MailContentType.URL);
                 mailInfoVO.setTaskId(74);
-                mailInfoVO.setReceiverEmail("laevus@jinair.com");
-                mailInfoVO.setReceiverName("laevus@jinair.com");
+                mailInfoVO.setReceiverEmail(form.getLoginUser().getEmail());
+                mailInfoVO.setReceiverName(form.getLoginUser().getUserName());
                 mailInfoVO.setMailTitle("CREW PNR 생성 완료 (" + DateUtils.string(dateEnd, "yyyy-MM-dd HH:mm") + ")");
                 mailInfoVO.setMailContents(url);
-                mailInfoVO.setReceiverId("laevus");
+                mailInfoVO.setReceiverId("SYSTEM");
                 mailInfoVO.setSenderEmail("system@jinair.com");
                 mailInfoVO.setSenderName("system@jinair.com");
                 mailService.send(mailInfoVO);
