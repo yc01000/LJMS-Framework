@@ -33,7 +33,8 @@ sso:
     redirect-uri: https://local-crewpnr.jinair.com/sso/callback
   ignoring-urls: >
     /swagger-ui/**,
-    /v3/api-docs/**
+    /v3/api-docs/**,
+    /mail/**
   using-dummy-login: true
 
 # 패키지별 로그 레벨
