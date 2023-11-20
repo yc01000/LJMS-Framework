@@ -24,13 +24,15 @@ server:
 sso:
   oauth:
     endpoint:
-      authorize: https://ssostg.jinair.com/oauth/authorize
-      token: https://ssostg.jinair.com/oauth/token
-      userinfo: https://ssostg.jinair.com/oauth/userinfo
-    client-id: local-crewpnr
-    client-secret: a76858d3-7500-475d-9e57-cef18fdf2e36
+      authorize: https://ssostg.jinair.com/oauth/authorize # 인가 코드 발급
+      token: https://ssostg.jinair.com/oauth/token # 토큰 발급
+      userinfo: https://ssostg.jinair.com/oauth/userinfo # 사용자 정보 조회
+      signout: https://ssostg.jinair.com/logout # 로그아웃
+    client-id: stg-crewpnr
+    client-secret: e3bc5b51-ef6b-4521-b678-d32f23ff9a74
     scope: ReadProfile,ReadAll,WriteProfile
-    redirect-uri: https://stg-crewpnr.jinair.com/sso/callback
+  redirect-path: /sso/callback # sso 로그인 후 전달받을 콜백 url
+  logout-path: /sso/signout # sso 로그아웃 url
   ignoring-urls: >
     /swagger-ui/**,
     /v3/api-docs/**,

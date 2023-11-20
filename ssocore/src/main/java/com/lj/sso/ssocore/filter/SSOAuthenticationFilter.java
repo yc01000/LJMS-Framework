@@ -29,7 +29,6 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 
@@ -53,6 +52,9 @@ public class SSOAuthenticationFilter extends OncePerRequestFilter {
 	@Value("${server.scheme}://${server.name}")
 	String serverEndpoint;
 
+	@Value("${sso.redirect-path}")
+	String redirectPath;
+
 	@Value("${sso.policies.default-return-uri}")
 	private String defaultReturnUri;
 
@@ -61,8 +63,7 @@ public class SSOAuthenticationFilter extends OncePerRequestFilter {
 		LOGGER.info("+|{}", request.getAttribute("rid"));
 
 		// SSO로부터 redirect된 path가 아니면 리턴
-		final String REDIRECT_PATH = "/sso/callback";
-		if(!StringUtils.contains(request.getRequestURI(), REDIRECT_PATH)) {
+		if(!StringUtils.startsWithIgnoreCase(request.getRequestURI(), redirectPath)) {
 			LOGGER.info("-|{}|/sso/callback이 아님", request.getAttribute("rid"));
 			filterChain.doFilter(request, response);
 			return;
@@ -107,6 +108,7 @@ public class SSOAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
+		// access token
 		String tokenResponse = oauthClientService.requestAccessToken(code);
 		LOGGER.info("{}|token: {}", request.getAttribute("rid"), tokenResponse);
 		if(StringUtils.isBlank(tokenResponse)) {
@@ -129,7 +131,7 @@ public class SSOAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		// access token이 있는 경우 사용자 정보 확인
+		// userinfo
 		String userinfoResponse = oauthClientService.requestUserInfo(accessToken);
 		LOGGER.info("{}|userinfo: {}", request.getAttribute("rid"), userinfoResponse);
 		if(StringUtils.isBlank(userinfoResponse)) {
@@ -145,6 +147,7 @@ public class SSOAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
+		// security context
 		AbstractAuthenticationToken authentication = null;
 		try {
 			UserInfoVO userInfo = new Gson().fromJson(userinfoResponse, UserInfoVO.class);

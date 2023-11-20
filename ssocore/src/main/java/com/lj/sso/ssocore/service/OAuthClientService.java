@@ -36,7 +36,7 @@ public class OAuthClientService {
 	@Value("${sso.oauth.scope}")
 	private String scope;
 
-	@Value("${sso.oauth.redirect-uri}")
+	@Value("${server.scheme}://${server.name}${sso.redirect-path}")
 	private String redirectUri;
 
 	/**

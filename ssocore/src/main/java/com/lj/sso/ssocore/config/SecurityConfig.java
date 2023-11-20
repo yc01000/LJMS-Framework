@@ -43,6 +43,12 @@ public class SecurityConfig {
     @Value("${sso.ignoring-urls}")
     private List<String> ssoIgnoringUrls;
 
+    @Value("${sso.logout-path}")
+    private String logoutPath;
+
+    @Value("${sso.oauth.endpoint.signout}")
+    private String signoutEndpoint;
+
     @Bean
     public SSOAuthenticationFilter ssoAuthenticateFilter() {
         return new SSOAuthenticationFilter();
@@ -73,7 +79,15 @@ public class SecurityConfig {
                 .addFilterBefore(new CORSFilter(), JWTAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider())
                 .httpBasic(c -> c.authenticationEntryPoint(authenticationEntryPoint()))
-                .logout(logout -> logout.logoutUrl("/logout").invalidateHttpSession(true));
+                .logout(logout -> logout.logoutUrl(logoutPath)
+                        .invalidateHttpSession(true)
+                        .addLogoutHandler((request, response, authentication) -> {
+                            try {
+                                new DefaultRedirectStrategy().sendRedirect(request, response, signoutEndpoint);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }));
         if(usingDummyLogin) {
             http.addFilterAfter(new DummyUserFilter(), CORSFilter.class);
         }
@@ -110,7 +124,7 @@ public class SecurityConfig {
             @Value("${sso.oauth.client-id}")
             private String clientId;
 
-            @Value("${sso.oauth.redirect-uri}")
+            @Value("${server.scheme}://${server.name}${sso.redirect-path}")
             private String redirectUri;
 
             @Value("${sso.oauth.scope}")
