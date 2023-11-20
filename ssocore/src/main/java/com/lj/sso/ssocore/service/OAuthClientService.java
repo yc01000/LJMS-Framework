@@ -1,10 +1,7 @@
 package com.lj.sso.ssocore.service;
 
-import com.google.gson.Gson;
-import com.lj.sso.ssocore.model.UserToken;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,22 +64,12 @@ public class OAuthClientService {
 	 * @param
 	 * @return String
 	 */
-	public UserToken requestRefreshToken(UserToken userToken) {
+	public String requestRefreshToken(String refreshToken) {
 		String credentials = clientId + ":" + clientSecret;
 		String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes()));
 
-		String param = "grant_type=refresh_token&scope=" + scope + "&refresh_token=" + userToken.getRefresh_token();
-		String httpResponse = requestOAuthService(tokenUri, HttpMethod.POST, "application/x-www-form-urlencoded", encodedCredentials, param);
-
-		UserToken newUserToken = new UserToken();
-		try {
-			newUserToken = new Gson().fromJson(httpResponse, UserToken.class);
-		} catch (Exception e) {
-			LOGGER.error(ExceptionUtils.getStackTrace(e));
-			return null;
-		}
-
-		return newUserToken;
+		String param = "grant_type=refresh_token&scope=" + scope + "&refresh_token=" + refreshToken;
+		return requestOAuthService(tokenUri, HttpMethod.POST, "application/x-www-form-urlencoded", encodedCredentials, param);
 	}
 
 	/**
@@ -92,8 +79,8 @@ public class OAuthClientService {
 	 * @param
 	 * @return String
 	 */
-	public String requestUserInfo(UserToken userToken) {
-		String param = "?access_token=" + userToken.getAccess_token();
+	public String requestUserInfo(String accessToken) {
+		String param = "?access_token=" + accessToken;
 
 		String httpResponse = requestOAuthService(userinfoUri, HttpMethod.GET, null, null, param);
 		LOGGER.debug("User Information Response - {}", httpResponse);

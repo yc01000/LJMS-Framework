@@ -2,17 +2,17 @@ package com.lj.sso.ssocore.filter;
 
 import com.google.gson.Gson;
 import com.lj.sso.ssocore.model.SsoAuthenticationToken;
+import com.lj.sso.ssocore.model.UserInfoVO;
+import com.lj.sso.ssocore.service.OAuthClientService;
 import com.lj.sso.ssocore.util.BinderUtils;
 import com.lj.sso.ssocore.util.SsoConstants;
-import com.lj.sso.ssocore.model.UserInfoVO;
-import com.lj.sso.ssocore.model.UserToken;
-import com.lj.sso.ssocore.service.OAuthClientService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +43,9 @@ import java.util.UUID;
  *  @version : 1.0
  *  @desc    : 페이지 접근시마다 인증 여부를 확인
  */
-public class SsoLoginCallbackFilter extends OncePerRequestFilter {
+public class SSOAuthenticationFilter extends OncePerRequestFilter {
 
-	private final static Logger LOGGER = LoggerFactory.getLogger(SsoLoginCallbackFilter.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(SSOAuthenticationFilter.class);
 
 	@Autowired
 	private OAuthClientService oauthClientService;
@@ -58,18 +58,19 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		String uuid = UUID.randomUUID().toString();
+		LOGGER.info("+|{}", request.getAttribute("rid"));
 
 		// SSO로부터 redirect된 path가 아니면 리턴
 		final String REDIRECT_PATH = "/sso/callback";
 		if(!StringUtils.contains(request.getRequestURI(), REDIRECT_PATH)) {
+			LOGGER.info("-|{}|/sso/callback이 아님", request.getAttribute("rid"));
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		String remoteIp = getRemoteAddr(request);
 		String query = BinderUtils.chompString(request.getQueryString());
-		LOGGER.info("+|{}|remote ip: {}, query: {}", uuid, remoteIp, query);
+		LOGGER.info("+|{}|/sso/callback|ip: {}, query: {}", request.getAttribute("rid"), remoteIp, query);
 
 		String returnUrl = BinderUtils.chompString(request.getParameter("returnUrl"));
 		if(StringUtils.isBlank(returnUrl)) {
@@ -83,7 +84,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 		if(StringUtils.startsWithIgnoreCase(returnUrl, "/")) {
 			returnUrl = serverEndpoint + returnUrl;
 		}
-		LOGGER.info("{}|return url is replaced with return url: {}", uuid, returnUrl);
+		LOGGER.info("{}|return url is replaced with return url: {}", request.getAttribute("rid"), returnUrl);
 
 		// /sso/callback으로 접근했지만, 이미 principal이 있을 경우 리턴
 		HttpSession session = request.getSession(false);
@@ -92,7 +93,7 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 			if(context != null) {
 				Authentication authentication = context.getAuthentication();
 				if(authentication != null) {
-					LOGGER.info("-|{}|이미 정상 사용자로 인증되고, 해당 시스템 내 세션에 사용자 정보가 존재하는 경우는 Bypass (정상 사용자 처리)", uuid);
+					LOGGER.info("-|{}|이미 정상 사용자로 인증되고, 해당 시스템 내 세션에 사용자 정보가 존재하는 경우는 Bypass (정상 사용자 처리)", request.getAttribute("rid"));
 					new DefaultRedirectStrategy().sendRedirect(request, response, returnUrl);
 					return;
 				}
@@ -101,60 +102,63 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 
 		String code = BinderUtils.chompString(request.getParameter("code"));
 		if(StringUtils.isBlank(code)) {
-			LOGGER.error("-|{}|empty authorization code", uuid);
+			LOGGER.error("-|{}|empty authorization code", request.getAttribute("rid"));
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		String tokenResponse = oauthClientService.requestAccessToken(code);
-		LOGGER.info("{}|token: {}", uuid, tokenResponse);
+		LOGGER.info("{}|token: {}", request.getAttribute("rid"), tokenResponse);
 		if(StringUtils.isBlank(tokenResponse)) {
-			LOGGER.error("-|{}|empty access token", uuid);
+			LOGGER.error("-|{}|empty access token", request.getAttribute("rid"));
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		UserToken token = new Gson().fromJson(tokenResponse, UserToken.class);
-		if(token == null) {
-			LOGGER.error("-|{}|액세스 토큰 없음으로 인한 실패", uuid);
+		String accessToken = null;
+		try {
+			accessToken = (String) new Gson().fromJson(tokenResponse, HashMap.class).get("access_token");
+		} catch(Exception e) {
+			LOGGER.error("-|{}|토큰 파싱 중 실패|{}", request.getAttribute("rid"), ExceptionUtils.getStackTrace(e));
+			filterChain.doFilter(request, response);
+			return;
+		}
+		if(StringUtils.isBlank(accessToken)) {
+			LOGGER.error("-|{}|액세스 토큰 없음으로 인한 실패", request.getAttribute("rid"));
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		// access token이 있는 경우 사용자 정보 확인
-		String userinfoResponse = oauthClientService.requestUserInfo(token);
-		LOGGER.info("{}|userinfo: {}", uuid, userinfoResponse);
+		String userinfoResponse = oauthClientService.requestUserInfo(accessToken);
+		LOGGER.info("{}|userinfo: {}", request.getAttribute("rid"), userinfoResponse);
 		if(StringUtils.isBlank(userinfoResponse)) {
-			LOGGER.error("-|{}|empty userinfo", uuid);
+			LOGGER.error("-|{}|empty userinfo", request.getAttribute("rid"));
 			filterChain.doFilter(request, response);
 			return;
 		} else if(StringUtils.containsIgnoreCase(userinfoResponse, "error")) {
 			Map<String, String> errorResponse = new Gson().fromJson(userinfoResponse, HashMap.class);
 			String error = errorResponse.get("error");
 			String errorDescription = errorResponse.get("error_description");
-			if(StringUtils.equalsIgnoreCase(error, "invalid_token")) {
-				if(StringUtils.equalsIgnoreCase(errorDescription, "Access token expired")) {
-					token = oauthClientService.requestRefreshToken(token);
-					if(token == null) {
-						LOGGER.error("-|{}|리프레시 토큰을 통한 갱신 실패", uuid);
-						filterChain.doFilter(request, response);
-						return;
-					}
-				} else {
-					LOGGER.error("-|{}|토큰 만료됨", uuid);
-					filterChain.doFilter(request, response);
-					return;
-				}
-			}
-			LOGGER.error("-|{}|empty userinfo", uuid);
+			LOGGER.error("-|{}|사용자 정보 조회 실패: {} {}", request.getAttribute("rid"), error, errorDescription);
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		// authentication 취득
-		AbstractAuthenticationToken authentication = authUserByToken(request, userinfoResponse);
-		if(authentication == null || authentication.getPrincipal() == null) {
-			LOGGER.error("-|{}|authUser is null", uuid);
+		AbstractAuthenticationToken authentication = null;
+		try {
+			UserInfoVO userInfo = new Gson().fromJson(userinfoResponse, UserInfoVO.class);
+			userInfo.setLoginTm(new Date());
+			userInfo.setLoginIp(getRemoteAddr(request));
+			userInfo.setLoginChnlCd("PCW");
+			authentication = new SsoAuthenticationToken(userInfo.getAuthorities(), userInfo);
+		} catch (Exception e) {
+			LOGGER.error("-|{}|사용자 정보 파싱 중 실패|{}", request.getAttribute("rid"), ExceptionUtils.getStackTrace(e));
+			filterChain.doFilter(request, response);
+			return;
+		}
+		if(authentication == null) {
+			LOGGER.error("-|{}|사용자 정보 없음으로 인한 실패", request.getAttribute("rid"));
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -168,33 +172,9 @@ public class SsoLoginCallbackFilter extends OncePerRequestFilter {
 		}
 		session.setAttribute(SsoConstants.SPRING_SECURITY_CONTEXT, context);
 
-		LOGGER.info("-|{}|sign in complete, returning to : {}", uuid, returnUrl);
+		LOGGER.info("-|{}|sign in complete, returning to : {}", request.getAttribute("rid"), returnUrl);
 
 		new DefaultRedirectStrategy().sendRedirect(request, response, returnUrl);
-	}
-
-	private AbstractAuthenticationToken authUserByToken(HttpServletRequest request, String userToken) {
-		if (StringUtils.isEmpty(userToken)) {
-			return null;
-		}
-
-		try {
-			UserInfoVO userInfo = new Gson().fromJson(userToken, UserInfoVO.class);
-
-			AbstractAuthenticationToken authUser	= new SsoAuthenticationToken(userInfo.getAuthorities(), userInfo);
-			authUser.setAuthenticated(true);
-
-			UserInfoVO principal = (UserInfoVO) authUser.getPrincipal();
-			principal.setLoginTm(new Date());
-			principal.setLoginIp(getRemoteAddr(request));
-			principal.setLoginChnlCd("PCW");
-
-			return authUser;
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-		} 
-
-		return null;
 	}
 
 	private String getRemoteAddr(HttpServletRequest request) {

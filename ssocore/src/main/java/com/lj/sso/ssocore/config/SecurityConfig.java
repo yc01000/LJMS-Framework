@@ -1,12 +1,11 @@
 package com.lj.sso.ssocore.config;
 
 import com.google.gson.Gson;
-import com.lj.sso.ssocore.filter.CorsFilter;
+import com.lj.sso.ssocore.filter.CORSFilter;
 import com.lj.sso.ssocore.filter.DummyUserFilter;
-import com.lj.sso.ssocore.filter.SsoLoginCallbackFilter;
+import com.lj.sso.ssocore.filter.JWTAuthenticationFilter;
+import com.lj.sso.ssocore.filter.SSOAuthenticationFilter;
 import com.lj.sso.ssocore.util.BinderUtils;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,13 +26,9 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +44,8 @@ public class SecurityConfig {
     private List<String> ssoIgnoringUrls;
 
     @Bean
-    public SsoLoginCallbackFilter ssoLoginCallbackFilter() {
-        return new SsoLoginCallbackFilter();
+    public SSOAuthenticationFilter ssoAuthenticateFilter() {
+        return new SSOAuthenticationFilter();
     }
 
     @Bean
@@ -66,30 +61,21 @@ public class SecurityConfig {
         return web -> web.ignoring().requestMatchers(matchers);
     }
 
-//    @Bean
-//    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-//        configuration.setAllowedMethods(Arrays.asList("OPTIONS", "GET", "POST"));
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, SsoLoginCallbackFilter ssoLoginCallbackFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, SSOAuthenticationFilter ssoAuthenticationFilter) throws Exception {
         http
                 .headers(headers -> headers.frameOptions(f -> f.disable()))
                 .csrf(c -> c.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(c -> c.anyRequest().hasRole("USER"))
-                .addFilterBefore(ssoLoginCallbackFilter, WebAsyncManagerIntegrationFilter.class)
-                .addFilterBefore(new CorsFilter(), SsoLoginCallbackFilter.class)
+                .addFilterBefore(ssoAuthenticationFilter, WebAsyncManagerIntegrationFilter.class)
+                .addFilterBefore(new JWTAuthenticationFilter(), SSOAuthenticationFilter.class)
+                .addFilterBefore(new CORSFilter(), JWTAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider())
                 .httpBasic(c -> c.authenticationEntryPoint(authenticationEntryPoint()))
                 .logout(logout -> logout.logoutUrl("/logout").invalidateHttpSession(true));
         if(usingDummyLogin) {
-            http.addFilterAfter(new DummyUserFilter(), CorsFilter.class);
+            http.addFilterAfter(new DummyUserFilter(), CORSFilter.class);
         }
 
         return http.build();

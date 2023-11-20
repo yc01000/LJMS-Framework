@@ -21,19 +21,14 @@ import com.lj.sso.ssocore.model.UserInfoVO;
  *  @desc    : 
  */
 public class SsoAuthenticationToken extends AbstractAuthenticationToken {
-	/**
-	 * serialVersionUID
-	 */
-	private static final long serialVersionUID = -3436609935960645677L;
 
-	private static final Logger	LOGGER	= LoggerFactory.getLogger(SsoAuthenticationToken.class);
-	
-	private UserInfoVO	userInfo;
+	private UserInfoVO userInfo;
 
 	public SsoAuthenticationToken(Collection<? extends GrantedAuthority> authorities, UserInfoVO userInfo) {
 		super(authorities);
 
-		this.userInfo	= userInfo;
+		this.userInfo = userInfo;
+		setAuthenticated(true);
 	}
 
 	@Override
@@ -47,10 +42,6 @@ public class SsoAuthenticationToken extends AbstractAuthenticationToken {
 
 	@Override
 	public Object getPrincipal() {
-		if (null == this.userInfo) {
-			return null;
-		} else {
-			return this.userInfo;
-		}
+		return this.userInfo;
 	}
 }
