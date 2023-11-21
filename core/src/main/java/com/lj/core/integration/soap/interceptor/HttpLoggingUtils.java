@@ -15,18 +15,17 @@ public class HttpLoggingUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HttpLoggingUtils.class);
 	
 	private static final String _UNDEFIND = "UNDEFINED";
-	public static String getClientSessionId(HttpComponentsConnection connection){
-		if( connection == null ){
+	public static String getClientSessionId(HttpComponentsConnection connection) {
+		if (connection == null) {
 			return null;
-		}		
-        for(Header header : connection.getHttpPost().getAllHeaders()) {        	
-       		if( "CLIENT_SESSION_ID".compareTo(header.getName()) == 0 ){
-       			return header.getValue();
-       		}
-        }		
-		return _UNDEFIND;		
+		}
+		for (Header header : connection.getHttpPost().getAllHeaders()) {
+			if ("CLIENT_SESSION_ID".compareTo(header.getName()) == 0) {
+				return header.getValue();
+			}
+		}
+		return _UNDEFIND;
 	}
-		
 	
 	public static String logMessage(String id, HttpComponentsConnection connection, MessageContext messageContext){
 		

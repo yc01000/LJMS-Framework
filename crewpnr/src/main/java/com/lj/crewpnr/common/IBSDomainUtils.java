@@ -1,12 +1,9 @@
 package com.lj.crewpnr.common;
 
-import com.lj.core.util.CodeConstants.AccessChannelCode;
 import com.lj.core.commoncode.handler.CityAirportHandler;
 import com.lj.core.commoncode.handler.CountryHandler;
 import com.lj.core.commoncode.vo.CityAirportInfoVO;
 import com.lj.core.commoncode.vo.CountryInfoVO;
-import com.lj.core.integration.soap.ibs.IbsChannel;
-import com.lj.core.integration.soap.ibs.IbsChannel.DomIntType;
 import com.lj.core.integration.soap.ibs.domain.booking.*;
 import com.lj.crewpnr.common.Constants.ERROR_CODE;
 import org.apache.commons.collections4.CollectionUtils;
@@ -133,32 +130,6 @@ public class IBSDomainUtils {
 		GuestRequestDetailsType guestRequest = new GuestRequestDetailsType();
 		BeanUtils.copyProperties(guestResponse, guestRequest);
 		return guestRequest;
-	}
-
-	public static BookingChannelType getBookingChannel(boolean domestic) {
-		BookingChannelType channel = new BookingChannelType();
-		channel.setChannelType(Constants.IBS_BOOKING_CHANNEL_CHANNEL_TYPE);
-		channel.setChannel(IbsChannel.find(AccessChannelCode.B2T, domestic ? DomIntType.DOM : DomIntType.INT));
-		channel.setChannel("PW" + (domestic ? "D" : "I"));
-		channel.setLocale(Constants.IBS_BOOKING_CHANNEL_LOCALE);
-		return channel;
-	}
-
-	public static BookingChannelKeyType getBookingChannelKey(boolean domestic) {
-		BookingChannelKeyType channel = new BookingChannelKeyType();
-		channel.setChannelType(Constants.IBS_BOOKING_CHANNEL_CHANNEL_TYPE);
-		channel.setChannel(IbsChannel.find(AccessChannelCode.B2T, domestic ? DomIntType.DOM : DomIntType.INT));
-		channel.setChannel("PW" + (domestic ? "D" : "I"));
-		channel.setLocale(Constants.IBS_BOOKING_CHANNEL_LOCALE);
-		return channel;
-	}
-
-	public static BookingChannelType bookingChannel(String loginChannel, boolean domestic) {
-		BookingChannelType channel = new BookingChannelType();
-		channel.setChannelType(Constants.IBS_BOOKING_CHANNEL_CHANNEL_TYPE);
-		channel.setChannel(IbsChannel.find(loginChannel, domestic ? DomIntType.DOM : DomIntType.INT));
-		channel.setLocale(Constants.IBS_BOOKING_CHANNEL_LOCALE);
-		return channel;
 	}
 
 	public static BookingChannelKeyType bookingChannelKey(String channel) {
