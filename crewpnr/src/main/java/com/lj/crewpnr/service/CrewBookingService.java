@@ -348,6 +348,7 @@ public class CrewBookingService {
                 createBookingsResult.setFailureCount(failCnt);
                 createBookingsResult.setDateStart(DateUtils.string(dateStart, "yyyy-MM-dd HH:mm:ss"));
                 createBookingsResult.setDateEnd(DateUtils.string(dateEnd, "yyyy-MM-dd HH:mm:ss"));
+                createBookingsResult.setElapsedTime(dateEnd.getTime() - dateStart.getTime());
                 String q = URLEncoder.encode(Base64.getEncoder().encodeToString(new Gson().toJson(createBookingsResult).getBytes(StandardCharsets.UTF_8)));
                 String url = String.format("%s%s?q=%s", serverEndpoint, "/mail/createBookingsResult", q);
 
@@ -359,7 +360,7 @@ public class CrewBookingService {
                 mailInfoVO.setMailTitle("CREW PNR 생성 완료 (" + DateUtils.string(dateEnd, "yyyy-MM-dd HH:mm") + ")");
                 mailInfoVO.setMailContents(url);
                 mailInfoVO.setReceiverId("SYSTEM");
-                mailInfoVO.setSenderEmail("system@jinair.com");
+                mailInfoVO.setSenderEmail("noreply@jinair.com");
                 mailInfoVO.setSenderName("승무원 예약 시스템");
                 mailService.send(mailInfoVO);
             } catch (Exception e) {

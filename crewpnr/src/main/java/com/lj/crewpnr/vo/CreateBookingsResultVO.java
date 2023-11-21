@@ -12,6 +12,8 @@ public class CreateBookingsResultVO {
 
     private String dateEnd;
 
+    private long elapsedTime;
+
     public Integer getAllCount() {
         return allCount;
     }
@@ -50,5 +52,13 @@ public class CreateBookingsResultVO {
 
     public void setDateEnd(String dateEnd) {
         this.dateEnd = dateEnd;
+    }
+
+    public long getElapsedTime() {
+        return elapsedTime;
+    }
+
+    public void setElapsedTime(long elapsedTime) {
+        this.elapsedTime = elapsedTime;
     }
 }

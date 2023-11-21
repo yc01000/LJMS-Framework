@@ -28,7 +28,7 @@ public class MailController {
             contents = """
             <p>CREW PNR 생성 완료 되었습니다.</p>
             <ol>
-                <li>처리 시간: %s ~ %s</li>
+                <li>처리 시간: %s ~ %s (%s ms)</li>
                 <li>
                     처리 건수:
                     <br>- 전체: %d건
@@ -40,6 +40,7 @@ public class MailController {
             """.formatted(
                     result.getDateStart(),
                     result.getDateEnd(),
+                    result.getElapsedTime(),
                     result.getAllCount(),
                     result.getSuccessCount(),
                     result.getFailureCount(),
