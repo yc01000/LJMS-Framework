@@ -26,6 +26,7 @@ public class MailController {
         try {
             CreateBookingsResultVO result = new Gson().fromJson(new String(Base64.decodeBase64(q.getBytes(StandardCharsets.UTF_8))), CreateBookingsResultVO.class);
             contents = """
+            <p>CREW PNR 생성 완료 되었습니다.</p>
             <ol>
                 <li>처리 시간: %s ~ %s</li>
                 <li>
