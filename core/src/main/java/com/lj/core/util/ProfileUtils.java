@@ -1,13 +1,12 @@
-package com.lj.support.common.util;
-
-import javax.annotation.Resource;
+package com.lj.core.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /** 프로파일 유틸 */
-@Component(value = "support.ProfileUtils")
+@Component
 public class ProfileUtils {
 
 	private static final String PRODUCT = "prd";
@@ -45,15 +44,19 @@ public class ProfileUtils {
 	}
 
 	public static String activeProfile() {
+		return activeProfile(ProfileUtils.environment);
+	}
+
+	public static String activeProfile(Environment environment) {
 		String[] profiles = environment.getActiveProfiles();
-		if(profiles == null || profiles.length == 0) {
+		if(profiles.length == 0) {
 			return null;
 		}
 
 		return StringUtils.lowerCase(profiles[0]);
 	}
 
-	@Resource
+	@Autowired
 	public void setEnvironment(Environment environment) {
 		ProfileUtils.environment = environment;
 	}
