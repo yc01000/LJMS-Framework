@@ -1,7 +1,7 @@
 package com.lj.core.integration.soap.ibs.config;
 
 import com.lj.core.integration.soap.interceptor.LogClientSoapInterceptor;
-import com.lj.core.util.ProfileUtils;
+import com.lj.core.util.Profiles;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.CookieSpecs;
@@ -46,14 +46,13 @@ public class IBSConfig {
 	@Bean(name="IntegrationProperties")
 	public PropertiesFactoryBean integrationProperties() {
 		String path = null;
-		String activeProfile = ProfileUtils.activeProfile(environment);
-		if(StringUtils.containsIgnoreCase(activeProfile, "prd")) {
+		if(Profiles.isProduct(environment)) {
 			path = "prd";
-		} else if(StringUtils.containsIgnoreCase(activeProfile, "stg")) {
+		} else if(Profiles.isStage(environment)) {
 			path = "stg";
-		} else if(StringUtils.containsIgnoreCase(activeProfile, "dev")) {
+		} else if(Profiles.isDevelop(environment)) {
 			path = "dev";
-		} else if(StringUtils.containsIgnoreCase(activeProfile, "local")) {
+		} else if(Profiles.isLocal(environment)) {
 			path = "local";
 		}
 		if(StringUtils.isBlank(path)) {
@@ -68,14 +67,13 @@ public class IBSConfig {
 	@Bean(name="IbsBookingProperties")
 	public PropertiesFactoryBean ibsBookingProperties() {
 		String path = null;
-		String activeProfile = ProfileUtils.activeProfile(environment);
-		if(StringUtils.containsIgnoreCase(activeProfile, "prd")) {
+		if(Profiles.isProduct(environment)) {
 			path = "prd";
-		} else if(StringUtils.containsIgnoreCase(activeProfile, "stg")) {
+		} else if(Profiles.isStage(environment)) {
 			path = "stg";
-		} else if(StringUtils.containsIgnoreCase(activeProfile, "dev")) {
+		} else if(Profiles.isDevelop(environment)) {
 			path = "dev";
-		} else if(StringUtils.containsIgnoreCase(activeProfile, "local")) {
+		} else if(Profiles.isLocal(environment)) {
 			path = "local";
 		}
 		if(StringUtils.isBlank(path)) {

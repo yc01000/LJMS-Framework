@@ -20,12 +20,6 @@ server:
   scheme: https
   name: local-crewpnr.jinair.com
 
-ibs:
-  api:
-    socket-timeout: 30001
-    connect-timeout: 10001
-    connection-request-timeout: 10001
-
 # SSO 클라이언트에서 정의해줘야 하는 sso 관련 properties
 sso:
   oauth:

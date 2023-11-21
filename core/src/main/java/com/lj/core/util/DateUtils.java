@@ -1,4 +1,4 @@
-package com.lj.crewpnr.common;
+package com.lj.core.util;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;

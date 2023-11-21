@@ -13,7 +13,7 @@ import com.lj.core.util.LoggerUtils;
 import com.lj.crewpnr.common.Constants;
 import com.lj.crewpnr.common.Constants.ERROR_CODE;
 import com.lj.crewpnr.common.IBSDomainUtils;
-import com.lj.crewpnr.common.DateUtils;
+import com.lj.core.util.DateUtils;
 import com.lj.crewpnr.mapper.pssdb.CrewBookingMapper;
 import com.lj.crewpnr.vo.*;
 import com.lj.crewpnr.vo.availability.AvailabilityCriteriaVO;
@@ -27,6 +27,7 @@ import com.lj.sso.ssocore.model.UserInfoVO;
 import com.lj.sso.ssocore.util.PrincipalUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -359,11 +360,10 @@ public class CrewBookingService {
                 mailInfoVO.setMailContents(url);
                 mailInfoVO.setReceiverId("SYSTEM");
                 mailInfoVO.setSenderEmail("system@jinair.com");
-                mailInfoVO.setSenderName("system@jinair.com");
+                mailInfoVO.setSenderName("승무원 예약 시스템");
                 mailService.send(mailInfoVO);
             } catch (Exception e) {
-                LoggerUtils.e(LOGGER, "{}", e);
-                e.printStackTrace();
+                LoggerUtils.e(LOGGER, "{}", ExceptionUtils.getStackTrace(e));
             }
         }
         return resultMapVO;

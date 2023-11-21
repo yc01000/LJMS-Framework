@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 /** 프로파일 유틸 */
 @Component
-public class ProfileUtils {
+public class Profiles {
 
 	private static final String PRODUCT = "prd";
 
@@ -20,31 +20,47 @@ public class ProfileUtils {
 	private static Environment environment;
 
 	public static boolean isNotProduct() {
-		return !isProduct();
+		return isNotProduct(Profiles.environment);
+	}
+
+	public static boolean isNotProduct(Environment environment) {
+		return !isProduct(environment);
 	}
 
 	public static boolean isProduct() {
-		return StringUtils.indexOf(activeProfileLower(), PRODUCT) != -1;
+		return isProduct(Profiles.environment);
+	}
+
+	public static boolean isProduct(Environment environment) {
+		return StringUtils.indexOfIgnoreCase(activeProfile(environment), PRODUCT) != -1;
 	}
 
 	public static boolean isStage() {
-		return StringUtils.indexOf(activeProfileLower(), STAGE) != -1;
+		return isStage(Profiles.environment);
+	}
+
+	public static boolean isStage(Environment environment) {
+		return StringUtils.indexOfIgnoreCase(activeProfile(environment), STAGE) != -1;
 	}
 
 	public static boolean isDevelop() {
-		return StringUtils.indexOf(activeProfileLower(), DEVELOP) != -1;
+		return isDevelop(Profiles.environment);
+	}
+
+	public static boolean isDevelop(Environment environment) {
+		return StringUtils.indexOfIgnoreCase(activeProfile(environment), DEVELOP) != -1;
 	}
 
 	public static boolean isLocal() {
-		return StringUtils.indexOf(activeProfileLower(), LOCAL) != -1;
+		return isLocal(Profiles.environment);
 	}
 
-	public static String activeProfileLower() {
-		return StringUtils.lowerCase(activeProfile());
+	public static boolean isLocal(Environment environment) {
+		return StringUtils.indexOfIgnoreCase(activeProfile(environment), LOCAL) != -1;
 	}
 
 	public static String activeProfile() {
-		return activeProfile(ProfileUtils.environment);
+		return activeProfile(Profiles.environment);
 	}
 
 	public static String activeProfile(Environment environment) {
@@ -58,6 +74,6 @@ public class ProfileUtils {
 
 	@Autowired
 	public void setEnvironment(Environment environment) {
-		ProfileUtils.environment = environment;
+		Profiles.environment = environment;
 	}
 }

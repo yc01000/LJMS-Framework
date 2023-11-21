@@ -8,3 +8,9 @@ sso:
         /reservations,
         /failhistories,
         /swagger-ui/index.html
+
+ibs:
+  api:
+    socket-timeout: 30000
+    connect-timeout: 10000
+    connection-request-timeout: 10000
