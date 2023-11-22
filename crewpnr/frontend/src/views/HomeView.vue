@@ -17,8 +17,8 @@
                             <label for="file-Gen">파일 찾기</label>
                             <input id="file-Gen" type="file" @change="handleFileChange" />
                             <span id="text-Gen" style="border:0px; font-size: large; padding: 15px;">
-                                {{ this.GenUploadFile === null ? '일반 예약 파일을 이 영역 위에 끌어다 놓으세요' :
-                                    this.GenUploadFile.name }}</span>
+                                {{ this.uploadProps.get('Gen').file.length === 0 ? '일반 예약 파일을 이 영역 위에 끌어다 놓으세요' :
+                                    this.uploadProps.get('Gen').file.name }}</span>
                         </div>
                     </td>
                     <td style="text-align: center; width: 20%;">
@@ -35,8 +35,8 @@
                             <label for="file-Gum">파일 찾기</label>
                             <input id="file-Gum" type="file" @change="handleFileChange" />
                             <span id="text-Gum" style="border:0px; font-size: large; padding: 15px;">
-                                {{ this.GumUploadFile === null ? '괌 예약 파일을 이 영역 위에 끌어다 놓으세요' :
-                                    this.GumUploadFile.name }}</span>
+                                {{ this.uploadProps.get('Gum').file.length === 0 ? '괌 예약 파일을 이 영역 위에 끌어다 놓으세요' :
+                                    this.uploadProps.get('Gum').file.name }}</span>
                         </div>
                     </td>
                     <td style="text-align: center; width: 20%;">
@@ -75,9 +75,13 @@ export default {
     },
     data() {
         return {
-            GenUploadFile: null,
-            GumUploadFile: null,
+            uploadProps: new Map([
+                ['Gen', {url: 'https://stg-crewpnr.jinair.com/crew/createBookings', file: []}],
+                ['Gum', {url: 'https://stg-crewpnr.jinair.com/crew/createBookingsForGum', file: []}],
+            ]),
         };
+    },
+    mounted() {
     },
     methods: {
         showMessage(title, msg) {
@@ -88,49 +92,28 @@ export default {
         },
         handleDrop(event) {
             event.preventDefault();
-            if (event.target.id.split('-')[1] === 'Gen') {
-                this.GenUploadFile = event.dataTransfer.files[0];
-            }
-            else if (event.target.id.split('-')[1] === 'Gum') {
-                this.GumUploadFile = event.dataTransfer.files[0];
-            }
-            console.log("event id:", event);
+            this.handleFileChange(event);
         },
         handleFileChange(event) {
-            if (event.target.id === 'file-Gen') {
-                this.GenUploadFile = event.target.files[0];
-            }
-            else if (event.target.id === 'file-Gum') {
-                this.GumUploadFile = event.target.files[0];
-            }
-            console.log("event id:", event);
+            const upload = this.uploadProps.get(event.target.id.split('-')[1]);
+            (event.type === 'drop') ? upload.file = event.dataTransfer.files[0] : upload.file = event.target.files[0];
         },
-        async uploadFile(type) {
-            let url = '';
-            let uploadfile = null;
+        async uploadFile(type) { // type: Gen-일반, Gum-괌
+            const upload = this.uploadProps.get(type);
             try {
-                if (type == 'Gen') {
-                    url = 'https://stg-crewpnr.jinair.com/crew/createBookings';
-                    uploadfile = this.GenUploadFile;
-                }
-                else {
-                    url = 'https://stg-crewpnr.jinair.com/crew/createBookingsForGum';
-                    uploadfile = this.GumUploadFile;
-                }
-                if (uploadfile == null) {
+                if (upload.file.length == 0) {
                     this.showMessage('Warning', '선택된 파일이 없습니다.<br>업로드할 파일을 선택해 주세요.');
                     return;
                 }
                 const formData = new FormData();
-                formData.append('file', uploadfile);
-
-                const response = await axios.post(url, formData, {
+                formData.append('file', upload.file);
+                const response = await axios.post(upload.url, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
                 console.log('response:', response);
-                this.GenUploadFile = this.GumUploadFile = null;
+                upload.file = []; //파일 비우기
                 if (response.data.result == 'SUCCESS') {
                     this.showMessage('Uploaded', '업로드 완료되었습니다.<br>PNR 생성 완료 후 EMAIL로 안내 됩니다.');
                 }
@@ -139,13 +122,13 @@ export default {
                 }
 
             } catch (error) {
+                upload.file = [];
                 console.error(error);
                 this.showMessage('Error', error);
             }
         },
     },
 };
-
 </script>
   
 <style scoped>

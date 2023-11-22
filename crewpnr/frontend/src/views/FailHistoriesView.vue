@@ -14,20 +14,20 @@
                 <li>
                     <div style="display: flex; justify-content: left; align-items: center;">
                         <label>DEP DATE<span class="fontTypeA normal">(*)</span></label>
-                        <Datepicker id="qModel_datefr" class="btn_calendar hasDatepicker" v-model="selectedDate1"
+                        <Datepicker id="required_datefr" class="btn_calendar hasDatepicker" v-model="selectedDate1"
                             format="yyyy-MM-dd">
                         </Datepicker>
                         <span style="margin: 10px">~</span>
-                        <Datepicker id="qModel_dateto" class="btn_calendar hasDatepicker" v-model="selectedDate2"
+                        <Datepicker id="required_dateto" class="btn_calendar hasDatepicker" v-model="selectedDate2"
                             format="yyyy-MM-dd">
                         </Datepicker>
                     </div>
                 </li>
                 <li>
                     <label>DEP/ARR<span class="fontTypeA normal">(*)</span></label>
-                    <input class="inputPort" id="qModel_stnfr" maxlength="3" name="qModel.stnfr" placeholder="GMP"
+                    <input class="inputPort" id="required_stnfr" maxlength="3" name="qModel.stnfr" placeholder="GMP"
                         type="text" value="" /> &nbsp;&nbsp;&nbsp;
-                    <input class="inputPort" id="qModel_stnto" maxlength="3" name="qModel.stnto" placeholder="CJU"
+                    <input class="inputPort" id="required_stnto" maxlength="3" name="qModel.stnto" placeholder="CJU"
                         type="text" value="" />
                 </li>
                 <li>
@@ -52,38 +52,23 @@
             <a href="javascript://" class="btnTypeD" @click="search">조회</a>&nbsp;
             <button class="btnTypeD" @click="initialize">초기화</button>
         </div>
-
         <table class="table_style">
             <thead>
                 <tr>
-                    <th>생성일시</th>
-                    <th>출발일자</th>
-                    <th>항공편</th>
-                    <th>출발지</th>
-                    <th>도착지</th>
-                    <th>Fare Class</th>
-                    <th>좌석수</th>
-                    <th width="40%">Error Value</th>
+                    <th v-for="(key, value) in failTableHeaders" :key="key">{{ value }}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="item in items" :key="item.seq">
-                    <td>{{ item.rgstDttm }}</td>
-                    <td>{{ item.depDate.substring(0, 4) + '-' + item.depDate.substring(4, 6) + '-' + item.depDate.slice(6) }}</td>
-                    <td>{{ item.fltNum }}</td>
-                    <td>{{ item.stnfrCode }}</td>
-                    <td>{{ item.stntoCode }}</td>
-                    <td>{{ item.fareClass }}</td>
-                    <td>{{ item.paxCnt }}</td>
-                    <td>{{ item.errorValue }}</td>
+                    <td v-for="(field, key) in failTableHeaders" :key="key">{{ item[field] }}</td>
                 </tr>
             </tbody>
         </table>
         <div class="btn_wrap right">
-            <download-excel class="btnTypeC" :data="this.items" worksheet="My Worksheet" name="filename.xls">엑셀
+            <download-excel class="btnTypeC" :fields="this.failTableHeaders" :data="this.items" worksheet="My Worksheet"
+                name="filename.xls">엑셀
                 다운로드</download-excel>
         </div>
-
     </div>
     <div>
         <MessageBox ref="msg_box" />
@@ -95,6 +80,8 @@ import Datepicker from 'vue3-datepicker';
 import { ref } from 'vue';
 import JsonExcel from "vue-json-excel3";
 import MessageBox from '@/components/MessageBox.vue';
+import { ycObject, ycUtils } from '@/components/YcUtils.js';
+import axios from 'axios';
 
 export default {
     components: {
@@ -110,9 +97,10 @@ export default {
             selectedDate1: ref(new Date()),
             selectedDate2: ref(new Date()),
             classOption: '', // 선택된 옵션 값을 저장할 변수
-            classOptions: ['U0', 'U1', 'C', 'U3'],
+            classOptions: ycObject.classOptions,
             paxCntOption: '', // 선택된 옵션 값을 저장할 변수
-            paxCntOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            paxCntOptions: ycObject.paxCntOptions,
+            failTableHeaders: ycObject.failTableHeaders,
         };
     },
 
@@ -126,59 +114,47 @@ export default {
         initialize() {
             this.selectedDate1 = ref(new Date());
             this.selectedDate2 = ref(new Date());
-            document.getElementById('qModel_stnfr').value = '';
-            document.getElementById('qModel_stnto').value = '';
+            document.getElementById('required_stnfr').value = '';
+            document.getElementById('required_stnto').value = '';
             this.classOption = '';
             this.paxCntOption = '';
             this.items = [];
         },
-        search() {
+        async search() {
             if (this.fieldValidation() == false) {
                 this.showMessage('Warning', "도시코드는 필수 입니다.");
                 return;
             }
-
-            let inputJson = this.generateInputJson();
-            console.log("inputJson:", inputJson);
-            fetch('https://stg-crewpnr.jinair.com/crew/getCreateBookingFailLog', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json' // JSON 데이터를 전송한다고 서버에 알림
-                },
-                body: inputJson // JSON 데이터를 문자열로 변환하여 바디에 넣음
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.result.length == 0) {
-                        this.showMessage('Warnning', '조회된 데이터가 없습니다.');
-                    }
-                    this.items = data.result;
-                    console.log("response data:", data)
-                })
-                .catch((error) => {
-                    console.error('데이터를 불러오는 중 오류가 발생했습니다.', error);
-                    this.showMessage('Error', error);
-                });
-        },
-        generateInputJson() {
             const jsonData = {
-                brdStrtDt: document.getElementById('qModel_datefr').value.replaceAll('-', ''),
-                brdEndDt: document.getElementById('qModel_dateto').value.replaceAll('-', ''),
-                stnfrCode: document.getElementById('qModel_stnfr').value.toUpperCase(),
-                stntoCode: document.getElementById('qModel_stnto').value.toUpperCase(),
-                // fareClass: document.getElementById('qModel_fareclass').value,
-                // paxCount: document.getElementById('qModel_paxcnt').value,
+                brdStrtDt: document.getElementById('required_datefr').value.replaceAll('-', ''),
+                brdEndDt: document.getElementById('required_dateto').value.replaceAll('-', ''),
+                stnfrCode: document.getElementById('required_stnfr').value.toUpperCase(),
+                stntoCode: document.getElementById('required_stnto').value.toUpperCase(),
                 fareClass: this.classOption,
                 paxCount: this.paxCntOption,
             };
-            // 생성된 JSON 데이터를 문자열로 변환하여 데이터 속성에 저장
-            return JSON.stringify(jsonData, null, 2);
+            try {
+                // await로 데이터 가져오기
+                const response = await axios.post('https://stg-crewpnr.jinair.com/crew/getCreateBookingFailLog', jsonData, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.data.result.length == 0) {
+                    this.showMessage('Warnning', '조회된 데이터가 없습니다.');
+                }
+                this.items = response.data.result.map(item => ({
+                    ...item,
+                    depDate: ycUtils.krFormatDate(item.depDate)
+                }));
+                console.log("response this.items:", this.items)
+            } catch (error) {
+                console.error('데이터를 불러오는 중 오류가 발생했습니다.', error);
+                this.showMessage('Error', error);
+            }
         },
         fieldValidation() {
-            if (document.getElementById('qModel_stnfr').value == "" || document.getElementById('qModel_stnto').value == "")
-                return false;
-            else
-                return true;
+            return ycUtils.fieldValidation(document, 'required');
         },
     }
 };
