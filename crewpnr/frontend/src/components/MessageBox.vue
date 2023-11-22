@@ -32,22 +32,21 @@ export default {
     this.showPopup;
   },
   methods: {
-    showPopup(strTitle, strMsg, objAction, isconfirm) {
+    showPopup(strTitle, strMsg, objAction, isConfirm) {
       this.title = strTitle;
       this.msg = strMsg;
       this.action = objAction;
-      this.isConfirmMsg = isconfirm;
-      // 팝업 레이어를 표시하는 메소드
+      this.isConfirmMsg = isConfirm;
+      // 팝업 레이어를 표시
       this.isVisible = true;
     },
     closePopup() {
+      this.isVisible = false;
       // 팝업 레이어를 닫는 메소드, 후속 액션명
       this.$emit('postAction', this.action);
-      this.isVisible = false;
     },
     cancelClosePopup() {
       // 취소
-      //this.$emit('postAction', '');
       this.isVisible = false;
     },
   },

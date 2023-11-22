@@ -4,7 +4,7 @@
       <p class="logo"><a :href="SUPERSYSTEM_URL">JINAIR</a></p>
       <ul class="uti1">
         <li><a>{{userinfo.userName}}</a></li>
-        <li><a href="/user/signout">SIGN OUT</a></li>
+        <li><a href="/sso/signout">SIGN OUT</a></li>
       </ul>
 
       <p class="title_txt">승무원 예약</p>
