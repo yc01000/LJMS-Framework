@@ -15,6 +15,9 @@ spring:
       username: airkorea_dev
       password: dev_airkorea16
       driver-class-name: oracle.jdbc.driver.OracleDriver
+  redis:
+    host: 10.23.5.231
+    port: 6379
 
 server:
   scheme: https
