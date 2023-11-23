@@ -28,6 +28,7 @@ public class PSSDBConfig {
 
     @Primary
     @Bean(name="sqlSessionFactoryPSSDB")
+    @ConfigurationProperties("mybatis.configuration")
     public SqlSessionFactory sqlSessionFactoryPSSDB(@Qualifier("datasourcePSSDB") DataSource datasourcePSSDB) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(datasourcePSSDB);

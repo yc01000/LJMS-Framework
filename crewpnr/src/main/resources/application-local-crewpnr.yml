@@ -18,10 +18,19 @@ spring:
   redis:
     host: 10.23.5.231
     port: 6379
+  session:
+    redis:
+      flush-mode: on_save
+      namespace: 'spring:session:crewpnr'
+    store-type: redis
+    timeout: 30
 
 server:
   scheme: https
   name: local-crewpnr.jinair.com
+  sevlet:
+    session:
+      timeout: 1m
 
 # SSO 클라이언트에서 정의해줘야 하는 sso 관련 properties
 sso:

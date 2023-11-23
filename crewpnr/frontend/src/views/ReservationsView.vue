@@ -342,7 +342,7 @@ export default {
                     this.showMessage('Error', response.data.error);
                 } else {
                     if (response.data.result.length >= 100) {
-                        errMsg = '결과 값이 100건을 초과하였습니다.<br>검색조건을 수정하여 조회 하십시요.';
+                        const errMsg = '결과 값이 100건을 초과하였습니다.<br>검색조건을 수정하여 조회 하십시요.';
                         this.showMessage('Warning', errMsg);
                     }
                     this.items = this.reformTable(response.data.result);
