@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+	<property name="LOGS_APP_NAME" value="sample"/>
+	<property name="DATADOG_LOG_PATH" value="/data/psslog/SAMPLE_LOG" />
+	<property name="LOGFILE_PATH" value="/data/ljmicroservices/logs/sample" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>logback %d{HH:mm:ss.SSS} [%thread] %-5level [%-36logger{36}] - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- DataDog Log Appender -->
+	<appender name="DATADOG_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${DATADOG_LOG_PATH}/${spring.profiles.active}-webapp.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${DATADOG_LOG_PATH}/${spring.profiles.active}-webapp.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>1</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<includeTags>true</includeTags>
+			<customFields>{"host":"${HOSTNAME}", "service":"${dd.service}", "ddsource":"java", "ddtags":"env:${dd.env}"}</customFields>
+		</encoder>
+	</appender>
+
+	<!-- DataDog Log Appender -->
+	<appender name="appenderLogfileIBS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGFILE_PATH}/ibs-${spring.profiles.active}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGFILE_PATH}/ibs-${spring.profiles.active}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>1</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<includeTags>true</includeTags>
+			<customFields>{"host":"${HOSTNAME}", "service":"${dd.service}", "ddsource":"java", "ddtags":"env:${dd.env}"}</customFields>
+		</encoder>
+	</appender>
+
+	<!-- DataDog Log Appender -->
+	<appender name="appenderLogfileGeneral" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGFILE_PATH}/general-${spring.profiles.active}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGFILE_PATH}/general-${spring.profiles.active}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>1</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<includeTags>true</includeTags>
+			<customFields>{"host":"${HOSTNAME}", "service":"${dd.service}", "ddsource":"java", "ddtags":"env:${dd.env}"}</customFields>
+		</encoder>
+	</appender>
+
+	<!-- 통합 IBS Log Appender -->
+	<appender name="JOINTIBSAPILOG" class="ch.qos.logback.core.ConsoleAppender">
+		<region>ap-northeast-2</region>
+		<logGroup>STG</logGroup>
+		<logStream>${LOGS_APP_NAME}_transactions</logStream>
+		<layout>
+			<pattern>{
+				"T"		: "%d{yyyy-MM-dd HH:mm:ss.SSS}",
+				"stage"	: "${spring.profiles.active}",
+				"level"	: "%level",
+				"msg"	: %msg,
+				"thread": "[%thread]"
+			}</pattern>
+		</layout>
+	</appender>
+	
+	<!-- Home Biz Log Appendeer -->
+	<appender name="SAMPLE_BIZ_LOG" class="ch.qos.logback.core.ConsoleAppender">
+		<region>ap-northeast-2</region>
+		<logGroup>STG</logGroup>
+		<logStream>${LOGS_APP_NAME}_general_log</logStream>
+		<layout>
+			<pattern>{
+				"T"		: "%d{yyyy-MM-dd HH:mm:ss.SSS}",
+				"stage"	: "${spring.profiles.active}",
+				"level"	: "%level",
+				"msg"	: %msg,
+				"thread": "[%thread]"
+			}</pattern>
+		</layout>
+	</appender>
+
+	<!-- IBS 웹서비스 로그 -->
+	<logger name="com.lj.core.integration.soap.interceptor.LogClientSoapInterceptor" additivity="true" level="info">
+<!--		<appender-ref ref="JOINTIBSAPILOG" />-->
+		<appender-ref ref="DATADOG_LOG" />
+		<appender-ref ref="appenderLogfileIBS" />
+	</logger>
+
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core" level="debug" additivity="true" />
+	<logger name="org.springframework.beans" level="debug" additivity="true" />
+	<logger name="org.springframework.context" level="debug" additivity="true" />
+	<logger name="org.springframework.web" level="debug" additivity="true" />
+
+	<logger name="org.apache.commons.dbcp2" level="debug" additivity="false" />
+	<logger name="org.apache.commons.beanutils" level="debug" additivity="false" />
+
+	<logger name="org.apache.http" level="error" additivity="false"/>
+
+	<logger name="java.sql" level="error"/>
+	<logger name="jdbc.sqlonly" level="debug"/>
+	<logger name="jdbc.sqltiming" level="debug"/>
+	<logger name="jdbc.audit" level="error"/>
+	<logger name="jdbc.resultset" level="error"/>
+
+	<!-- application logger -->
+	<logger name="com.lj.sample" additivity="true" level="debug">
+		<appender-ref ref="appenderLogfileGeneral" />
+		<appender-ref ref="DATADOG_LOG" />
+	</logger>
+
+	<root level="debug">
+		<appender-ref ref="STDOUT" />
+	</root>
+</included>

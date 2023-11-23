@@ -1,0 +1,16 @@
+# SSO 클라이언트에서 정의해줘야 하는 sso 관련 properties
+sso:
+  policies:
+    default-return-uri: /
+    redirection:
+      target-urls: >
+        /,
+        /reservations,
+        /failhistories,
+        /swagger-ui/index.html
+
+ibs:
+  api:
+    socket-timeout: 30000
+    connect-timeout: 10000
+    connection-request-timeout: 10000
