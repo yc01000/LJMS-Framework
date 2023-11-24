@@ -1015,6 +1015,7 @@ public class CrewBookingService {
             String critSegStatus = criteriaVO.getSegmentStatus();
             String critFareClass = criteriaVO.getFareClass();
             String critPaxCnt = criteriaVO.getPaxCount();
+            String critDepStartDate = criteriaVO.getDepStartDate();
 
             //segmentStatus, fareClass, paxCount 조회 조건 필터링
             if (null != critSegStatus && !critSegStatus.isEmpty()) {
@@ -1040,6 +1041,14 @@ public class CrewBookingService {
 
             if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
                 if (paxCnt != Integer.parseInt(critPaxCnt)) {
+                    continue;
+                }
+            }
+
+            //예약 일자를 변경해도 최초 예약 일자로 조회하면 해당 PNR 표출 > 검색한 출발 일자로 필터링
+            String rsDepTime =  DateUtils.string(targetFltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd");
+            if (null != critDepStartDate && !critDepStartDate.isEmpty()) {
+                if (!StringUtils.equals(rsDepTime, critDepStartDate)) {
                     continue;
                 }
             }
