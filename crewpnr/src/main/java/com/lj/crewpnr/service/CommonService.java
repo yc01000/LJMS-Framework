@@ -144,11 +144,17 @@ public class CommonService {
                 Row row = worksheet.getRow(i);
                 rowNo = row.getRowNum();
 
-                if(row.getFirstCellNum() == -1)
+                // row empty check
+                boolean isRowEmpty = true;
+                for (Cell cell : row) {
+                    if (cell.getCellType() != CellType.BLANK) {
+                        isRowEmpty = false;
+                        break;
+                    }
+                }
+                if(isRowEmpty){
                     continue;
-
-                if(row.getLastCellNum() == -1)
-                    continue;
+                }
 
                 Iterator<Cell> cellIterator = row.iterator();
 
@@ -309,11 +315,17 @@ public class CommonService {
                 Row row = worksheet.getRow(i);
                 rowNo = row.getRowNum();
 
-                if(row.getFirstCellNum() == -1)
+                // row empty check
+                boolean isRowEmpty = true;
+                for (Cell cell : row) {
+                    if (cell.getCellType() != CellType.BLANK) {
+                        isRowEmpty = false;
+                        break;
+                    }
+                }
+                if(isRowEmpty){
                     continue;
-
-                if(row.getLastCellNum() == -1)
-                    continue;
+                }
 
                 Iterator<Cell> cellIterator = row.iterator();
 
