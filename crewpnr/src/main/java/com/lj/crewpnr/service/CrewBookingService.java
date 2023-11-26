@@ -1073,6 +1073,11 @@ public class CrewBookingService {
 
             reservationSummaryVOList.add(reservationSummaryVO);
         }
+        if(CollectionUtils.isEmpty(reservationSummaryVOList)) {
+            LoggerUtils.e(LOGGER, "RetrieveReservationSummary 결과는 있지만, 모두 제거됨: errorCode={}");
+            return ResultMapVO.simpleError("조회된 예약 내역이 없습니다.");
+        }
+
         reservationSummaryVOList.sort(Comparator.comparing(ReservationSummaryVO::getDepDate));
 
         return ResultMapVO.simpleResult("result", reservationSummaryVOList);
