@@ -7,7 +7,7 @@ app.use(router)
 app.mount('#app')
 
 var params = new URLSearchParams(location.search);
-const page = params.get('page') || '/index';
+const page = params.get('page') || '/create';
 if(!!page) {
     router.push(page);
 }
