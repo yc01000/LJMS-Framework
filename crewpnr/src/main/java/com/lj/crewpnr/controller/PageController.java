@@ -12,7 +12,7 @@ public class PageController {
     @Value("${server.scheme}://${server.name}")
     String serverEndpoint;
 
-    @RequestMapping(value={"/", "/reservations", "/failhistories"})
+    @RequestMapping(value={"/", "/create", "/list", "/failhistories"})
     public String index(HttpServletRequest request) {
         String query = !StringUtils.equals(request.getRequestURI(), "/") ? "?page=" + request.getRequestURI() : "";
         return "redirect:" + serverEndpoint + "/index.html" + query;

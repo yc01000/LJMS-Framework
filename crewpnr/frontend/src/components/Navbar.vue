@@ -9,8 +9,8 @@
       </div>
       <div class="menu">
         <ul>
-          <li class="m"><RouterLink to="/index.html" class="sub" title="예약 생성"><i class="fa fa-plane"></i> <p>예약 생성</p></RouterLink></li>
-          <li class="m"><RouterLink to="/reservations" class="sub" title="예약 조회"><i class="fa fa-search"></i> <p>예약 조회</p></RouterLink></li>
+          <li class="m"><RouterLink to="/create" class="sub" title="예약 생성"><i class="fa fa-plane"></i> <p>예약 생성</p></RouterLink></li>
+          <li class="m"><RouterLink to="/list" class="sub" title="예약 조회"><i class="fa fa-search"></i> <p>예약 조회</p></RouterLink></li>
           <li class="m"><RouterLink to="/failhistories" class="sub" title="예약 생성 실패 이력 조회"><i class="fa fa-question"></i> <p>예약 생성 실패 이력 조회</p></RouterLink></li>
         </ul>
       </div>
@@ -22,8 +22,8 @@
     <div class="nav_header"><a href="javascript://" class="open_nav" @click="openNav"></a></div>
     <div class="menu">
       <ul id="closeMenu">
-        <li class="m"><RouterLink to="/index.html" class="sub" title="예약 생성"><i class="fa fa-plane"></i></RouterLink></li>
-        <li class="m"><RouterLink to="/reservations" class="sub" title="예약 조회"><i class="fa fa-search"></i></RouterLink></li>
+        <li class="m"><RouterLink to="/create" class="sub" title="예약 생성"><i class="fa fa-plane"></i></RouterLink></li>
+        <li class="m"><RouterLink to="/list" class="sub" title="예약 조회"><i class="fa fa-search"></i></RouterLink></li>
         <li class="m"><RouterLink to="/failhistories" class="sub" title="예약 생성 실패 이력 조회"><i class="fa fa-question"></i></RouterLink></li>
       </ul>
     </div>

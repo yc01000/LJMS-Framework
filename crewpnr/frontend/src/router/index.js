@@ -7,12 +7,12 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/index.html',
+      path: '/create',
       name: 'home',
       component: HomeView
     },
     {
-      path: '/reservations',
+      path: '/list',
       name: 'reservations',
       component: ReservationsView
     },

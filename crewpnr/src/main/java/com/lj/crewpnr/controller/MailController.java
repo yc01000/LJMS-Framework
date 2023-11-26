@@ -44,7 +44,7 @@ public class MailController {
                     result.getAllCount(),
                     result.getSuccessCount(),
                     result.getFailureCount(),
-                    serverEndpoint + "/reservations");
+                    serverEndpoint + "/list");
         } catch(Exception e) {
             contents = "Server error occured.";
         }

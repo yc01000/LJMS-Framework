@@ -1,11 +1,11 @@
 [
   {
-    "path": "/index.html",
+    "path": "/create",
     "icon": "fa fa-plane",
     "name": "예약 생성"
   },
   {
-    "path": "/reservations",
+    "path": "/list",
     "icon": "fa fa-search",
     "name": "예약 조회"
   },
