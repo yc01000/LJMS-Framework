@@ -5,7 +5,8 @@ sso:
     redirection:
       target-urls: >
         /,
-        /reservations,
+        /create,
+        /list,
         /failhistories,
         /swagger-ui/index.html
 
