@@ -1405,7 +1405,7 @@ public class CrewBookingService {
     public ResultMapVO getCrewBookingFailLogs(CrewPNRLogCriteriaVO criteriaVO) {
         List<CrewPnrLogVO> list = crewBookingMapper.getCreateBookingFailLog(criteriaVO);
         if(CollectionUtils.isEmpty(list)) {
-            return ResultMapVO.simpleResult("result", list);
+            return ResultMapVO.simpleResult("error", "조회된 예약 내역이 없습니다.");
         }
         list.forEach(t -> t.setCabinClassDisplay(CABIN_CLASS_DISPLAY_MAP.get(t.getFareClass())));
 
