@@ -23,7 +23,7 @@ spring:
       flush-mode: on_save
       namespace: 'spring:session:crewpnr'
     store-type: redis
-    timeout: 900
+    timeout: 3600
 
 server:
   scheme: https
