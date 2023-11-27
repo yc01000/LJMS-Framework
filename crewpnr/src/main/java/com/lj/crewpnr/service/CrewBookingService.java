@@ -1060,9 +1060,11 @@ public class CrewBookingService {
                 else
                     fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
 
-                cabinClass = CABIN_CLASS_MAP.get(fltSegFareClass);
-                if(!StringUtils.equalsIgnoreCase(criteriaVO.getCabinClass(), cabinClass)) {
-                    continue;
+                if(StringUtils.isNotBlank(criteriaVO.getCabinClass())) {
+                    cabinClass = CABIN_CLASS_MAP.get(fltSegFareClass);
+                    if (!StringUtils.equalsIgnoreCase(criteriaVO.getCabinClass(), cabinClass)) {
+                        continue;
+                    }
                 }
             }
 
