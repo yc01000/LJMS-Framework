@@ -7,63 +7,59 @@
             <li class="select"><a href="#" class="ico_bul">예약 생성</a></li>
         </ul>
     </div>
-    <div class="content_wrap">
-        <div class="btn_wrap">
-            <table>
-                <tr>
-                    <td style="width: 20%;"></td>
-                    <td style="width: 60%;">
-                        <div id="filedrop-Gen" class="file-drop filebox" @dragover="onDragover" @drop="handleDrop">
-                            <label for="file-Gen">파일 찾기</label>
-                            <input id="file-Gen" type="file" @change="handleFileChange" />
-                            <span id="text-Gen" style="border:0px; font-size: large; padding: 15px;">
-                                {{ this.uploadProps.get('Gen').file.length === 0 ? '일반 예약 파일을 이 영역 위에 끌어다 놓으세요' :
-                                    this.uploadProps.get('Gen').file.name }}</span>
-                        </div>
-                    </td>
-                    <td style="text-align: center; width: 20%;">
-                        <a href="#" @click="uploadFile('Gen')" class="btnTypeD">엑셀 업로드 (PNR 생성 요청)</a>
-                    </td>
-                </tr>
-                <tr style="height: 20px;">
-                    <td colspan="3"></td>
-                </tr>
-                <tr>
-                    <td style="width: 20%;"></td>
-                    <td style="width: 60%;">
-                        <div id="filedrop-Gum" class="file-drop filebox" @dragover="onDragover" @drop="handleDrop">
-                            <label for="file-Gum">파일 찾기</label>
-                            <input id="file-Gum" type="file" @change="handleFileChange" />
-                            <span id="text-Gum" style="border:0px; font-size: large; padding: 15px;">
-                                {{ this.uploadProps.get('Gum').file.length === 0 ? '괌 예약 파일을 이 영역 위에 끌어다 놓으세요' :
-                                    this.uploadProps.get('Gum').file.name }}</span>
-                        </div>
-                    </td>
-                    <td style="text-align: center; width: 20%;">
-                        <a href="#" @click="uploadFile('Gum')" class="btnTypeD">엑셀 업로드 (GUM PNR 생성)</a>
-                    </td>
-                </tr>
-                <tr style="height: 40px;">
-                    <td colspan="3"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <a :href="sampleFile" class="btnTypeC">엑셀 형식 다운로드</a>
+    <div class="tab02_wrap" ref="tabWrap">
+        <ul class="tab_ul02">
+            <li v-for="(tab, index) in tabs" :key="index" :class="{ 'on': activeTab === index }" class="tab_li02">
+                <a @click="changeTab(index)">{{ tab }}</a>
+            </li>
+        </ul>
+        <div class="tab_box">
+            <div class="tabcon" id="tabcon-0" :class="{ 'on': activeTab === 0 }">
+                <div class="wh_wrap">
+                    <div id="filedrop-Gen" class="file-drop filebox" @dragover="onDragover" @drop="handleDrop">
+                        <label for="file-Gen">파일 찾기</label>
+                        <input id="file-Gen" type="file" @change="handleFileChange" /><br>
+                        <span id="text-Gen" style="border:0px; font-size: large; padding: 15px;">
+                            <p>-- 또는 --</p><br>
+                            {{ this.uploadProps.get('Gen').file.length === 0 ? '일반 예약 파일을 여기로 드래그해 주세요.' :
+                                this.uploadProps.get('Gen').file.name }}</span>
+                    </div>
+
+                    <div class="btn_wrap right">
+                        <a href="https://imagesstg.jinair.com/eForm/crewpnr_example.xlsx" class="btnTypeC">엑셀 형식
+                            다운로드</a>
                         &nbsp;
-                        <a :href="sampleFileGUM" class="btnTypeC">엑셀 형식 다운로드(GUM)</a>
-                    </td>
-                    <td>
-                    </td>
-                </tr>
-            </table>
+                        <a href="#" @click="uploadFile('Gen')" class="btnTypeA">엑셀 업로드 (PNR 생성 요청)</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabcon" id="tabcon-1" :class="{ 'on': activeTab === 1 }">
+                <div class="wh_wrap">
+                    <div id="filedrop-Gum" class="file-drop filebox" @dragover="onDragover" @drop="handleDrop">
+                        <label for="file-Gum">파일 찾기</label>
+                        <input id="file-Gum" type="file" @change="handleFileChange" /><br>
+                        <span id="text-Gum" style="border:0px; font-size: large; padding: 15px;">
+                            <p>-- 또는 --</p><br>
+                            {{ this.uploadProps.get('Gum').file.length === 0 ? '괌 예약 파일을 여기로 드래그해 주세요.' :
+                                this.uploadProps.get('Gum').file.name }}</span>
+                    </div>
+
+                    <div class="btn_wrap right">
+                        <a href="https://imagesstg.jinair.com/eForm/crewpnr_gum_example.xlsx" class="btnTypeC">엑셀 형식
+                            다운로드(GUM)</a>
+                        &nbsp;
+                        <a href="#" @click="uploadFile('Gum')" class="btnTypeA">엑셀 업로드 (GUM PNR 생성)</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div>
         <MessageBox ref="msg_box" />
     </div>
 </template>
-  
+
 <script>
 //import axios from 'axios';
 import MessageBox from '@/components/MessageBox.vue';
@@ -83,11 +79,23 @@ export default {
                 ['Gen', {url: '/crew/createBookings', file: []}],
                 ['Gum', {url: '/crew/createBookingsForGum', file: []}],
             ]),
+            tabs: ["일반 PNR 요청", "GUM PNR 요청"], // 탭의 제목들
+            activeTab: 0, // 초기에 활성화된 탭의 인덱스
         };
     },
     mounted() {
+
     },
     methods: {
+        changeTab(index) {
+            this.activeTab = index;
+            // ref를 사용하여 요소에 접근
+            const tabWrap = this.$refs.tabWrap;
+            const target = `#tabcon-${index}`;
+            // querySelectorAll 대신에 간단한 forEach 반복문 사용
+            tabWrap.querySelectorAll('.tabcon').forEach((tabcon) => tabcon.style.display = 'none');
+            tabWrap.querySelector(target).style.display = 'block';
+        },
         showMessage(title, msg) {
             this.$refs.msg_box.showPopup(title, msg);
         },
@@ -100,7 +108,7 @@ export default {
         },
         handleFileChange(event) {
             const upload = this.uploadProps.get(event.target.id.split('-')[1]);
-            (event.type === 'drop') ? upload.file = event.dataTransfer.files[0] : upload.file = event.target.files[0];
+            upload.file = (event.type === 'drop') ? event.dataTransfer.files[0] : event.target.files[0];
         },
         async uploadFile(type) { // type: Gen-일반, Gum-괌
             const upload = this.uploadProps.get(type);
@@ -145,14 +153,14 @@ export default {
     },
 };
 </script>
-  
+ 
 <style scoped>
 .file-drop {
     width: 95%;
-    height: 30px;
-    border: 2px dashed #ccc;
-    text-align: left;
-    padding: 15px;
+    height: 160px;
+    border: 3px dashed #ccc;
+    text-align: center !important;
+    padding: 40px;
     cursor: pointer;
 }
 </style>
