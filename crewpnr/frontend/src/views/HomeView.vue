@@ -65,8 +65,9 @@
 </template>
   
 <script>
-import axios from 'axios';
+//import axios from 'axios';
 import MessageBox from '@/components/MessageBox.vue';
+import requests from '../functions/requests';
 
 export default {
     components: {
@@ -79,8 +80,8 @@ export default {
             GenUploadFile: null,
             GumUploadFile: null,
             uploadProps: new Map([
-                ['Gen', {url: import.meta.env.VITE_BACKEND_ENDPOINT + '/crew/createBookings', file: []}],
-                ['Gum', {url: import.meta.env.VITE_BACKEND_ENDPOINT + '/crew/createBookingsForGum', file: []}],
+                ['Gen', {url: '/crew/createBookings', file: []}],
+                ['Gum', {url: '/crew/createBookingsForGum', file: []}],
             ]),
         };
     },
@@ -110,7 +111,7 @@ export default {
                 }
                 const formData = new FormData();
                 formData.append('file', upload.file);
-                const response = await axios.post(upload.url, formData, {
+                /*const response = await axios.post(upload.url, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -122,8 +123,20 @@ export default {
                 }
                 else {
                     this.showMessage('Error', response.data.error);
+                }*/
+                alert(upload.url);
+                const response = await requests.post(upload.url, {
+                    headers: {'Content-Type': 'multipart/form-data'},
+                    body: formData
+                });
+                console.log('response:', response);
+                upload.file = []; //파일 비우기
+                if (response.result == 'SUCCESS') {
+                    this.showMessage('Uploaded', '업로드 완료되었습니다.<br>PNR 생성 완료 후 EMAIL로 안내 됩니다.');
                 }
-
+                else {
+                    this.showMessage('Error', response.error);
+                }
             } catch (error) {
                 upload.file = [];
                 console.error(error);

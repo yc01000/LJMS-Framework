@@ -126,7 +126,8 @@ import JsonExcel from "vue-json-excel3";
 import MessageBox from '@/components/MessageBox.vue';
 import DropdownWithCheck from '@/components/DropdownWithCheck.vue';
 import { ycObject, ycUtils } from '@/components/YcUtils.js';
-import axios from 'axios';
+//import axios from 'axios';
+import requests from '../functions/requests';
 
 export default {
     components: {
@@ -247,7 +248,7 @@ export default {
         async acceptSchedule(pnr) {
             try {
                 this.loading = true;
-                const response = await axios.get(`https://stg-crewpnr.jinair.com/crew/acceptSchedule?pnrNumber=${pnr}`);
+                /*const response = await axios.get(`https://stg-crewpnr.jinair.com/crew/acceptSchedule?pnrNumber=${pnr}`);
                 this.loading = false;
 
                 if (response.data.error === undefined) {
@@ -255,6 +256,15 @@ export default {
                     this.showMessage('Inform', successMsg, 'search');
                 } else {
                     this.showMessage('Error', response.data.error);
+                }*/
+                const response = await requests.get(`/crew/acceptSchedule?pnrNumber=${pnr}`);
+                this.loading = false;
+
+                if (response.error === undefined) {
+                    const successMsg = `처리가 완료되었습니다.<br>${response.result}`;
+                    this.showMessage('Inform', successMsg, 'search');
+                } else {
+                    this.showMessage('Error', response.error);
                 }
             } catch (error) {
                 this.loading = false;
@@ -282,7 +292,7 @@ export default {
             };
             try {
                 this.loading = true;
-                const response = await axios.post('https://stg-crewpnr.jinair.com/crew/cancelReservation', jsonData, {
+                /*const response = await axios.post('https://stg-crewpnr.jinair.com/crew/cancelReservation', jsonData, {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -294,6 +304,18 @@ export default {
                     this.showMessage('Inform', successMsg, 'search');
                 } else {
                     this.showMessage('Error', response.data.error);
+                }*/
+                const response = await requests.post('/crew/cancelReservation', {
+                    headers: {'Content-Type': 'application/json'},
+                    body: jsonData
+                });
+                this.loading = false;
+
+                if (response.error === undefined) {
+                    const successMsg = `처리가 완료되었습니다.<br>${response.result}`;
+                    this.showMessage('Inform', successMsg, 'search');
+                } else {
+                    this.showMessage('Error', response.error);
                 }
             } catch (error) {
                 this.loading = false;
@@ -330,7 +352,7 @@ export default {
             };
             try {
                 this.loading = true;
-                const response = await axios.post('https://stg-crewpnr.jinair.com/crew/getReservationSummary', jsonData, {
+                /*const response = await axios.post('https://stg-crewpnr.jinair.com/crew/getReservationSummary', jsonData, {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -346,6 +368,22 @@ export default {
                         this.showMessage('Warning', errMsg);
                     }
                     this.items = this.reformTable(response.data.result);
+                }*/
+                const response = await requests.post('/crew/getReservationSummary', {
+                    headers: {'Content-Type': 'application/json'},
+                    body: jsonData
+                });
+                this.loading = false;
+
+                if (response.error !== undefined) {
+                    this.items = [];
+                    this.showMessage('Error', response.error);
+                } else {
+                    if (response.result.length >= 100) {
+                        const errMsg = '결과 값이 100건을 초과하였습니다.<br>검색조건을 수정하여 조회 하십시요.';
+                        this.showMessage('Warning', errMsg);
+                    }
+                    this.items = this.reformTable(response.result);
                 }
             } catch (error) {
                 this.loading = false;

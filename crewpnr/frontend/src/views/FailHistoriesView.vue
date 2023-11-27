@@ -81,7 +81,8 @@ import { ref } from 'vue';
 import JsonExcel from "vue-json-excel3";
 import MessageBox from '@/components/MessageBox.vue';
 import { ycObject, ycUtils } from '@/components/YcUtils.js';
-import axios from 'axios';
+//import axios from 'axios';
+import requests from '../functions/requests';
 
 export default {
     components: {
@@ -134,7 +135,7 @@ export default {
             };
             try {
                 // await로 데이터 가져오기
-                const response = await axios.post('https://stg-crewpnr.jinair.com/crew/getCreateBookingFailLog', jsonData, {
+                /*const response = await axios.post('https://stg-crewpnr.jinair.com/crew/getCreateBookingFailLog', jsonData, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -143,6 +144,18 @@ export default {
                     this.showMessage('Warnning', '조회된 데이터가 없습니다.');
                 }
                 this.items = response.data.result.map(item => ({
+                    ...item,
+                    depDate: ycUtils.krFormatDate(item.depDate)
+                }));
+                console.log("response this.items:", this.items)*/
+                const response = await requests.post('/crew/getCreateBookingFailLog', {
+                    headers: {'Content-Type': 'application/json'},
+                    body: jsonData
+                });
+                if (response.result.length == 0) {
+                    this.showMessage('Warnning', '조회된 데이터가 없습니다.');
+                }
+                this.items = response.result.map(item => ({
                     ...item,
                     depDate: ycUtils.krFormatDate(item.depDate)
                 }));

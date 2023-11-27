@@ -46,7 +46,8 @@
 <script>
 import MessageBox from '@/components/MessageBox.vue';
 import { ref, onMounted, getCurrentInstance } from 'vue';
-import axios from 'axios';
+// import axios from 'axios';
+import requests from '../functions/requests';
 
 export default {
     setup() {
@@ -102,7 +103,7 @@ export default {
 
             this.loading = true;
             try {
-                const response = await axios.post('https://stg-crewpnr.jinair.com/crew/splitPnr', jsonData, {
+                /*const response = await axios.post('https://stg-crewpnr.jinair.com/crew/splitPnr', jsonData, {
                     headers: { 'Content-Type': 'application/json' }
                 });
                 this.loading = false;
@@ -113,6 +114,19 @@ export default {
                     });
                 } else {
                     this.showMessage('Error', JSON.stringify(response.data, null, 2));
+                }*/
+                const response = await requests.post('/crew/splitPnr', {
+                    headers: { 'Content-Type': 'application/json' },
+                    body: jsonData
+                });
+                this.loading = false;
+                if (response.result === 'SUCCESS') {
+                    this.showMessage('Inform', '처리가 완료되었습니다.', {
+                        actionName: 'closeModal',
+                        params: true,
+                    });
+                } else {
+                    this.showMessage('Error', JSON.stringify(response, null, 2));
                 }
             } catch (error) {
                 this.loading = false;
@@ -130,12 +144,15 @@ export default {
         },
         async search() {
             try {
-                const response = await axios.get('https://stg-crewpnr.jinair.com/crew/retrieveBooking', {
+                /*const response = await axios.get('https://stg-crewpnr.jinair.com/crew/retrieveBooking', {
                     params: {
                         pnrNumber: this.Pnr.pnrnumber
                     }
                 });
                 this.items = response.data.result;
+                console.log(this.items);*/
+                const response = await requests.get(`/crew/retrieveBooking?pnrNumber=${this.Pnr.pnrnumber}`);
+                this.items = response.result;
                 console.log(this.items);
             } catch (error) {
                 console.error('데이터를 불러오는 중 오류가 발생했습니다.', error);
