@@ -124,7 +124,6 @@ export default {
                 else {
                     this.showMessage('Error', response.data.error);
                 }*/
-                alert(upload.url);
                 const response = await requests.post(upload.url, {
                     headers: {'Content-Type': 'multipart/form-data'},
                     body: formData
