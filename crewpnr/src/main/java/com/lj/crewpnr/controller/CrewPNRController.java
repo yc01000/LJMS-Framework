@@ -30,6 +30,7 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -108,7 +109,7 @@ public class CrewPNRController {
 //        criteriaVO.setBrdEndDt("20230904");
 //        criteriaVO.setFareClass("U1");
 //        criteriaVO.setPaxCount(5);
-        return ResultMapVO.toJson(ResultMapVO.simpleResult("result", crewBookingMapper.getCreateBookingFailLog(criteriaVO)));
+        return ResultMapVO.toJson(crewBookingService.getCrewBookingFailLogs(criteriaVO));
     }
 
     @RequestMapping(value="/crew/getSummaryListExcel", method=RequestMethod.POST)

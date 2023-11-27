@@ -984,6 +984,15 @@ public class CrewBookingService {
             }
         };
 
+        final Map<String, String> CABIN_CLASS_DISPLAY_MAP = new HashMap<>() {
+            {
+                put("C", "Premium Economy");
+                put("U0", "Premium Economy");
+                put("U1", "Economy");
+                put("U3", "Economy");
+            }
+        };
+
         for (var pnrSummary : summaries) {
             ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
             int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
@@ -1079,6 +1088,8 @@ public class CrewBookingService {
             // status
             reservationSummaryVO.setStatus(STATUS_MAP.get(targetFltSegment.getSegmentStatus()));
             reservationSummaryVO.setStatusDisplay(STATUS_DISPLAY_MAP.get(reservationSummaryVO.getStatus()));
+
+            reservationSummaryVO.setCabinClassDisplay(CABIN_CLASS_DISPLAY_MAP.get(fltSegFareClass));
 
             reservationSummaryVOList.add(reservationSummaryVO);
         }
@@ -1372,7 +1383,26 @@ public class CrewBookingService {
         return ResultMapVO.simpleResult("result", "SUCCESS");
     }
 
-    public String getAgencyCode(){
+    public ResultMapVO getCrewBookingFailLogs(CrewPNRLogCriteriaVO criteriaVO) {
+        List<CrewPnrLogVO> list = crewBookingMapper.getCreateBookingFailLog(criteriaVO);
+        if(CollectionUtils.isEmpty(list)) {
+            return ResultMapVO.simpleResult("result", list);
+        }
+
+        final Map<String, String> CABIN_CLASS_DISPLAY_MAP = new HashMap<>() {
+            {
+                put("C", "Premium Economy");
+                put("U0", "Premium Economy");
+                put("U1", "Economy");
+                put("U3", "Economy");
+            }
+        };
+        list.forEach(t -> t.setCabinClassDisplay(CABIN_CLASS_DISPLAY_MAP.get(t.getFareClass())));
+
+        return ResultMapVO.simpleResult("result", list);
+    }
+
+    private String getAgencyCode() {
         UserInfoVO loginUser = PrincipalUtils.user();
         CodeInfoVO codeInfoVO = null;
         String agencyCode = null;

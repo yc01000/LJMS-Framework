@@ -18,6 +18,8 @@ public class ReservationSummaryVO {
 
     private String statusDisplay;
 
+    private String cabinClassDisplay;
+
     public String getFltnum() {
         return fltnum;
     }
@@ -128,5 +130,13 @@ public class ReservationSummaryVO {
 
     public void setStatusDisplay(String statusDisplay) {
         this.statusDisplay = statusDisplay;
+    }
+
+    public String getCabinClassDisplay() {
+        return cabinClassDisplay;
+    }
+
+    public void setCabinClassDisplay(String cabinClassDisplay) {
+        this.cabinClassDisplay = cabinClassDisplay;
     }
 }

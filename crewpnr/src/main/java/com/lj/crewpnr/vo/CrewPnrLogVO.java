@@ -11,6 +11,8 @@ public class CrewPnrLogVO {
     private String rgstDttm;
     private String errorValue;
 
+    private String cabinClassDisplay;
+
     public int getSeq() {
         return seq;
     }
@@ -81,5 +83,13 @@ public class CrewPnrLogVO {
 
     public void setErrorValue(String errorValue) {
         this.errorValue = errorValue;
+    }
+
+    public String getCabinClassDisplay() {
+        return cabinClassDisplay;
+    }
+
+    public void setCabinClassDisplay(String cabinClassDisplay) {
+        this.cabinClassDisplay = cabinClassDisplay;
     }
 }
