@@ -47,17 +47,25 @@
             ERROR_VALUE,
             RGST_DTTM
         FROM TB_CREW_PNR_LOG
-        WHERE  STNFR_CODE = #{stnfrCode}
-        AND STNTO_CODE = #{stntoCode}
+        WHERE 1 = 1
         AND DEP_DATE BETWEEN #{brdStrtDt} AND #{brdEndDt}
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(stnfrCode)">
+        AND STNFR_CODE = #{stnfrCode}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(stntoCode)">
+        AND STNTO_CODE = #{stntoCode}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(fltNum)">
+        AND FLT_NUM = 'LJ' || #{fltNum}
+        </if>
         <if test='@org.apache.commons.lang3.StringUtils@equals(cabinClass, "P")'>
-            AND FARE_CLASS IN ('C', 'U0')
+        AND FARE_CLASS IN ('C', 'U0')
         </if>
         <if test='@org.apache.commons.lang3.StringUtils@equals(cabinClass, "E")'>
-            AND FARE_CLASS IN ('U1', 'U3')
+        AND FARE_CLASS IN ('U1', 'U3')
         </if>
         <if test='null != paxCount and !"".equals(paxCount)'>
-            AND PAX_CNT = #{paxCount}
+        AND PAX_CNT = #{paxCount}
         </if>
         ORDER BY RGST_DTTM DESC
     </select>

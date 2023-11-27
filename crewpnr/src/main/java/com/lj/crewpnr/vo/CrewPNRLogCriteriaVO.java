@@ -11,6 +11,8 @@ public class CrewPNRLogCriteriaVO {
 
     private String cabinClass;
 
+    private String fltNum;
+
     public String getStnfrCode() {
         return stnfrCode;
     }
@@ -65,5 +67,13 @@ public class CrewPNRLogCriteriaVO {
 
     public void setCabinClass(String cabinClass) {
         this.cabinClass = cabinClass;
+    }
+
+    public String getFltNum() {
+        return fltNum;
+    }
+
+    public void setFltNum(String fltNum) {
+        this.fltNum = fltNum;
     }
 }
