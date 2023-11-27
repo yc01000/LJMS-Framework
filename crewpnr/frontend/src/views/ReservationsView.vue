@@ -10,12 +10,14 @@
                     <li class="select"><a href="#" class="ico_bul">예약 조회</a></li>
                 </ul>
             </div>
+            <div>* 출발일자, 출도착지 혹은 항공편명 중 1개 조건을 필수 선택 후 조회해 주세요.<br>
+            * 조회한 기간 내 예약된 PNR이 100개 이상인 경우, 일부 PNR은 LIST에 표출되지 않습니다. 조회 기간을 줄인 후 다시 조회해 주세요.</div><br>
             <div>
                 <div class="filter search_form_box">
                     <ul>
                         <li>
                             <div style="display: flex; justify-content: left; align-items: center;">
-                                <label>DEP DATE<span class="fontTypeA normal">(*)</span></label>
+                                <label>출발일자<span class="fontTypeA normal">(*)</span></label>
                                 <Datepicker id="required_datefr" class="btn_calendar hasDatepicker" v-model="selectedDate1"
                                     format="yyyy-MM-dd">
                                 </Datepicker>
@@ -26,14 +28,14 @@
                             </div>
                         </li>
                         <li>
-                            <label>DEP/ARR<span class="fontTypeA normal">(*)</span></label>
+                            <label>출도착지<span class="fontTypeA normal">(*)</span></label>
                             <input class="inputPort" id="required_stnfr" maxlength="3" v-model="stnfr" placeholder="GMP"
                                 type="text" /> &nbsp;&nbsp;&nbsp;
                             <input class="inputPort" id="required_stnto" maxlength="3" v-model="stnto" placeholder="CJU"
                                 type="text" />
                         </li>
                         <li>
-                            <label>예약상태</label>
+                            <label>예약상태  <img src="/images/icon/filter3.png" tabindex="-1" /></label>
                             <select v-model="selectedStatus">
                                 <option value="">All (Select an option)</option>
                                 <option v-for="option in statusOptions" :key="option.value" :value="option.value">
@@ -41,20 +43,25 @@
                             </select>
                         </li>
                         <li>
-                            <label>Class</label>
+                            <label>항공편명(LJ)<span class="fontTypeA normal">(*)</span></label>
+                            <input id="required_fltNo" maxlength="5" v-model="flightNumber" class="common_input" type="text" placeholder="001, 3~4숫자+suffix"> <!-- @input="allowOnlyNumbers"> -->
+                        </li>
+                        <li>
+                            <label>좌석등급</label>
                             <select v-model="classOption">
                                 <option value="">All (Select an option)</option>
-                                <option v-for="option in classOptions" :key="option" :value="option">
-                                    {{ option }}</option>
+                                <option v-for="option in classOptions" :key="option.value" :value="option.value">
+                                    {{ option.label }}</option>
                             </select>
-                            <span style="margin: 10px">좌석수</span>
-                            <select v-model="paxCntOption" style="width:90pt">
+                        </li>
+                        <li>
+                            <label>좌석수  <img src="/images/icon/filter3.png" tabindex="-1" /></label>
+                            <select v-model="paxCntOption">
                                 <option value="">All (Select an option)</option>
                                 <option v-for="option in paxCntOptions" :key="option" :value="option">
                                     {{ option }}</option>
                             </select>
                         </li>
-
                     </ul>
                 </div>
                 <div class="btn_wrap">
@@ -63,7 +70,7 @@
                 </div>
                 <div class="btn_wrap">
                     <!-- Modal 컴포넌트를 사용하고 selectedPNR 프로퍼티를 전달합니다 -->
-                    <CancelBooking v-if="modalVisible" :Pnr="selectedPNR" @close="closeModal" />
+                    <CancelBooking v-if="modalVisible" :Pnr="selectedPNR" @close="closeModal" @cancelAll="pnrCancel"/>
                 </div>
                 <table class="table_style">
                     <thead>
@@ -147,6 +154,7 @@ export default {
             selectedDate2: ref(new Date()),
             stnfr: "",
             stnto: "",
+            flightNumber: "",
             selectedStatus: '', //예약상태 statusOptions의 선택값
             statusOptions: ycObject.statusOptions,
             classOption: '', // 클래스 선택값
@@ -154,7 +162,7 @@ export default {
             paxCntOption: '', // 승객수 선택값
             paxCntOptions: ycObject.paxCntOptions,
             selectAll: false, //전체선택을 위한 변수
-            selectedItems: [], //선택된 리스트
+            selectedItems: [], //체크박스 선택된 리스트
             isExcept: ycObject.isExcept, // (CancelBookin)승객 부분취소 팝업이 필요없는 상태 들..
             resTableHeaders: ycObject.resTableHeaders,
             loading: false, // 레이어가 새로 그려지기 때문에 vue 생성주기에 문제가 생기므로 이벤트시 코딩처리 해줘야 함.
@@ -190,10 +198,10 @@ export default {
                         return false;
                     }
                 }
-                //클래스 필터
-                if (this.classOption !== "" && row.fareClass !== this.classOption) {
-                    return false;
-                }
+                //클래스 필터 (허지은 과장 요건으로 필터에서 제외.. 좌석등급으로 대체)
+                // if (this.classOption !== "" && row.fareClass !== this.classOption) {
+                //     return false;
+                // }
                 //좌석수 필터
                 if (this.paxCntOption !== "" && row.paxCount !== this.paxCntOption) {
                     return false;
@@ -203,7 +211,11 @@ export default {
         }
     },
     methods: {
-        // 전체 선택시, 버튼과 취소 PNR은 제외시켜야 함.
+        // 정규식을 사용하여 숫자만 남기고 나머지 문자 제거
+        allowOnlyNumbers() {
+            this.flightNumber = this.flightNumber.replace(/[^0-9]/g, "");
+        },        
+        // 전체 선택시, 취소 PNR은 제외시켜야 함.
         selectAllItems() {
             if (this.selectAll) {
                 //this.selectedItems = [...this.filteredRows];
@@ -262,7 +274,6 @@ export default {
                 this.showMessage('Error', error);
             }
         },
-
         // PNR 취소 버튼 클릭. Confirm 메시지박스 비동기처리..
         checkPnrCancel() {
             if (this.selectedItems.length == 0) {
@@ -276,10 +287,19 @@ export default {
             this.showMessage('Confirm', '선택한 PNR을 일괄 취소 하시겠습니까?', 'pnrCancel', true);
         },
         // 선택된 PNR 처리.
-        async pnrCancel() {
-            const jsonData = {
-                pnrNumber: this.selectedItems.map(item => item.pnrnumber),
-            };
+        async pnrCancel(onePnr) {
+            let jsonData = null;
+            if(onePnr !== undefined){ // CancelBooking 모달페이지에서 넘어온 PNR
+                jsonData = {
+                    pnrNumber: [onePnr]
+                };
+                this.modalVisible = false;
+            }
+            else{ //체크된 PNR들 처리.
+                jsonData = {
+                    pnrNumber: this.selectedItems.map(item => item.pnrnumber),
+                };
+            }
             try {
                 this.loading = true;
                 const response = await axios.post('https://stg-crewpnr.jinair.com/crew/cancelReservation', jsonData, {
@@ -311,6 +331,7 @@ export default {
             this.selectedDate2 = ref(new Date());
             this.stnfr = '';
             this.stnto = '';
+            this.flightNumber = '';
             this.selectedStatus = '';
             this.classOption = '';
             this.paxCntOption = '';
@@ -319,7 +340,7 @@ export default {
         // 검색
         async search() {
             if (this.fieldValidation() == false) {
-                this.showMessage('Warning', "도시코드는 필수 입니다.");
+                this.showMessage('Warning', "출도착지 또는 항공편명은 필수 입니다.");
                 return;
             }
             const jsonData = {
@@ -327,6 +348,8 @@ export default {
                 depEndDate: document.getElementById('required_dateto').value,
                 stnfrCode: document.getElementById('required_stnfr').value.toUpperCase(),
                 stntoCode: document.getElementById('required_stnto').value.toUpperCase(),
+                fltNum: this.flightNumber,
+                cabinClass: this.classOption,
             };
             try {
                 this.loading = true;
@@ -342,8 +365,8 @@ export default {
                     this.showMessage('Error', response.data.error);
                 } else {
                     if (response.data.result.length >= 100) {
-                        errMsg = '결과 값이 100건을 초과하였습니다.<br>검색조건을 수정하여 조회 하십시요.';
-                        this.showMessage('Warning', errMsg);
+                        const msg = '결과 값이 100건을 초과하였습니다.<br>검색조건을 수정하여 조회 하십시요.';
+                        this.showMessage('Warning', msg);
                     }
                     this.items = this.reformTable(response.data.result);
                 }
@@ -382,7 +405,20 @@ export default {
             this.showCancelBooking();
         },
         fieldValidation() {
-            return ycUtils.fieldValidation(document, 'required');
+            // return ycUtils.fieldValidation(document, 'required');
+            //항공편에 값만 있으면 조회 가능하도록 변경..
+            if(document.getElementById('required_fltNo').value.length >= 3){
+                return true;
+            }
+            else{
+                if(document.getElementById('required_stnfr').value.length 
+                    + document.getElementById('required_stnto').value.length === 6){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
         },
     }
 };

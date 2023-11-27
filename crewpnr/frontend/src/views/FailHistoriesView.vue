@@ -13,7 +13,7 @@
             <ul>
                 <li>
                     <div style="display: flex; justify-content: left; align-items: center;">
-                        <label>DEP DATE<span class="fontTypeA normal">(*)</span></label>
+                        <label>출발일자<span class="fontTypeA normal">(*)</span></label>
                         <Datepicker id="required_datefr" class="btn_calendar hasDatepicker" v-model="selectedDate1"
                             format="yyyy-MM-dd">
                         </Datepicker>
@@ -24,24 +24,28 @@
                     </div>
                 </li>
                 <li>
-                    <label>DEP/ARR<span class="fontTypeA normal">(*)</span></label>
+                    <label for="required_stnfr">출도착지<span class="fontTypeA normal">(*)</span></label>
                     <input class="inputPort" id="required_stnfr" maxlength="3" name="qModel.stnfr" placeholder="GMP"
-                        type="text" value="" /> &nbsp;&nbsp;&nbsp;
+                        label="출발지" type="text" value="" /> &nbsp;&nbsp;&nbsp;
                     <input class="inputPort" id="required_stnto" maxlength="3" name="qModel.stnto" placeholder="CJU"
-                        type="text" value="" />
+                        label="도착지" type="text" value="" />
                 </li>
                 <li>
-                    <label>Class</label>
+                    <label>좌석등급</label>
                     <select v-model="classOption">
-                        <option value="">All (Select)</option>
-                        <option v-for="option in classOptions" :key="option" :value="option">
-                            {{ option }}</option>
+                        <option value="">All (Select an option)</option>
+                        <option v-for="option in classOptions" :key="option.value" :value="option.value">
+                            {{ option.label }}</option>
                     </select>
+                </li>
+                <li>
+                    <label>항공편명(LJ)<span class="fontTypeA normal">(*)</span></label>
+                    <input id="required_fltNo" maxlength="5" v-model="flightNumber" class="common_input" type="text" placeholder="001, 3~4숫자+suffix"> <!-- @input="allowOnlyNumbers"> -->
                 </li>
                 <li>
                     <label>좌석수</label>
                     <select v-model="paxCntOption">
-                        <option value="">All (Select)</option>
+                        <option value="">All (Select an option)</option>
                         <option v-for="option in paxCntOptions" :key="option" :value="option">
                             {{ option }}</option>
                     </select>
@@ -96,6 +100,7 @@ export default {
             ],
             selectedDate1: ref(new Date()),
             selectedDate2: ref(new Date()),
+            flightNumber: "",
             classOption: '', // 선택된 옵션 값을 저장할 변수
             classOptions: ycObject.classOptions,
             paxCntOption: '', // 선택된 옵션 값을 저장할 변수
@@ -103,10 +108,8 @@ export default {
             failTableHeaders: ycObject.failTableHeaders,
         };
     },
-
     mounted() {
     },
-
     methods: {
         showMessage(title, msg) {
             this.$refs.msg_box.showPopup(title, msg);
@@ -116,13 +119,14 @@ export default {
             this.selectedDate2 = ref(new Date());
             document.getElementById('required_stnfr').value = '';
             document.getElementById('required_stnto').value = '';
+            this.flightNumber = '';
             this.classOption = '';
             this.paxCntOption = '';
             this.items = [];
         },
         async search() {
             if (this.fieldValidation() == false) {
-                this.showMessage('Warning', "도시코드는 필수 입니다.");
+                this.showMessage('Warning', "출도착지 또는 항공편명은 필수 입니다.");
                 return;
             }
             const jsonData = {
@@ -130,7 +134,8 @@ export default {
                 brdEndDt: document.getElementById('required_dateto').value.replaceAll('-', ''),
                 stnfrCode: document.getElementById('required_stnfr').value.toUpperCase(),
                 stntoCode: document.getElementById('required_stnto').value.toUpperCase(),
-                fareClass: this.classOption,
+                fltNum: this.flightNumber,
+                cabinClass: this.classOption,
                 paxCount: this.paxCntOption,
             };
             try {
@@ -145,7 +150,7 @@ export default {
                 }
                 this.items = response.data.result.map(item => ({
                     ...item,
-                    depDate: ycUtils.krFormatDate(item.depDate)
+                    depDate: ycUtils.krFormatDate(item.depDate) //날짜 yyyy-MM-dd로 표시
                 }));
                 console.log("response this.items:", this.items)
             } catch (error) {
@@ -154,7 +159,20 @@ export default {
             }
         },
         fieldValidation() {
-            return ycUtils.fieldValidation(document, 'required');
+            // return ycUtils.fieldValidation(document, 'required');
+            //항공편에 값만 있으면 조회 가능하도록 변경..
+            if(document.getElementById('required_fltNo').value.length >= 3){
+                return true;
+            }
+            else{
+                if(document.getElementById('required_stnfr').value.length 
+                    + document.getElementById('required_stnto').value.length === 6){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
         },
     }
 };

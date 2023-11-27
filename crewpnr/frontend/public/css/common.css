@@ -389,3 +389,6 @@ div[class^='filter'] input[type="text"].btn_calendar {height:40px;}
 .myCheckbox {
     text-align: center;
 }
+
+/* yc추가 */
+.wh_wrap {padding:30px 30px; background:#fff;}

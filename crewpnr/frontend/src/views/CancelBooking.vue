@@ -95,6 +95,12 @@ export default {
                 this.showMessage('Warning', '선택된 승객이 없습니다.');
                 return;
             }
+            // 1명만 있는 PNR은 부분취소가 아닌 PNR자체를 취소해야 함.
+            if(guestIdList.length === 1 && this.items.length === 1){
+                this.$emit('cancelAll', this.Pnr.pnrnumber);
+                return;
+            }
+
             const jsonData = {
                 pnrNumber: this.Pnr.pnrnumber,
                 guestId: guestIdList,
@@ -136,7 +142,6 @@ export default {
                     }
                 });
                 this.items = response.data.result;
-                console.log(this.items);
             } catch (error) {
                 console.error('데이터를 불러오는 중 오류가 발생했습니다.', error);
                 this.showMessage('Error', error, 'closeModal');
@@ -144,7 +149,6 @@ export default {
         },
     },
     mounted() {
-        console.log("mounted!!! Pnr:", this.Pnr);
         this.pnrInfo = `PNR : ${this.Pnr.pnrnumber}  /  여정 : ${this.Pnr.depDate}, ${this.Pnr.stnfrCode}-${this.Pnr.stntoCode}, ${this.Pnr.fltnum}`;
         this.search();
     }

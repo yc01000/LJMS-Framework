@@ -54,7 +54,8 @@ export const ycObject = {
         좌석수: 'paxCnt',
         ErrorValue: 'errorValue',
     },
-    statusLabels: [ // response 테이블에 표시될 상태 값
+    // response 테이블에 표시될 상태 값
+    statusLabels: [ 
         ["CONFIRMED", "완료"],
         ["WAITLISTED_HL", "대기(HL)"],
         ["WAITLISTED_KL", "대기(KL)"],
@@ -63,7 +64,8 @@ export const ycObject = {
         ["TIME_CHANGE", "시간 변경"],
         ["CANCELLED", "취소"]
     ],
-    statusOptions: [ //검색조건 옵션
+     //검색조건 옵션
+    statusOptions: [
         { value: "CONFIRMED", label: "완료" },
         { value: "WAITLISTED", label: "대기" },
         { value: "NO_OP", label: "비운항" },
@@ -71,8 +73,13 @@ export const ycObject = {
         { value: "TIME_CHANGE", label: "시간 변경" },
         { value: "CANCELLED", label: "취소" }
     ],
-    classOptions: ['U0', 'U1', 'C', 'U3'],  //검색조건 옵션
-    paxCntOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9],  //검색조건 옵션
+     //검색조건 옵션
+    classOptions: [
+        { value: "E", label: "Economy" },
+        { value: "P", label: "Premium Economy" },
+    ],  
+     //검색조건 옵션
+    paxCntOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9], 
     // (CancelBookin)승객 부분취소 팝업이 필요없는 상태 들..
     isExcept: ['TIME_CHANGE', 'SCHEDULE_CHANGE', 'CANCELLED'], 
 };
