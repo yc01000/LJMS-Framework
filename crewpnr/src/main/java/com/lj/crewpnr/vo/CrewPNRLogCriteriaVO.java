@@ -9,6 +9,8 @@ public class CrewPNRLogCriteriaVO {
     private String fareClass;
     private String paxCount;
 
+    private String cabinClass;
+
     public String getStnfrCode() {
         return stnfrCode;
     }
@@ -55,5 +57,13 @@ public class CrewPNRLogCriteriaVO {
 
     public void setPaxCount(String paxCount) {
         this.paxCount = paxCount;
+    }
+
+    public String getCabinClass() {
+        return cabinClass;
+    }
+
+    public void setCabinClass(String cabinClass) {
+        this.cabinClass = cabinClass;
     }
 }

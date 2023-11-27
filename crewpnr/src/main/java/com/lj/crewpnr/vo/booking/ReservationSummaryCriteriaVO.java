@@ -11,6 +11,8 @@ public class ReservationSummaryCriteriaVO {
     private String agencyCode;
     private String fltNum;
 
+    private String cabinClass;
+
     public String getDepStartDate() {
         return depStartDate;
     }
@@ -81,5 +83,13 @@ public class ReservationSummaryCriteriaVO {
 
     public void setFltNum(String fltNum) {
         this.fltNum = fltNum;
+    }
+
+    public String getCabinClass() {
+        return cabinClass;
+    }
+
+    public void setCabinClass(String cabinClass) {
+        this.cabinClass = cabinClass;
     }
 }

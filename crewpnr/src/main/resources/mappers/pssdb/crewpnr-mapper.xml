@@ -50,8 +50,11 @@
         WHERE  STNFR_CODE = #{stnfrCode}
         AND STNTO_CODE = #{stntoCode}
         AND DEP_DATE BETWEEN #{brdStrtDt} AND #{brdEndDt}
-        <if test='null != fareClass and !"".equals(fareClass)' >
-            AND FARE_CLASS = #{fareClass}
+        <if test='@org.apache.commons.lang3.StringUtils@equals(cabinClass, "P")'>
+            AND FARE_CLASS IN ('C', 'U0')
+        </if>
+        <if test='@org.apache.commons.lang3.StringUtils@equals(cabinClass, "E")'>
+            AND FARE_CLASS IN ('U1', 'U3')
         </if>
         <if test='null != paxCount and !"".equals(paxCount)'>
             AND PAX_CNT = #{paxCount}

@@ -80,6 +80,24 @@ public class CrewBookingService {
     @Value("${server.scheme}://${server.name}")
     String serverEndpoint;
 
+    private static final Map<String, String> CABIN_CLASS_MAP = new HashMap<>() {
+        {
+            put("C", "P");
+            put("U0", "P");
+            put("U1", "E");
+            put("U3", "E");
+        }
+    };
+
+    private static final Map<String, String> CABIN_CLASS_DISPLAY_MAP = new HashMap<>() {
+        {
+            put("C", "Premium Economy");
+            put("U0", "Premium Economy");
+            put("U1", "Economy");
+            put("U3", "Economy");
+        }
+    };
+
     public ResultMapVO createBookingsAsync(List<CrewPNRExcelVO> crewPNRExcelList) {
         ResultMapVO result = new ResultMapVO();
 
@@ -822,10 +840,6 @@ public class CrewBookingService {
     public ResultMapVO getReservationSummary(ReservationSummaryCriteriaVO criteriaVO) {
         //로그인 유저의 부서 코드로 agency Code 세팅
         String agencyCode = getAgencyCode();
-//        if(agencyCode == null){
-//            resultMapVO.put("message", "Agency Code null");
-//            return resultMapVO;
-//        }
 
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
@@ -838,8 +852,19 @@ public class CrewBookingService {
 
         RetrieveReservationSummaryRQ req = new RetrieveReservationSummaryRQ();
 
-        if(StringUtils.isNotEmpty(criteriaVO.getFltNum())){
-            req.setFlightNumber(Integer.valueOf(criteriaVO.getFltNum()));
+        req.setCarrierCode("LJ");
+        if(StringUtils.isNotEmpty(criteriaVO.getFltNum())) {
+            String flightNumber = null;
+            String flightSuffix = null;
+            if(StringUtils.isNumeric(criteriaVO.getFltNum())) {
+                flightNumber = criteriaVO.getFltNum();
+            } else {
+                flightSuffix = criteriaVO.getFltNum().substring(criteriaVO.getFltNum().length() - 2);
+                flightNumber = StringUtils.replace(criteriaVO.getFltNum(), flightSuffix, "");
+            }
+
+            req.setFlightNumber(Integer.valueOf(flightNumber));
+            req.setFlightSuffix(flightSuffix);
         }
         if(StringUtils.isNotEmpty(criteriaVO.getStnfrCode()) && StringUtils.isNotEmpty(criteriaVO.getStntoCode())){
             req.setBoardPoint(criteriaVO.getStnfrCode());
@@ -984,15 +1009,6 @@ public class CrewBookingService {
             }
         };
 
-        final Map<String, String> CABIN_CLASS_DISPLAY_MAP = new HashMap<>() {
-            {
-                put("C", "Premium Economy");
-                put("U0", "Premium Economy");
-                put("U1", "Economy");
-                put("U3", "Economy");
-            }
-        };
-
         String critSegStatus = criteriaVO.getSegmentStatus();
         String critFareClass = criteriaVO.getFareClass();
         String critPaxCnt = criteriaVO.getPaxCount();
@@ -1034,6 +1050,8 @@ public class CrewBookingService {
                 }
             }
 
+            // Filtering with Cabin Class
+            String cabinClass = null;
             String rsFareClass = targetFltSegment.getFareBasis();
             if(StringUtils.isNotBlank(rsFareClass)) {
                 boolean fromKorea = IBSDomainUtils.isDomestic(criteriaVO.getStnfrCode(), criteriaVO.getStntoCode());
@@ -1042,13 +1060,13 @@ public class CrewBookingService {
                 else
                     fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
 
-                if (null != critFareClass && !critFareClass.isEmpty()) {
-                    if (!StringUtils.equals(fltSegFareClass, critFareClass)) {
-                        continue;
-                    }
+                cabinClass = CABIN_CLASS_MAP.get(fltSegFareClass);
+                if(!StringUtils.equalsIgnoreCase(criteriaVO.getCabinClass(), cabinClass)) {
+                    continue;
                 }
             }
 
+            // Filtering with Pax Count
             if (null != critPaxCnt && !critPaxCnt.isEmpty()) {
                 if (paxCnt != Integer.parseInt(critPaxCnt)) {
                     continue;
@@ -1088,7 +1106,7 @@ public class CrewBookingService {
             reservationSummaryVO.setStatus(STATUS_MAP.get(targetFltSegment.getSegmentStatus()));
             reservationSummaryVO.setStatusDisplay(STATUS_DISPLAY_MAP.get(reservationSummaryVO.getStatus()));
 
-            reservationSummaryVO.setCabinClassDisplay(CABIN_CLASS_DISPLAY_MAP.get(fltSegFareClass));
+            reservationSummaryVO.setCabinClassDisplay(CABIN_CLASS_DISPLAY_MAP.get(cabinClass));
 
             reservationSummaryVOList.add(reservationSummaryVO);
         }
@@ -1387,15 +1405,6 @@ public class CrewBookingService {
         if(CollectionUtils.isEmpty(list)) {
             return ResultMapVO.simpleResult("result", list);
         }
-
-        final Map<String, String> CABIN_CLASS_DISPLAY_MAP = new HashMap<>() {
-            {
-                put("C", "Premium Economy");
-                put("U0", "Premium Economy");
-                put("U1", "Economy");
-                put("U3", "Economy");
-            }
-        };
         list.forEach(t -> t.setCabinClassDisplay(CABIN_CLASS_DISPLAY_MAP.get(t.getFareClass())));
 
         return ResultMapVO.simpleResult("result", list);
