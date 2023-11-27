@@ -158,6 +158,11 @@ export default {
                     headers: {'Content-Type': 'application/json'},
                     body: jsonData
                 });
+                if (!!response.error) {
+                    this.showMessage('Error', response.error);
+                    return;
+                }
+
                 if (response.result.length == 0) {
                     this.showMessage('Warnning', '조회된 데이터가 없습니다.');
                 }
