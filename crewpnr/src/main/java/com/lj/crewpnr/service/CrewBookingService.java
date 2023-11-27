@@ -993,6 +993,12 @@ public class CrewBookingService {
             }
         };
 
+        String critSegStatus = criteriaVO.getSegmentStatus();
+        String critFareClass = criteriaVO.getFareClass();
+        String critPaxCnt = criteriaVO.getPaxCount();
+        int critDepStartDate = Integer.parseInt(criteriaVO.getDepStartDate().replace("-",""));
+        int critDepEndDate = Integer.parseInt(criteriaVO.getDepEndDate().replace("-",""));
+
         for (var pnrSummary : summaries) {
             ReservationSummaryVO reservationSummaryVO = new ReservationSummaryVO();
             int paxCnt = pnrSummary.getPnrGuestSummaryDetails().size();
@@ -1020,11 +1026,6 @@ public class CrewBookingService {
 
                 if(targetFltSegment != null) break;
             }
-
-            String critSegStatus = criteriaVO.getSegmentStatus();
-            String critFareClass = criteriaVO.getFareClass();
-            String critPaxCnt = criteriaVO.getPaxCount();
-            String critDepStartDate = criteriaVO.getDepStartDate();
 
             //segmentStatus, fareClass, paxCount 조회 조건 필터링
             if (null != critSegStatus && !critSegStatus.isEmpty()) {
@@ -1054,12 +1055,10 @@ public class CrewBookingService {
                 }
             }
 
-            //예약 일자를 변경해도 최초 예약 일자로 조회하면 해당 PNR 표출 > 검색한 출발 일자로 필터링
-            String rsDepTime =  DateUtils.string(targetFltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyy-MM-dd");
-            if (null != critDepStartDate && !critDepStartDate.isEmpty()) {
-                if (!StringUtils.equals(rsDepTime, critDepStartDate)) {
-                    continue;
-                }
+            //예약 일자를 변경해도 최초 예약 일자로 조회하면 해당 PNR 표출되는 문제 > IBS에서 내려준 출발일자가 검색조건 기간내 포함되면 리스트에 추가
+            int rsDepTime =  Integer.parseInt(DateUtils.string(targetFltSegment.getFlightDate(), "dd-MMM-yyyy", "yyyyMMdd"));
+            if (rsDepTime < critDepStartDate || rsDepTime > critDepEndDate) {
+                continue;
             }
 
             reservationSummaryVO.setPNRNumber(pnrSummary.getPnrNumber());
