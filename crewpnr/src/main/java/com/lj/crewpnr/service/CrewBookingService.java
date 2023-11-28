@@ -1427,12 +1427,15 @@ public class CrewBookingService {
         }
 
         if(StringUtils.isBlank(agencyCode)) {
-            Cookie cookie = Arrays.stream(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getCookies())
-                    .filter(t -> StringUtils.equals(t.getName(), "agencyCode"))
-                    .findFirst()
-                    .orElse(null);
-            if(cookie != null) {
-                agencyCode = cookie.getValue();
+            Cookie[] cookies = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getCookies();
+            if(cookies != null && cookies.length > 0) {
+                Cookie cookie = Arrays.stream(cookies)
+                        .filter(t -> StringUtils.equals(t.getName(), "agencyCode"))
+                        .findFirst()
+                        .orElse(null);
+                if (cookie != null) {
+                    agencyCode = cookie.getValue();
+                }
             }
         }
 
