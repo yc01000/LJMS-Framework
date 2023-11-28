@@ -25,6 +25,7 @@ import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
 import com.lj.sso.ssocore.model.UserInfoVO;
 import com.lj.sso.ssocore.util.PrincipalUtils;
+import jakarta.servlet.http.Cookie;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -33,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.net.URLEncoder;
@@ -108,6 +111,7 @@ public class CrewBookingService {
             final CreateBookingsFormVO form = new CreateBookingsFormVO();
             form.setCrewPNRExcelList(crewPNRExcelList);
             form.setLoginUser(PrincipalUtils.user());
+            form.setAgencyCode(getAgencyCode());
 
             //로그인 유저의 부서 코드로 agency Code 세팅
             String agencyCode = null;
@@ -1418,10 +1422,20 @@ public class CrewBookingService {
         String agencyCode = null;
 
         codeInfoVO = codeHandler.getCodeInfo("CMM209", loginUser.getDepartment());
-
-        if(codeInfoVO != null){
+        if(codeInfoVO == null) {
             agencyCode = codeInfoVO.getAddInfo1();
         }
+
+        if(StringUtils.isBlank(agencyCode)) {
+            Cookie cookie = Arrays.stream(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getCookies())
+                    .filter(t -> StringUtils.equals(t.getName(), "agencyCode"))
+                    .findFirst()
+                    .orElse(null);
+            if(cookie != null) {
+                agencyCode = cookie.getValue();
+            }
+        }
+
         return agencyCode;
     }
 }

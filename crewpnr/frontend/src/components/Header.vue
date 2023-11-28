@@ -7,7 +7,16 @@
         <li><a href="/sso/signout">SIGN OUT</a></li>
       </ul>
 
-      <p class="title_txt">승무원 예약</p>
+      <p class="title_txt">
+        승무원 예약
+        <select v-if="userinfo.superuser" v-model="agencyCode" @change="handleAgencyCode">
+          <option value="">대리점 코드 설정</option>
+          <option value="20024600">운항</option>
+          <option value="20024610">객실</option>
+          <option value="20024620">정비</option>
+        </select>
+      </p>
+
       <div class="m_menu">
         <a :href="SUPERSYSTEM_URL" class="Admin"><p class="portal">PORTAL</p></a>
       </div>
@@ -54,13 +63,50 @@ export default {
 
   data() {
     return {
-        userinfo: {}
+        userinfo: {},
+        agencyCode: ''
     };
+  },
+
+  methods: {
+    getCookie(name) {
+      const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+      for(const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === name) {
+          return cookieValue;
+        }
+      }
+      return null;
+    },
+
+    setCookie(name, value) {
+      const expirationDate = new Date();
+      expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+
+      document.cookie = `${name}=${value}; expires=${expirationDate.toUTCString()}`;
+    },
+
+    handleAgencyCode() {
+      this.setCookie('agencyCode', this.agencyCode);
+    }
   },
 
   async mounted() {
     const data = await requests.get('/user/userinfo');
+    let userinfo = data.result;
+    if(!userinfo) {
+      return;
+    }
+
+    userinfo.superuser = userinfo.department.indexOf('14') === 0 || userinfo.department.indexOf('31') === 0 || userinfo.department === 'LJ994';
+    if(true) {
+      this.agencyCode = this.getCookie('agencyCode') || '';
+    }
+
     this.userinfo = data.result;
+    console.log(this.userinfo);
+    window.header = this;
   }
 };
 </script>
