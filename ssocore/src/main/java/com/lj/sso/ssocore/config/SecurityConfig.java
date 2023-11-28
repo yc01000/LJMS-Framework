@@ -89,7 +89,7 @@ public class SecurityConfig {
                             }
                         }));
         if(usingDummyLogin) {
-            http.addFilterAfter(new DummyUserFilter(), CORSFilter.class);
+            http.addFilterBefore(new DummyUserFilter(), JWTAuthenticationFilter.class);
         }
 
         return http.build();

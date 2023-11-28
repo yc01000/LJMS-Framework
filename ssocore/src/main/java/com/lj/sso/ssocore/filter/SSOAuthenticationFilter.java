@@ -5,9 +5,18 @@ import com.lj.sso.ssocore.model.SsoAuthenticationToken;
 import com.lj.sso.ssocore.model.UserInfoVO;
 import com.lj.sso.ssocore.service.OAuthClientService;
 import com.lj.sso.ssocore.util.BinderUtils;
+import com.lj.sso.ssocore.util.PEMUtils;
 import com.lj.sso.ssocore.util.SsoConstants;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWEHeader;
+import com.nimbusds.jose.JWEObject;
+import com.nimbusds.jose.Payload;
+import com.nimbusds.jose.crypto.RSAEncrypter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +34,8 @@ import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -160,11 +171,6 @@ public class SSOAuthenticationFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return;
 		}
-		if(authentication == null) {
-			LOGGER.error("-|{}|사용자 정보 없음으로 인한 실패", request.getAttribute("rid"));
-			filterChain.doFilter(request, response);
-			return;
-		}
 
 		SecurityContext context = SecurityContextHolder.getContext();
 		context.setAuthentication(authentication);
@@ -176,6 +182,19 @@ public class SSOAuthenticationFilter extends OncePerRequestFilter {
 		session.setAttribute(SsoConstants.SPRING_SECURITY_CONTEXT, context);
 
 		LOGGER.info("-|{}|sign in complete, returning to : {}", request.getAttribute("rid"), returnUrl);
+
+		try {
+			JWEHeader jweHeader = new JWEHeader.Builder(JWEAlgorithm.RSA_OAEP_256, EncryptionMethod.A128GCM).build();
+			JWEObject jwe = new JWEObject(jweHeader, new Payload(new Gson().toJson(authentication.getPrincipal())));
+			jwe.encrypt(new RSAEncrypter((RSAPublicKey) PEMUtils.publicKey("certification/jwt/pubkey.pem")));
+			String jweSerialized = jwe.serialize();
+
+			Cookie cookie = new Cookie("testcookie", jweSerialized);
+			cookie.setPath("/");
+			response.addCookie(cookie);
+		} catch(JOSEException e) {
+			LOGGER.error("JWE encrypting failed: " + e.getMessage());
+		}
 
 		new DefaultRedirectStrategy().sendRedirect(request, response, returnUrl);
 	}
