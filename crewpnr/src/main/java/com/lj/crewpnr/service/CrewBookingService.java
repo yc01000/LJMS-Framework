@@ -112,16 +112,6 @@ public class CrewBookingService {
             form.setCrewPNRExcelList(crewPNRExcelList);
             form.setLoginUser(PrincipalUtils.user());
             form.setAgencyCode(getAgencyCode());
-
-            //로그인 유저의 부서 코드로 agency Code 세팅
-            String agencyCode = null;
-            try {
-                agencyCode = codeHandler.getCodeInfo("CMM209", form.getLoginUser().getDepartment()).getAddInfo1();
-                form.setAgencyCode(agencyCode);
-            } catch (Exception e) {
-                return ResultMapVO.simpleError("there is no agency code. please check the common code CMM209");
-            }
-
             new Thread(() -> createBookings(form)).start();
 
 //            result.put("service", service);
