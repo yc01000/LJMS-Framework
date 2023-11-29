@@ -9,7 +9,7 @@
     </div>
     <div class="tab02_wrap" ref="tabWrap">
         <ul class="tab_ul02">
-            <li v-for="(tab, index) in tabs" :key="index" :class="{ 'on': activeTab === index }" class="tab_li02">
+            <li v-for="(tab, index) in tabs" :key="index" :class="{ 'on': activeTab === index }" class="tab_li02" style="cursor: pointer;">
                 <a @click="changeTab(index)">{{ tab }}</a>
             </li>
         </ul>
@@ -24,13 +24,12 @@
                             {{ this.uploadProps.get('Gen').file.length === 0 ? '일반 예약 파일을 여기로 드래그해 주세요.' :
                                 this.uploadProps.get('Gen').file.name }}</span>
                     </div>
-
-                    <div class="btn_wrap right">
-                        <a href="https://imagesstg.jinair.com/eForm/crewpnr_example.xlsx" class="btnTypeC">엑셀 형식
-                            다운로드</a>
-                        &nbsp;
-                        <a href="#" @click="uploadFile('Gen')" class="btnTypeA">엑셀 업로드 (PNR 생성 요청)</a>
-                    </div>
+                </div>
+                <div class="btn_wrap right">
+                    <a href="https://imagesstg.jinair.com/eForm/crewpnr_example.xlsx" class="btnTypeC">엑셀 형식
+                        다운로드</a>
+                    &nbsp;
+                    <a href="#" @click="uploadFile('Gen')" class="btnTypeA">엑셀 업로드 (PNR 생성 요청)</a>
                 </div>
             </div>
 
@@ -44,13 +43,12 @@
                             {{ this.uploadProps.get('Gum').file.length === 0 ? '괌 예약 파일을 여기로 드래그해 주세요.' :
                                 this.uploadProps.get('Gum').file.name }}</span>
                     </div>
-
-                    <div class="btn_wrap right">
-                        <a href="https://imagesstg.jinair.com/eForm/crewpnr_gum_example.xlsx" class="btnTypeC">엑셀 형식
-                            다운로드(GUM)</a>
-                        &nbsp;
-                        <a href="#" @click="uploadFile('Gum')" class="btnTypeA">엑셀 업로드 (GUM PNR 생성)</a>
-                    </div>
+                </div>
+                <div class="btn_wrap right">
+                    <a href="https://imagesstg.jinair.com/eForm/crewpnr_gum_example.xlsx" class="btnTypeC">엑셀 형식
+                        다운로드(GUM)</a>
+                    &nbsp;
+                    <a href="#" @click="uploadFile('Gum')" class="btnTypeA">엑셀 업로드 (GUM PNR 생성)</a>
                 </div>
             </div>
         </div>
@@ -161,6 +159,6 @@ export default {
     border: 3px dashed #ccc;
     text-align: center !important;
     padding: 40px;
-    cursor: pointer;
+
 }
 </style>

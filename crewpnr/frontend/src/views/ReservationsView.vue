@@ -10,59 +10,71 @@
                     <li class="select"><a href="#" class="ico_bul">예약 조회</a></li>
                 </ul>
             </div>
-            <div>* 출발일자, 출도착지 혹은 항공편명 중 1개 조건을 필수 선택 후 조회해 주세요.<br>
-            * 조회한 기간 내 예약된 PNR이 100개 이상인 경우, 일부 PNR은 LIST에 표출되지 않습니다. 조회 기간을 줄인 후 다시 조회해 주세요.</div><br>
+            <span style="font-size: 14px;">* 출발일자, 출도착지 혹은 항공편명 중 1개 조건을 필수 선택 후 조회해 주세요.<br>
+            * 조회한 기간 내 예약된 PNR이 100개 이상인 경우, 일부 PNR은 LIST에 표출되지 않습니다. 조회 기간을 줄인 후 다시 조회해 주세요.</span><br><br>
             <div>
-                <div class="filter search_form_box">
-                    <ul>
-                        <li>
-                            <div style="display: flex; justify-content: left; align-items: center;">
-                                <label>출발일자<span class="fontTypeA normal">(*)</span></label>
-                                <Datepicker id="required_datefr" class="btn_calendar hasDatepicker" v-model="selectedDate1"
-                                    format="yyyy-MM-dd">
-                                </Datepicker>
-                                <span style="margin: 10px">~</span>
-                                <Datepicker id="required_dateto" class="btn_calendar hasDatepicker" v-model="selectedDate2"
-                                    format="yyyy-MM-dd">
-                                </Datepicker>
-                            </div>
-                        </li>
-                        <li>
-                            <label>출도착지<span class="fontTypeA normal">(*)</span></label>
-                            <input class="inputPort" id="required_stnfr" maxlength="3" v-model="stnfr" placeholder="GMP"
-                                type="text" /> &nbsp;&nbsp;&nbsp;
-                            <input class="inputPort" id="required_stnto" maxlength="3" v-model="stnto" placeholder="CJU"
-                                type="text" />
-                        </li>
-                        <li>
-                            <label>예약상태  <img src="/images/icon/filter3.png" tabindex="-1" /></label>
-                            <select v-model="selectedStatus">
-                                <option value="">All (Select an option)</option>
-                                <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-                                    {{ option.label }}</option>
-                            </select>
-                        </li>
-                        <li>
-                            <label>항공편명(LJ)<span class="fontTypeA normal">(*)</span></label>
-                            <input id="required_fltNo" maxlength="5" v-model="flightNumber" class="common_input" type="text" placeholder="001, 3~4숫자+suffix"> <!-- @input="allowOnlyNumbers"> -->
-                        </li>
-                        <li>
-                            <label>좌석등급</label>
-                            <select v-model="classOption">
-                                <option value="">All (Select an option)</option>
-                                <option v-for="option in classOptions" :key="option.value" :value="option.value">
-                                    {{ option.label }}</option>
-                            </select>
-                        </li>
-                        <li>
-                            <label>좌석수  <img src="/images/icon/filter3.png" tabindex="-1" /></label>
-                            <select v-model="paxCntOption">
-                                <option value="">All (Select an option)</option>
-                                <option v-for="option in paxCntOptions" :key="option" :value="option">
-                                    {{ option }}</option>
-                            </select>
-                        </li>
-                    </ul>
+                <div class="filter search_tb">
+                    <table>
+                        <colgroup>
+                            <col style="width:9%;">
+                            <col>
+                            <col style="width:9%;">
+                            <col>
+                            <col style="width:9%;">
+                            <col style="width:20%;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>출발일자<span class="fontTypeA normal">(*)</span></th>
+                                <td>
+                                    <div style="display: flex; justify-content: left; align-items: center;">
+                                    <Datepicker id="required_datefr" class="btn_calendar hasDatepicker" v-model="selectedDate1"
+                                        format="yyyy-MM-dd">
+                                    </Datepicker>
+                                    <span style="margin: 10px">~</span>
+                                    <Datepicker id="required_dateto" class="btn_calendar hasDatepicker" v-model="selectedDate2"
+                                        format="yyyy-MM-dd">
+                                    </Datepicker>
+                                </div>
+                                </td>
+                                <th>출도착지<span class="fontTypeA normal">(*)</span></th>
+                                <td>
+                                    <input class="inputPort" id="required_stnfr" maxlength="3" v-model="stnfr" placeholder="GMP"
+                                        type="text" /> &nbsp;&nbsp;&nbsp;
+                                    <input class="inputPort" id="required_stnto" maxlength="3" v-model="stnto" placeholder="CJU"
+                                        type="text" />                            </td>
+                                <th>항공편명(LJ)<span class="fontTypeA normal">(*)</span></th>
+                                <td><input id="required_fltNo" maxlength="5" v-model="flightNumber" class="common_input" type="text" placeholder="001, 3~4숫자+suffix"> <!-- @input="allowOnlyNumbers"> --></td>
+                            </tr>
+                            <tr>
+                                <th>좌석등급</th>
+                                <td>
+                                    <select v-model="classOption">
+                                        <option value="">All (Select an option)</option>
+                                        <option v-for="option in classOptions" :key="option.value" :value="option.value">
+                                            {{ option.label }}</option>
+                                    </select>
+                                </td>
+                                <th>예약상태  <img src="/images/icon/filter3.png" tabindex="-1" /></th>
+                                <td>
+                                    <select v-model="selectedStatus">
+                                        <option value="">All (Select an option)</option>
+                                        <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+                                            {{ option.label }}</option>
+                                    </select>
+                                </td>
+                                <th>좌석수  <img src="/images/icon/filter3.png" tabindex="-1" /></th>
+                                <td>
+                                    <select v-model="paxCntOption">
+                                        <option value="">All (Select an option)</option>
+                                        <option v-for="option in paxCntOptions" :key="option" :value="option">
+                                            {{ option }}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                 </div>
                 <div class="btn_wrap">
                     <button class="btnTypeD" @click="search">조회</button>&nbsp;
@@ -463,7 +475,7 @@ export default {
 </script>
 
 <style scoped>
-tr:hover {
+.table_style tr:hover {
     background-color: #ffcccb;
     /* 마우스를 올렸을 때 배경 색상 변경 */
 }
