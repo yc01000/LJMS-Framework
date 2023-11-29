@@ -9,48 +9,59 @@
     </div>
 
     <div>
-        <div class="filter search_form_box">
-            <ul>
-                <li>
-                    <div style="display: flex; justify-content: left; align-items: center;">
-                        <label>출발일자<span class="fontTypeA normal">(*)</span></label>
-                        <Datepicker id="required_datefr" class="btn_calendar hasDatepicker" v-model="selectedDate1"
-                            format="yyyy-MM-dd">
-                        </Datepicker>
-                        <span style="margin: 10px">~</span>
-                        <Datepicker id="required_dateto" class="btn_calendar hasDatepicker" v-model="selectedDate2"
-                            format="yyyy-MM-dd">
-                        </Datepicker>
-                    </div>
-                </li>
-                <li>
-                    <label for="required_stnfr">출도착지<span class="fontTypeA normal">(*)</span></label>
-                    <input class="inputPort" id="required_stnfr" maxlength="3" name="qModel.stnfr" placeholder="GMP"
-                        label="출발지" type="text" value="" /> &nbsp;&nbsp;&nbsp;
-                    <input class="inputPort" id="required_stnto" maxlength="3" name="qModel.stnto" placeholder="CJU"
-                        label="도착지" type="text" value="" />
-                </li>
-                <li>
-                    <label>좌석등급</label>
-                    <select v-model="classOption">
-                        <option value="">All (Select an option)</option>
-                        <option v-for="option in classOptions" :key="option.value" :value="option.value">
-                            {{ option.label }}</option>
-                    </select>
-                </li>
-                <li>
-                    <label>항공편명(LJ)<span class="fontTypeA normal">(*)</span></label>
-                    <input id="required_fltNo" maxlength="5" v-model="flightNumber" class="common_input" type="text" placeholder="001, 3~4숫자+suffix"> <!-- @input="allowOnlyNumbers"> -->
-                </li>
-                <li>
-                    <label>좌석수</label>
-                    <select v-model="paxCntOption">
-                        <option value="">All (Select an option)</option>
-                        <option v-for="option in paxCntOptions" :key="option" :value="option">
-                            {{ option }}</option>
-                    </select>
-                </li>
-            </ul>
+        <div class="filter search_tb">
+            <table>
+                <colgroup>
+                    <col style="width:9%;">
+                    <col>
+                    <col style="width:9%;">
+                    <col>
+                    <col style="width:9%;">
+                    <col style="width:20%;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th>출발일자<span class="fontTypeA normal">(*)</span></th>
+                        <td>
+                            <div style="display: flex; justify-content: left; align-items: center;">
+                            <Datepicker id="required_datefr" class="btn_calendar hasDatepicker" v-model="selectedDate1"
+                                format="yyyy-MM-dd">
+                            </Datepicker>
+                            <span style="margin: 10px">~</span>
+                            <Datepicker id="required_dateto" class="btn_calendar hasDatepicker" v-model="selectedDate2"
+                                format="yyyy-MM-dd">
+                            </Datepicker>
+                        </div>
+                        </td>
+                        <th>출도착지<span class="fontTypeA normal">(*)</span></th>
+                        <td>
+                            <input class="inputPort" id="required_stnfr" maxlength="3" v-model="stnfr" placeholder="GMP"
+                                type="text" /> &nbsp;&nbsp;&nbsp;
+                            <input class="inputPort" id="required_stnto" maxlength="3" v-model="stnto" placeholder="CJU"
+                                type="text" />                            </td>
+                        <th>항공편명(LJ)<span class="fontTypeA normal">(*)</span></th>
+                        <td><input id="required_fltNo" maxlength="5" v-model="flightNumber" class="common_input" type="text" placeholder="001, 3~4숫자+suffix"> <!-- @input="allowOnlyNumbers"> --></td>
+                    </tr>
+                    <tr>
+                        <th>좌석등급</th>
+                        <td>
+                            <select v-model="classOption">
+                                <option value="">All (Select an option)</option>
+                                <option v-for="option in classOptions" :key="option.value" :value="option.value">
+                                    {{ option.label }}</option>
+                            </select>
+                        </td>
+                        <th>좌석수  <img src="/images/icon/filter3.png" tabindex="-1" /></th>
+                        <td>
+                            <select v-model="paxCntOption">
+                                <option value="">All (Select an option)</option>
+                                <option v-for="option in paxCntOptions" :key="option" :value="option">
+                                    {{ option }}</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="btn_wrap">
             <a href="javascript://" class="btnTypeD" @click="search">조회</a>&nbsp;
@@ -145,8 +156,9 @@ export default {
                         'Content-Type': 'application/json'
                     }
                 });
-                if (response.data.result.length == 0) {
-                    this.showMessage('Warnning', '조회된 데이터가 없습니다.');
+                if (response.data.error !== undefined) {
+                    this.showMessage('Error', response.data.error);
+                    return;
                 }
                 this.items = response.data.result.map(item => ({
                     ...item,

@@ -75,8 +75,8 @@ export const ycObject = {
     ],
      //검색조건 옵션
     classOptions: [
-        { value: "E", label: "Economy" },
-        { value: "P", label: "Premium Economy" },
+        { value: "E", label: "Economy (U1, U3)" },
+        { value: "P", label: "Premium Economy (U0, C)" },
     ],  
      //검색조건 옵션
     paxCntOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9], 
