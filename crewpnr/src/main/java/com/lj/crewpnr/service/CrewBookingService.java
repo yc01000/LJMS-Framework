@@ -853,7 +853,7 @@ public class CrewBookingService {
             if(StringUtils.isNumeric(criteriaVO.getFltNum())) {
                 flightNumber = criteriaVO.getFltNum();
             } else {
-                flightSuffix = criteriaVO.getFltNum().substring(criteriaVO.getFltNum().length() - 2);
+                flightSuffix = criteriaVO.getFltNum().substring(criteriaVO.getFltNum().length() - 1);
                 flightNumber = StringUtils.replace(criteriaVO.getFltNum(), flightSuffix, "");
             }
 
