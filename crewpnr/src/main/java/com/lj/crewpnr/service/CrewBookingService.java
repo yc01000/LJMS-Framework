@@ -134,6 +134,8 @@ public class CrewBookingService {
 
         String agencyCode = form.getAgencyCode();
 
+        LoggerUtils.i(LOGGER, "Agency Code: " + agencyCode);
+
         var crewPNRExcelList = form.getCrewPNRExcelList();
 
         AvailabilityCriteriaVO criteria = null;
@@ -300,7 +302,7 @@ public class CrewBookingService {
                     createBookingRQ.setPointOfOrigin("KR");
                     createBookingRQ.setCurrency("KRW");
 
-
+                    LoggerUtils.i(LOGGER, "Agency Code: " + agencyCode);
                     CreateBookingRS createBookingRS = saveCreateBooking.request(createBookingRQ, property);
                     String errors = errors(createBookingRS);
                     if (StringUtils.isNotBlank(errors)) {
