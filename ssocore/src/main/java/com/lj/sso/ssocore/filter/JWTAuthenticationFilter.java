@@ -5,6 +5,7 @@ import com.lj.sso.ssocore.model.SsoAuthenticationToken;
 import com.lj.sso.ssocore.model.UserInfoVO;
 import com.lj.sso.ssocore.util.LoggerUtils;
 import com.lj.sso.ssocore.util.PEMUtils;
+import com.lj.sso.ssocore.util.SsoConstants;
 import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.crypto.RSADecrypter;
 import jakarta.servlet.FilterChain;
@@ -55,6 +56,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             AbstractAuthenticationToken authentication = new SsoAuthenticationToken(userInfo.getAuthorities(), userInfo);
             SecurityContext context = SecurityContextHolder.getContext();
             context.setAuthentication(authentication);
+
+            request.getSession().setAttribute(SsoConstants.SPRING_SECURITY_CONTEXT, context);
         } catch (Exception e) {
             LoggerUtils.d(LOGGER, "-|{}|{}", request.getAttribute("rid"), "JWT로 인가 실패 (JWT 없음)");
             filterChain.doFilter(request, response);
