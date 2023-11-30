@@ -11,9 +11,9 @@
         승무원 예약
         <select v-if="userinfo.superuser" v-model="agencyCode" @change="handleAgencyCode">
           <option value="">대리점 코드 설정</option>
-          <option value="20024600">운항</option>
-          <option value="20024610">객실</option>
-          <option value="20024620">정비</option>
+          <option value="90000100">운항</option>
+          <option value="90000200">객실</option>
+          <option value="90000300">정비</option>
         </select>
       </p>
 
