@@ -93,19 +93,7 @@ export default {
   },
 
   async mounted() {
-    const data = await requests.get('/user/userinfo');
-    let userinfo = data.result;
-    if(!userinfo) {
-      return;
-    }
-
-    userinfo.superuser = userinfo.department.indexOf('14') === 0 || userinfo.department.indexOf('31') === 0 || userinfo.department === 'LJ994';
-    if(true) {
-      this.agencyCode = this.getCookie('agencyCode') || '';
-    }
-
-    this.userinfo = data.result;
-    console.log(this.userinfo);
+    this.userinfo = await this.$getUserinfo();
     window.header = this;
   }
 };
