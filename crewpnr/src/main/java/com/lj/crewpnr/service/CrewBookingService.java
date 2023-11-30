@@ -996,7 +996,7 @@ public class CrewBookingService {
         final Map<String, String> STATUS_DISPLAY_MAP = new HashMap<>() {
             {
                 put("CONFIRMED", "완료");
-                put("WAITLISTED", "대기(HL)");
+                put("WAITLISTED_HL", "대기(HL)");
                 put("WAITLISTED_KL", "대기(KL)");
                 put("CANCELLED", "취소");
                 put("TIME_CHANGE", "시간 변경");
