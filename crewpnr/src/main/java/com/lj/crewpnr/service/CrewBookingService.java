@@ -1413,11 +1413,12 @@ public class CrewBookingService {
         CodeInfoVO codeInfoVO = null;
         String agencyCode = null;
 
+        LoggerUtils.i(LOGGER, "getAgencyCode: " + new Gson().toJson(loginUser));
         codeInfoVO = codeHandler.getCodeInfo("CMM209", loginUser.getDepartment());
         if(codeInfoVO == null) {
             agencyCode = codeInfoVO.getAddInfo1();
         }
-
+        LoggerUtils.i(LOGGER, "getAgencyCode: " + agencyCode);
         if(StringUtils.isBlank(agencyCode)) {
             Cookie[] cookies = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getCookies();
             if(cookies != null && cookies.length > 0) {
@@ -1430,6 +1431,7 @@ public class CrewBookingService {
                 }
             }
         }
+        LoggerUtils.i(LOGGER, "getAgencyCode: " + agencyCode);
 
         return agencyCode;
     }
