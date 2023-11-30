@@ -28,7 +28,7 @@ export const ycUtils = (function() {
 })();
 
 export const ycObject = {
-    //예약조회시 엑셀다운로드로만 사용. status가 테이블에는 미표시나, items에서는 값이 있어야함.
+    //예약조회시 엑셀다운로드로만 사용.
     resTableHeaders: { 
         No: 'id',
         항공편: 'fltnum',
@@ -37,11 +37,10 @@ export const ycObject = {
         도착지: 'stntoCode',
         출발시간: 'departureDateTime',
         도착시간: 'arrivalDateTime',
-        Class: 'fareClass',
+        'Fare Class': 'fareClass',
         좌석수: 'paxCount',
-        예약상태: 'status',
-        예약결과: 'statusDisplay',
-        PNR: 'pnrnumber'
+        PNR: 'pnrnumber',
+        예약상태: 'statusDisplay',
     },
     //예약실패 페이지에서 테이블과 엑셀에 사용.
     failTableHeaders: {
@@ -50,7 +49,7 @@ export const ycObject = {
         항공편: 'fltNum',
         출발지: 'stnfrCode',
         도착지: 'stntoCode',
-        Class: 'fareClass',
+        'Fare Class': 'fareClass',
         좌석수: 'paxCnt',
         ErrorValue: 'errorValue',
     },

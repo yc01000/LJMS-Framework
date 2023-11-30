@@ -51,7 +51,7 @@
                                     {{ option.label }}</option>
                             </select>
                         </td>
-                        <th>좌석수  <img src="/images/icon/filter3.png" tabindex="-1" /></th>
+                        <th>좌석수</th>
                         <td>
                             <select v-model="paxCntOption">
                                 <option value="">All (Select an option)</option>
