@@ -192,11 +192,11 @@ public class CrewBookingService {
                     criteria.setTripType(Constants.TRIP_TYPE.ONW_WAY);
                     criteria.setFareLevel("CR");
 
-                    if (StringUtils.equals(agencyCode, "20024620"))
+                    if (StringUtils.equals(agencyCode, "90000100"))
                         middleName = "OOA"; //운항
-                    else if (StringUtils.equals(excelVO.getMiddleName(), "20024600"))
+                    else if (StringUtils.equals(excelVO.getMiddleName(), "90000200"))
                         middleName = "UFA"; //객실
-                    else if (StringUtils.equals(excelVO.getMiddleName(), "20024610"))
+                    else if (StringUtils.equals(excelVO.getMiddleName(), "90000300"))
                         middleName = "MCA"; //정비
 
                     criteria.setAgencyCode(agencyCode);
