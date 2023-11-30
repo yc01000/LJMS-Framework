@@ -94,7 +94,7 @@
                             <th>도착지</th>
                             <th>출발시간</th>
                             <th>도착시간</th>
-                            <th>Class</th>
+                            <th>Fare Class</th>
                             <th>좌석수</th>
                             <th>PNR</th>
                             <th>예약상태</th>
@@ -126,7 +126,7 @@
                 <div class="btn_wrap right">
                     <button class="btnTypeA" @click="checkPnrCancel">PNR 취소</button>&nbsp;
                     <download-excel class="btnTypeC" :fields="this.resTableHeaders" :data="this.items"
-                        worksheet="My Worksheet" name="filename.xls">엑셀
+                        worksheet="My Worksheet" :name="this.excelName" :before-generate = "beforeDownload">엑셀
                         다운로드</download-excel>
                 </div>
             </div>
@@ -147,6 +147,8 @@ import DropdownWithCheck from '@/components/DropdownWithCheck.vue';
 import { ycObject, ycUtils } from '@/components/YcUtils.js';
 //import axios from 'axios';
 import requests from '../functions/requests';
+import axios from 'axios';
+import moment from 'moment';
 
 export default {
     components: {
@@ -179,6 +181,9 @@ export default {
             isExcept: ycObject.isExcept, // (CancelBookin)승객 부분취소 팝업이 필요없는 상태 들..
             resTableHeaders: ycObject.resTableHeaders,
             loading: false, // 레이어가 새로 그려지기 때문에 vue 생성주기에 문제가 생기므로 이벤트시 코딩처리 해줘야 함.
+            excelName: '',
+            userinfo: Object,
+
         };
     },
     setup() {
@@ -191,8 +196,9 @@ export default {
             myInstance
         };
     },
-    mounted() {
-
+    async mounted() {
+        this.userinfo = await this.$getUserinfo();
+        console.log('userinfo', this.userinfo);
     },
     computed: {
         // 조회조건 AND 형태로 필터링하는 기능. 예약상태, 클래스, 승객수
@@ -224,6 +230,21 @@ export default {
         }
     },
     methods: {
+        //엑셀다운로드 버튼 처리.
+        beforeDownload() {
+            const Date1 = moment(this.selectedDate1).format('YYYYMMDD');
+            const Date2 = moment(this.selectedDate2).format('YYYYMMDD');
+            let fltNo ='';
+            let stn = '';
+            if(this.flightNumber !== ''){
+                fltNo = `_${this.flightNumber}`;
+            }
+            else{
+                stn = `_${this.stnfr.toUpperCase()}${this.stnto.toUpperCase()}`;
+            }
+            const filename = `${this.userinfo.position}_${Date1}-${Date2}${stn}${fltNo}.xls`;
+            this.excelName = filename;
+        },
         // 정규식을 사용하여 숫자만 남기고 나머지 문자 제거
         allowOnlyNumbers() {
             this.flightNumber = this.flightNumber.replace(/[^0-9]/g, "");

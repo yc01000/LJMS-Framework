@@ -7,10 +7,6 @@ import cookies from './functions/cookies';
 const app = createApp(App)
 app.use(router)
 
-console.log(app.config);
-
-app.provide('$getUserinfo',)
-
 app.config.globalProperties.$getUserinfo = async () => {
     return new Promise((resolve) => {
         if(!!app.config.globalProperties._userinfo) {
