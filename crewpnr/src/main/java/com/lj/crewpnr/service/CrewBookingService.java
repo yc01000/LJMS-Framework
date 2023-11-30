@@ -1415,7 +1415,7 @@ public class CrewBookingService {
 
         LoggerUtils.i(LOGGER, "getAgencyCode: " + new Gson().toJson(loginUser));
         codeInfoVO = codeHandler.getCodeInfo("CMM209", loginUser.getDepartment());
-        if(codeInfoVO == null) {
+        if(codeInfoVO != null) {
             agencyCode = codeInfoVO.getAddInfo1();
         }
         LoggerUtils.i(LOGGER, "getAgencyCode: " + agencyCode);
