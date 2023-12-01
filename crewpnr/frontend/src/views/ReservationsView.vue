@@ -230,18 +230,8 @@ export default {
     methods: {
         //엑셀다운로드 버튼 처리.
         beforeDownload() {
-            const Date1 = moment(this.selectedDate1).format('YYYYMMDD');
-            const Date2 = moment(this.selectedDate2).format('YYYYMMDD');
-            let fltNo ='';
-            let stn = '';
-            if(this.flightNumber !== ''){
-                fltNo = `_${this.flightNumber}`;
-            }
-            else{
-                stn = `_${this.stnfr.toUpperCase()}${this.stnto.toUpperCase()}`;
-            }
-            const filename = `${this.userinfo.position}_${Date1}-${Date2}${stn}${fltNo}.xls`;
-            this.excelName = filename;
+            const stn = `${this.stnfr.toUpperCase()}${this.stnto.toUpperCase()}`;
+            this.excelName = ycUtils.getDownloadExcelName(this.userinfo.position, this.selectedDate1, this.selectedDate2, stn, this.flightNumber);
         },
         // 정규식을 사용하여 숫자만 남기고 나머지 문자 제거
         allowOnlyNumbers() {

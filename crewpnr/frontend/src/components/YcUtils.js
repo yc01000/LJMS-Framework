@@ -1,7 +1,6 @@
 export const ycUtils = (function() {
     // attributey
     var userInfo = {};
-    
     // private function ...
     return {
         init: function (obj) {
@@ -24,6 +23,14 @@ export const ycUtils = (function() {
             const day = dateString.substring(6, 8);
             return `${year}-${month}-${day}`;
         },
+        getDownloadExcelName: function(position, date1, date2, stn, flightNumber){
+            const Date1 = window.moment(date1).format('YYYYMMDD');
+            const Date2 = window.moment(date2).format('YYYYMMDD');
+            if(flightNumber !== ''){
+                stn = `${flightNumber}`;
+            }
+            return `${position}_${Date1}-${Date2}_${stn}.xls`;
+        },
     }
 })();
 
@@ -32,7 +39,7 @@ export const ycObject = {
     resTableHeaders: { 
         No: 'id',
         항공편: 'fltnum',
-        출발일자: 'depDate',
+        출발일자: 'depDate',    
         출발지: 'stnfrCode',
         도착지: 'stntoCode',
         출발시간: 'departureDateTime',
