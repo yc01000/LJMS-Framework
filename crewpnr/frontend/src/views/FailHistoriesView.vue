@@ -81,7 +81,7 @@
         </table>
         <div class="btn_wrap right">
             <download-excel class="btnTypeC" :fields="this.failTableHeaders" :data="this.items" worksheet="My Worksheet"
-                name="filename.xls">엑셀
+            :name="this.excelName" :before-generate = "beforeDownload">엑셀
                 다운로드</download-excel>
         </div>
     </div>
@@ -112,25 +112,37 @@ export default {
             ],
             selectedDate1: ref(new Date()),
             selectedDate2: ref(new Date()),
+            stnfr: '',
+            stnto: '',
             flightNumber: "",
             classOption: '', // 선택된 옵션 값을 저장할 변수
             classOptions: ycObject.classOptions,
             paxCntOption: '', // 선택된 옵션 값을 저장할 변수
             paxCntOptions: ycObject.paxCntOptions,
             failTableHeaders: ycObject.failTableHeaders,
+            excelName: '',
+            userinfo: Object,
+
         };
     },
-    mounted() {
+    async mounted() {
+        this.userinfo = await this.$getUserinfo();
+        console.log('userinfo', this.userinfo);
     },
     methods: {
+        //엑셀다운로드 버튼 처리.
+        beforeDownload() {
+            const stn = `${this.stnfr.toUpperCase()}${this.stnto.toUpperCase()}`;
+            this.excelName = ycUtils.getDownloadExcelName(this.userinfo.position, this.selectedDate1, this.selectedDate2, stn, this.flightNumber);
+        },        
         showMessage(title, msg) {
             this.$refs.msg_box.showPopup(title, msg);
         },
         initialize() {
             this.selectedDate1 = ref(new Date());
             this.selectedDate2 = ref(new Date());
-            document.getElementById('required_stnfr').value = '';
-            document.getElementById('required_stnto').value = '';
+            this.stnfr = '';
+            this.stnto = '';
             this.flightNumber = '';
             this.classOption = '';
             this.paxCntOption = '';
