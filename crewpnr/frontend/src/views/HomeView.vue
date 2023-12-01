@@ -105,6 +105,7 @@ export default {
             this.handleFileChange(event);
         },
         handleFileChange(event) {
+            console.log(event);
             const upload = this.uploadProps.get(event.target.id.split('-')[1]);
             upload.file = (event.type === 'drop') ? event.dataTransfer.files[0] : event.target.files[0];
         },
@@ -142,6 +143,9 @@ export default {
                 else {
                     this.showMessage('Error', response.error);
                 }
+
+                document.getElementById('file-Gen').value = '';
+                document.getElementById('file-Gum').value = '';
             } catch (error) {
                 upload.file = [];
                 console.error(error);
