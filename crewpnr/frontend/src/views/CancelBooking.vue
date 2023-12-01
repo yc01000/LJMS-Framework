@@ -97,7 +97,7 @@ export default {
                 return;
             }
             // 1명만 있는 PNR은 부분취소가 아닌 PNR자체를 취소해야 함.
-            if(guestIdList.length === 1 && this.items.length === 1){
+            if(guestIdList.length === this.items.length){
                 this.$emit('cancelAll', this.Pnr.pnrnumber);
                 return;
             }
