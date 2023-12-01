@@ -164,13 +164,13 @@ public class CrewBookingService {
                     boolean fromKorea = IBSDomainUtils.isDomestic(excelVO.getBoardPoint(), excelVO.getOffPoint());
 
                     if (fromKorea) {
-                        if (StringUtils.equals(excelVO.getFareClass(), "PE")) {  //Premium Economy
+                        if (StringUtils.equals(excelVO.getCabinClass(), "PE")) {  //Premium Economy
                             fareClass = "U0";
                         } else {
                             fareClass = "U1";                  //Economy
                         }
                     } else {
-                        if (StringUtils.equals(excelVO.getFareClass(), "PE")) {
+                        if (StringUtils.equals(excelVO.getCabinClass(), "PE")) {
                             fareClass = "C";
                         } else {
                             fareClass = "U3";

@@ -50,7 +50,7 @@ public class CommonService {
                 crewPNRExcelVO.setBoardPoint(crewVO.getBoardPoint());
                 crewPNRExcelVO.setOffPoint(crewVO.getOffPoint());
                 crewPNRExcelVO.setFlightDate(crewVO.getFlightDate());
-                crewPNRExcelVO.setFareClass(crewVO.getFareClass());
+                crewPNRExcelVO.setCabinClass(crewVO.getCabinClass());
                 crewPNRExcelVO.setEmailAddress(crewVO.getEmailAddress());
                 crewPNRExcelVO.setCellNumber(crewVO.getCellNumber());
 
@@ -97,7 +97,7 @@ public class CommonService {
                 crewPNRExcelVO.setBoardPoint(crewPNRExcelGumTempList.get(i).getBoardPoint());
                 crewPNRExcelVO.setOffPoint(crewPNRExcelGumTempList.get(i).getOffPoint());
                 crewPNRExcelVO.setFlightDate(crewPNRExcelGumTempList.get(i).getFlightDate());
-                crewPNRExcelVO.setFareClass(crewPNRExcelGumTempList.get(i).getFareClass());
+                crewPNRExcelVO.setCabinClass(crewPNRExcelGumTempList.get(i).getCabinClass());
                 crewPNRExcelVO.setEmailAddress(crewPNRExcelGumTempList.get(i).getEmailAddress());
                 crewPNRExcelVO.setCellNumber(crewPNRExcelGumTempList.get(i).getCellNumber());
 
@@ -211,11 +211,11 @@ public class CommonService {
                                 crewPNRExcelVO.setFlightDate(cellValue);
                             }
                             break;
-                        case 4: // fareClass
+                        case 4: // cabinClass
                             if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "fareClass";
+                                emptyFields += "cabinClass";
                             } else {
-                                crewPNRExcelVO.setFareClass(cellValue);
+                                crewPNRExcelVO.setCabinClass(cellValue);
                             }
                             break;
                         case 5: // givenName
@@ -389,11 +389,11 @@ public class CommonService {
                                 crewPNRExcelGUMVO.setFlightDate(cellValue);
                             }
                             break;
-                        case 5: // fareClass
+                        case 5: // cabinClass
                             if (StringUtils.isBlank(cellValue)) {
-                                emptyFields += "fareClass";
+                                emptyFields += "cabinClass";
                             } else {
-                                crewPNRExcelGUMVO.setFareClass(cellValue);
+                                crewPNRExcelGUMVO.setCabinClass(cellValue);
                             }
                             break;
                         case 6: // givenName

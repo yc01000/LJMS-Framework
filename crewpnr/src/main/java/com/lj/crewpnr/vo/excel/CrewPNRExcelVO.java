@@ -8,7 +8,7 @@ public class CrewPNRExcelVO {
     private String boardPoint;
     private String offPoint;
     private String flightDate;
-    private String fareClass;
+    private String cabinClass;
     private String givenName;
     private String surName;
     private String middleName;
@@ -70,12 +70,12 @@ public class CrewPNRExcelVO {
         this.flightDate = flightDate;
     }
 
-    public String getFareClass() {
-        return fareClass;
+    public String getCabinClass() {
+        return cabinClass;
     }
 
-    public void setFareClass(String fareClass) {
-        this.fareClass = fareClass;
+    public void setCabinClass(String cabinClass) {
+        this.cabinClass = cabinClass;
     }
 
     public String getGivenName() {
