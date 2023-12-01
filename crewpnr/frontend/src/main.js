@@ -25,7 +25,6 @@ app.config.globalProperties.$getUserinfo = async () => {
             }
 
             app.config.globalProperties._userinfo = data.result;
-            window.header = this;
 
             resolve(app.config.globalProperties._userinfo);
         });
@@ -33,8 +32,6 @@ app.config.globalProperties.$getUserinfo = async () => {
 };
 
 app.mount('#app')
-
-window.app = app;
 
 var params = new URLSearchParams(location.search);
 const page = params.get('page') || '/create';

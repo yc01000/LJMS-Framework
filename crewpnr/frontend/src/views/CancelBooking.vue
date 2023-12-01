@@ -46,7 +46,6 @@
 <script>
 import MessageBox from '@/components/MessageBox.vue';
 import { ref, onMounted, getCurrentInstance } from 'vue';
-// import axios from 'axios';
 import requests from '../functions/requests';
 
 export default {
@@ -109,18 +108,6 @@ export default {
 
             this.loading = true;
             try {
-                /*const response = await axios.post('https://stg-crewpnr.jinair.com/crew/splitPnr', jsonData, {
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                this.loading = false;
-                if (response.data.result === 'SUCCESS') {
-                    this.showMessage('Inform', '처리가 완료되었습니다.', {
-                        actionName: 'closeModal',
-                        params: true,
-                    });
-                } else {
-                    this.showMessage('Error', JSON.stringify(response.data, null, 2));
-                }*/
                 const response = await requests.post('/crew/splitPnr', {
                     headers: { 'Content-Type': 'application/json' },
                     body: jsonData
@@ -150,13 +137,6 @@ export default {
         },
         async search() {
             try {
-                /*const response = await axios.get('https://stg-crewpnr.jinair.com/crew/retrieveBooking', {
-                    params: {
-                        pnrNumber: this.Pnr.pnrnumber
-                    }
-                });
-                this.items = response.data.result;
-                console.log(this.items);*/
                 const response = await requests.get(`/crew/retrieveBooking?pnrNumber=${this.Pnr.pnrnumber}`);
                 this.items = response.result;
                 console.log(this.items);

@@ -58,7 +58,7 @@ export default {
     },
     closeForce() {
       this.closeNav();
-      window.document.getElementsByTagName('body')[0].classList = '';
+      document.getElementsByTagName('body')[0].classList = '';
     },
     closeNav() {
       this.gnbCloseLeft = 0;
@@ -70,7 +70,7 @@ export default {
       this.isFixed = !this.isFixed;
       console.log(`this.isFixed: ${this.isFixed}`);
       this.scrHWidth = this.isFixed ? `${window.innerWidth - 310}px` : 'auto';
-      window.document.getElementsByTagName('body')[0].classList = this.isFixed ? 'm_fixed' : '';
+      document.getElementsByTagName('body')[0].classList = this.isFixed ? 'm_fixed' : '';
     }
   }
 };

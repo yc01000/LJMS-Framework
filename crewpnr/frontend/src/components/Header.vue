@@ -25,34 +25,7 @@
 </template>
 
 <script>
-import axios from 'axios';
-
-const DEFAULT_OPTS = {
-  endpoint: import.meta.env.VITE_BACKEND_ENDPOINT,
-  responseContentType: 'json'
-};
-
-const requests = {
-  get(url, opts) {
-    return new Promise(async (resolve, reject) => {
-      if(!url) {
-        throw new Error('url은 필수입니다.');
-      }
-      if(url.indexOf('http') !== -1) {
-        throw new Error('도메인을 제외한 경로만 입력해 주세요.');
-      }
-
-      const response = await axios.get(`${DEFAULT_OPTS.endpoint}${url}`);
-      if(response.data.error === 'not signed in') {
-        window.location.href = response.data.redirect_uri;
-        console.log('SSO로 이동합니다.');
-        reject(response.data);
-        return;
-      }
-      resolve(response.data);
-    });
-  }
-};
+import cookies from '@/functions/cookies';
 
 export default {
   setup() {
@@ -69,32 +42,13 @@ export default {
   },
 
   methods: {
-    getCookie(name) {
-      const cookies = document.cookie.split(';').map(cookie => cookie.trim());
-      for(const cookie of cookies) {
-        const [cookieName, cookieValue] = cookie.split('=');
-        if (cookieName === name) {
-          return cookieValue;
-        }
-      }
-      return null;
-    },
-
-    setCookie(name, value) {
-      const expirationDate = new Date();
-      expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-
-      document.cookie = `${name}=${value}; expires=${expirationDate.toUTCString()}`;
-    },
-
     handleAgencyCode() {
-      this.setCookie('agencyCode', this.agencyCode);
+      cookies.set('agencyCode', this.agencyCode);
     }
   },
 
   async mounted() {
     this.userinfo = await this.$getUserinfo();
-    window.header = this;
   }
 };
 </script>

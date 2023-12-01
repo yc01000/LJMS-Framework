@@ -151,21 +151,6 @@ export default {
                 paxCount: this.paxCntOption,
             };
             try {
-                // await로 데이터 가져오기
-                /*const response = await axios.post('https://stg-crewpnr.jinair.com/crew/getCreateBookingFailLog', jsonData, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (response.data.error !== undefined) {
-                    this.showMessage('Error', response.data.error);
-                    return;
-                }
-                this.items = response.data.result.map(item => ({
-                    ...item,
-                    depDate: ycUtils.krFormatDate(item.depDate) //날짜 yyyy-MM-dd로 표시
-                }));
-                console.log("response this.items:", this.items)*/
                 const response = await requests.post('/crew/getCreateBookingFailLog', {
                     headers: {'Content-Type': 'application/json'},
                     body: jsonData

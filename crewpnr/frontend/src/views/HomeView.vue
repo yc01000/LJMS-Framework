@@ -118,19 +118,7 @@ export default {
                 }
                 const formData = new FormData();
                 formData.append('file', upload.file);
-                /*const response = await axios.post(upload.url, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                console.log('response:', response);
-                upload.file = []; //파일 비우기
-                if (response.data.result == 'SUCCESS') {
-                    this.showMessage('Uploaded', '업로드 완료되었습니다.<br>PNR 생성 완료 후 EMAIL로 안내 됩니다.');
-                }
-                else {
-                    this.showMessage('Error', response.data.error);
-                }*/
+
                 const response = await requests.post(upload.url, {
                     headers: {'Content-Type': 'multipart/form-data'},
                     body: formData
