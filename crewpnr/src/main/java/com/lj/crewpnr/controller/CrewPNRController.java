@@ -1,7 +1,5 @@
 package com.lj.crewpnr.controller;
 
-import com.lj.core.integration.soap.ibs.api.booking.GetAirAvailability;
-import com.lj.crewpnr.mapper.pssdb.CrewBookingMapper;
 import com.lj.crewpnr.service.CommonService;
 import com.lj.crewpnr.service.CrewBookingService;
 import com.lj.crewpnr.vo.CrewPNRLogCriteriaVO;
@@ -12,7 +10,6 @@ import com.lj.crewpnr.vo.booking.RetrieveChangeGateVO;
 import com.lj.crewpnr.vo.excel.CrewPNRExcelVO;
 import com.lj.crewpnr.vo.excel.ExcelInfoVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.compress.utils.IOUtils;
@@ -44,14 +41,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Tag(name="crew", description="승무원 예약 API")
+@Tag(name="승무원 예약 API", description="IBS를 통한 승무원 예약/조회 기능을 제공하는 API")
 public class CrewPNRController {
     @Autowired
     private CrewBookingService crewBookingService;
-    @Autowired
-    private CrewBookingMapper crewBookingMapper;
-    @Resource(name="GetAirAvailability")
-    private GetAirAvailability airAvailability;
 
     @Autowired
     private CommonService commonService;

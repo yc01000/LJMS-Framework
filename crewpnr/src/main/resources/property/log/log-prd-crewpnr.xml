@@ -9,7 +9,7 @@
 		</encoder>
 	</appender>
 
-	<appender name="JOINTIBSAPILOG" class="com.lj.support.logback.appender.kinesis.FirehoseAppender">
+	<appender name="JOINTIBSAPILOG" class="com.lj.core.logback.appender.kinesis.FirehoseAppender">
 		<bufferSize>1000</bufferSize>
 		<threadCount>20</threadCount>
 		<endpoint>firehose.ap-northeast-2.amazonaws.com</endpoint><!-- Specify endpointOR region -->
@@ -39,7 +39,7 @@
 			}</pattern>
 		</layout>
 	</appender> -->
-	<appender name="HOM_BIZ_LOG" class="com.lj.support.logback.appender.kinesis.FirehoseAppender">
+	<appender name="HOM_BIZ_LOG" class="com.lj.core.logback.appender.kinesis.FirehoseAppender">
 		<bufferSize>1000</bufferSize>
 		<threadCount>20</threadCount>
 		<endpoint>firehose.ap-northeast-2.amazonaws.com</endpoint><!-- Specify endpointOR region -->
@@ -54,7 +54,7 @@
 	</appender>
 
 	<!-- IBS 웹서비스 로그 -->
-	<logger name="com.lj.support.integration.soap.interceptor.LogClientSoapInterceptor" additivity="false" level="info">
+	<logger name="com.lj.core.integration.soap.interceptor.LogClientSoapInterceptor" additivity="false" level="info">
 		<appender-ref ref="JOINTIBSAPILOG"/>
 	</logger>
 	

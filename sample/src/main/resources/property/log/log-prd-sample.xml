@@ -54,7 +54,7 @@
 	</appender>
 
 	<!-- IBS 웹서비스 로그 -->
-	<logger name="com.lj.support.integration.soap.interceptor.LogClientSoapInterceptor" additivity="false" level="info">
+	<logger name="com.lj.core.integration.soap.interceptor.LogClientSoapInterceptor" additivity="false" level="info">
 		<appender-ref ref="JOINTIBSAPILOG"/>
 	</logger>
 	
