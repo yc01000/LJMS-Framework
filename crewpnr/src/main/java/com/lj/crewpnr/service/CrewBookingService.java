@@ -194,9 +194,9 @@ public class CrewBookingService {
 
                     if (StringUtils.equals(agencyCode, "90000100"))
                         middleName = "OOA"; //운항
-                    else if (StringUtils.equals(excelVO.getMiddleName(), "90000200"))
+                    else if (StringUtils.equals(agencyCode, "90000200"))
                         middleName = "UFA"; //객실
-                    else if (StringUtils.equals(excelVO.getMiddleName(), "90000300"))
+                    else if (StringUtils.equals(agencyCode, "90000300"))
                         middleName = "MCA"; //정비
 
                     criteria.setAgencyCode(agencyCode);
@@ -987,7 +987,7 @@ public class CrewBookingService {
                 put("CANCELLED", "CANCELLED");
                 put("TIME_CHANGE", "TIME_CHANGE");
                 put("TIME_CHANGE_FROM_CONFIRMED", "TIME_CHANGE");
-                put("SCHEDULE_CHANGE", "SCHEDULE_CHANGE");
+                put("SCHEDULE_CHANGE", "SCHEDULE_CHANGE");/**/
                 put("WAS_CONFIRMED", "NO_OP");
                 put("WAS_WAITLISTED", "NO_OP");
             }
