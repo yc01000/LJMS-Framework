@@ -38,7 +38,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // TODO Authorization Header 또는 쿠키로부터 JWT를 읽어 들여 인가 처리
         try {
             String token = Arrays.stream(request.getCookies())
                     .filter(t -> StringUtils.equals(t.getName(), "testcookie"))

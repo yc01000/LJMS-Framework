@@ -1006,7 +1006,7 @@ public class CrewBookingService {
         };
 
         String critSegStatus = criteriaVO.getSegmentStatus();
-        String critFareClass = criteriaVO.getFareClass();
+        String critCabinClass = criteriaVO.getCabinClass();
         String critPaxCnt = criteriaVO.getPaxCount();
         int critDepStartDate = Integer.parseInt(criteriaVO.getDepStartDate().replace("-",""));
         int critDepEndDate = Integer.parseInt(criteriaVO.getDepEndDate().replace("-",""));
@@ -1055,12 +1055,11 @@ public class CrewBookingService {
                     fltSegFareClass = rsFareClass.substring(0, 2);
                 else
                     fltSegFareClass = StringUtils.equals(rsFareClass, "CID00C1") ? "C" : "U3";
-
-                if(StringUtils.isNotBlank(criteriaVO.getCabinClass())) {
-                    cabinClass = CABIN_CLASS_MAP.get(fltSegFareClass);
-                    if (!StringUtils.equalsIgnoreCase(criteriaVO.getCabinClass(), cabinClass)) {
-                        continue;
-                    }
+            }
+            if(StringUtils.isNotBlank(criteriaVO.getCabinClass())) {
+                cabinClass = CABIN_CLASS_MAP.get(fltSegFareClass);
+                if (!StringUtils.equalsIgnoreCase(critCabinClass, cabinClass)) {
+                    continue;
                 }
             }
 
