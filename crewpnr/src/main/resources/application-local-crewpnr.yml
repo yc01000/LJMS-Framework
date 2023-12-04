@@ -16,21 +16,18 @@ spring:
       password: dev_airkorea16
       driver-class-name: oracle.jdbc.driver.OracleDriver
   redis:
-    host: 10.23.5.231
+    host: 10.32.20.21
     port: 6379
   session:
     redis:
       flush-mode: on_save
 #      namespace: 'spring:session:crewpnr'
     store-type: redis
-    timeout: 30
+    timeout: 900
 
 server:
   scheme: https
   name: local-crewpnr.jinair.com
-  sevlet:
-    session:
-      timeout: 1m
 
 # SSO 클라이언트에서 정의해줘야 하는 sso 관련 properties
 sso:
@@ -61,6 +58,14 @@ logging:
             HikariPool: INFO
             PoolBase: INFO
     io:
+      lettuce:
+        core:
+          RedisChannelHandler: INFO
+          protocol:
+            CommandEncoder: INFO
+            CommandHandler: INFO
+            DefaultEndpoint: INFO
+            RedisStateMachine: INFO
       swagger:
         v3:
           core:
@@ -72,3 +77,13 @@ logging:
           autoconfigure:
             logging:
               ConditionEvaluationReportLogger: INFO
+        data:
+          redis:
+            core:
+              RedisConnectionUtils: INFO
+          convert:
+            CustomConversions: INFO
+        security:
+          web:
+            context:
+              HttpSessionSecurityContextRepository: INFO
