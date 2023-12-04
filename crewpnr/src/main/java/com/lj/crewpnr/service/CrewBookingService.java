@@ -47,6 +47,7 @@ public class CrewBookingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CrewBookingService.class);
     private static final String airlineCode = "LJ";
+    private static final String channel = "PWC";
     @Autowired
     private GetAirAvailability airAvailability;
     @Autowired
@@ -222,10 +223,6 @@ public class CrewBookingService {
                         continue;
                     }
 
-                    BookingChannelType bookingChannelType = new BookingChannelType();
-                    bookingChannelType.setChannel("PWC");
-                    bookingChannelType.setChannelType("API");
-                    bookingChannelType.setLocale("en_US");
 
                     List<FlightSegmentDetailsType> flightSegments = availabilityResult.get("flightSegments", List.class);
                     List<FareDetailsForGuestType> faresForGuest = availabilityResult.get("faresForGuest", List.class);
@@ -237,7 +234,7 @@ public class CrewBookingService {
                     createBookingRQ.setAgencyCode(agencyCode);
                     createBookingRQ.setOriginalAgentID(agencyCode);
                     createBookingRQ.setCurrentAgentID(agencyCode);
-                    createBookingRQ.setBookingChannel(bookingChannelType);
+                    createBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel(channel));
 
                     BookerDetailsType booker = new BookerDetailsType();
                     booker.setSurName("진");
@@ -397,11 +394,6 @@ public class CrewBookingService {
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
-        BookingChannelKeyType bookingChannelKeyType = new BookingChannelKeyType();
-        bookingChannelKeyType.setChannel("PWC");
-        bookingChannelKeyType.setChannelType("API");
-        bookingChannelKeyType.setLocale("en_US");
-
 
         //탑승객 수
         List<PaxCountType> paxCounts = new ArrayList<>();
@@ -423,7 +415,7 @@ public class CrewBookingService {
             AirAvailabilityRQ targetRQ = new AirAvailabilityRQ();
             targetRQ.setAirlineCode(airlineCode);
 
-            targetRQ.setBookingChannel(bookingChannelKeyType);
+            targetRQ.setBookingChannel(IBSDomainUtils.bookingChannelKey(channel));
             targetRQ.getPaxCountDetails().addAll(paxCounts);
             targetRQ.setTripType(tripType);
             targetRQ.setPointOfPurchase(criteria.getPointOfPurchase());
@@ -633,18 +625,13 @@ public class CrewBookingService {
             return ResultMapVO.simpleError("PNR null");
         }
 
-        BookingChannelType channel = new BookingChannelType();
-        channel.setChannelType("API");
-        channel.setChannel("PWC");
-        channel.setLocale("en_US");
-
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
         RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
         retrieveBookingRQ.setAirlineCode(airlineCode);
-        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel(channel));
         retrieveBookingRQ.setPnrNumber(pnrNumber);
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
         String errors = errors(retrieveBookingRS);
@@ -698,13 +685,8 @@ public class CrewBookingService {
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
-        BookingChannelType bookingChannelType = new BookingChannelType();
-        bookingChannelType.setChannel("PWC");
-        bookingChannelType.setChannelType("API");
-        bookingChannelType.setLocale("en_US");
-
         CancelBookingRQ cancelBookingRQ = new CancelBookingRQ();
-        cancelBookingRQ.setBookingChannel(bookingChannelType);
+        cancelBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel(channel));
         cancelBookingRQ.setAirlineCode(airlineCode);
         cancelBookingRQ.setPnrNumber(pnrNumber);
 
@@ -750,18 +732,13 @@ public class CrewBookingService {
     public ResultMapVO retrieveBooking(String pnrNumber){
         ResultMapVO result = new ResultMapVO();
 
-        BookingChannelType channel = new BookingChannelType();
-        channel.setChannelType("API");
-        channel.setChannel("PWC");
-        channel.setLocale("en_US");
-
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
         RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
         retrieveBookingRQ.setAirlineCode(airlineCode);
-        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel(channel));
         retrieveBookingRQ.setPnrNumber(pnrNumber);
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
 
@@ -783,12 +760,7 @@ public class CrewBookingService {
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
-        BookingChannelKeyType bookingChannelKeyType = new BookingChannelKeyType();
-        bookingChannelKeyType.setChannel("PWC");
-        bookingChannelKeyType.setChannelType("API");
-        bookingChannelKeyType.setLocale("en_US");
-
-        splitPnrRQ.setBookingChannel((bookingChannelKeyType));
+        splitPnrRQ.setBookingChannel(IBSDomainUtils.bookingChannelKey(channel));
         splitPnrRQ.setAirlineCode(airlineCode);
         splitPnrRQ.setPNRNumber(retrieveChangeGateVO.getPnrNumber());
         splitPnrRQ.getPaxIds().addAll(retrieveChangeGateVO.getGuestId());
@@ -804,7 +776,7 @@ public class CrewBookingService {
         // 탑승객 분리와 동시에 Child PNR 취소 - CancelBooking
         CancelBookingRQ cancelBookingRQ = new CancelBookingRQ();
         cancelBookingRQ.setAirlineCode(airlineCode);
-        cancelBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel("PWC"));
+        cancelBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel(channel));
         cancelBookingRQ.setPnrNumber(splitPnrRS.getChildPNR());
         CancelBookingRS cancelBookingRS = cancelBooking.request(cancelBookingRQ, property);
         errors = errors(cancelBookingRS);
@@ -1184,18 +1156,13 @@ public class CrewBookingService {
 </soap:Envelope>
          */
 
-        BookingChannelType channel = new BookingChannelType();
-        channel.setChannelType("API");
-        channel.setChannel("PWC");
-        channel.setLocale("en_US");
-
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
         RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
         retrieveBookingRQ.setAirlineCode(airlineCode);
-        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel(channel));
         retrieveBookingRQ.setPnrNumber(pnrNumber);
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
 
@@ -1310,18 +1277,13 @@ public class CrewBookingService {
 </soap:Envelope>
          */
 
-        BookingChannelType channel = new BookingChannelType();
-        channel.setChannelType("API");
-        channel.setChannel("PWC");
-        channel.setLocale("en_US");
-
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
         RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
         retrieveBookingRQ.setAirlineCode(airlineCode);
-        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel(channel));
         retrieveBookingRQ.setPnrNumber(pnrNumber);
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
 
@@ -1354,18 +1316,13 @@ public class CrewBookingService {
     }
 
     public ResultMapVO acceptWaitlisted(String pnrNumber) {
-        BookingChannelType channel = new BookingChannelType();
-        channel.setChannelType("API");
-        channel.setChannel("PWC");
-        channel.setLocale("en_US");
-
         IbsSoapProperty property = new IbsSoapProperty("TEST");
         property.setUsername("jinair");
         property.setPassword("jinatiflyapi");
 
         RetrieveBookingRQ retrieveBookingRQ = new RetrieveBookingRQ();
         retrieveBookingRQ.setAirlineCode(airlineCode);
-        retrieveBookingRQ.setBookingChannel(channel);
+        retrieveBookingRQ.setBookingChannel(IBSDomainUtils.bookingChannel(channel));
         retrieveBookingRQ.setPnrNumber(pnrNumber);
         RetrieveBookingRS retrieveBookingRS = retrieveBooking.request(retrieveBookingRQ, property);
 
