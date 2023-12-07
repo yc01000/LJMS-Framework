@@ -147,7 +147,6 @@ import DropdownWithCheck from '@/components/DropdownWithCheck.vue';
 import { ycObject, ycUtils } from '@/components/YcUtils.js';
 import requests from '../functions/requests';
 import axios from 'axios';
-import moment from 'moment';
 
 export default {
     components: {

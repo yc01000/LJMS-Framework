@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const ycUtils = (function() {
     // attributey
     var userInfo = {};
@@ -13,19 +15,16 @@ export const ycUtils = (function() {
                 if(element.value === ''){
                     result = false;
                     callback == null ? '': callback(element);//Invalid Field return fn(element)
-                }
+                } //else가 없으므로, 하나라도 걸리면 false 리턴
             });
             return result;
         },
         krFormatDate: function (dateString) {
-            const year = dateString.substring(0, 4);
-            const month = dateString.substring(4, 6);
-            const day = dateString.substring(6, 8);
-            return `${year}-${month}-${day}`;
+            return moment(dateString).format('YYYY-MM-DD');
         },
         getDownloadExcelName: function(position, date1, date2, stn, flightNumber){
-            const Date1 = window.moment(date1).format('YYYYMMDD');
-            const Date2 = window.moment(date2).format('YYYYMMDD');
+            const Date1 = moment(date1).format('YYYYMMDD');
+            const Date2 = moment(date2).format('YYYYMMDD');
             if(flightNumber !== ''){
                 stn = `${flightNumber}`;
             }
