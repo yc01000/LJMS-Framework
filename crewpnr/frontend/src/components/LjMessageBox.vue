@@ -23,6 +23,7 @@ export default {
       msg: '',
       action: [], //actionName, params로 등록하고 후속 액션을 사용할 수도 있음.
       isConfirmMsg: false, // alert: false, confirm: true
+      showPopup,
     };
   },
   props: {

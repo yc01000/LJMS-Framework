@@ -2,6 +2,7 @@
     <div>
         <div v-if="loading" class="loading-overlay" tabindex="-1"><img src="/images/bo/loading.gif" tabindex="-1" /></div>
         <div v-else>
+            <h2>{{ userinfo.userName }}</h2>
             <div class="header_util">
                 <p class="sub_title">예약 조회</p>
                 <ul class="cont">
@@ -10,8 +11,9 @@
                     <li class="select"><a href="#" class="ico_bul">예약 조회</a></li>
                 </ul>
             </div>
-            <span style="font-size: 14px;">* 출발일자, 출도착지 혹은 항공편명 중 1개 조건을 필수 선택 후 조회해 주세요.<br>
-            * 조회한 기간 내 예약된 PNR이 100개 이상인 경우, 일부 PNR은 LIST에 표출되지 않습니다. 조회 기간을 줄인 후 다시 조회해 주세요.</span><br><br>
+            <button @click="print">콘솔보기</button>
+            <span style="font-size: 14px;">* 조회한 기간 내 예약된 PNR이 기준을 초과한 경우, 일부 PNR은 LIST에 표출되지 않습니다.<br>
+                * 조회 기간을 줄인 후 다시 조회해 주세요. (탑승예정 예약 100건, 취소/탑승완료 예약 200건)</span><br><br>
             <div>
                 <div class="filter search_tb">
                     <table>
@@ -146,7 +148,8 @@ import MessageBox from '@/components/MessageBox.vue';
 import DropdownWithCheck from '@/components/DropdownWithCheck.vue';
 import { ycObject, ycUtils } from '@/components/YcUtils.js';
 import requests from '../functions/requests';
-import axios from 'axios';
+// import useUserinfo from '@/composables/auth-composition';
+import { useAuthStore } from '@/store/auth';
 
 export default {
     components: {
@@ -180,23 +183,24 @@ export default {
             resTableHeaders: ycObject.resTableHeaders,
             loading: false, // 레이어가 새로 그려지기 때문에 vue 생성주기에 문제가 생기므로 이벤트시 코딩처리 해줘야 함.
             excelName: '',
-            userinfo: Object,
-
         };
     },
     setup() {
+        // const { userinfo } = useUserinfo();
+        const auth = useAuthStore();
+        
         // onPostMessageBox에서 파라미터 값을 메소드명으로 찾아서 바로 호출하기 위해 myIntance사용..
         const myInstance = ref(null);
         onMounted(() => {
             myInstance.value = getCurrentInstance();
         });
         return {
-            myInstance
+            userinfo: auth.getUserinfo,
+            myInstance,
         };
     },
-    async mounted() {
-        this.userinfo = await this.$getUserinfo();
-        console.log('userinfo', this.userinfo);
+    mounted() {
+
     },
     computed: {
         // 조회조건 AND 형태로 필터링하는 기능. 예약상태, 클래스, 승객수
@@ -228,8 +232,12 @@ export default {
         }
     },
     methods: {
+        print() {
+            ycUtils.printCount(1);
+        },
         //엑셀다운로드 버튼 처리.
         beforeDownload() {
+            console.log(this.userinfo);
             const stn = `${this.stnfr.toUpperCase()}${this.stnto.toUpperCase()}`;
             this.excelName = ycUtils.getDownloadExcelName(this.userinfo.position, this.selectedDate1, this.selectedDate2, stn, this.flightNumber);
         },
@@ -382,10 +390,18 @@ export default {
 
                 if (response.error !== undefined) {
                     this.items = [];
-                    this.showMessage('Error', response.error);
+                    if(response.error.includes('BKG_RETRIEVE_15'))
+                    {
+                        this.showMessage('Error', '출발 기간은 최대 90일까지 조회 가능합니다.');
+                    }
+                    else{
+                        this.showMessage('Error', response.error);
+                    }
                 } else {
-                    if (response.result.length >= 100) {
-                        const errMsg = '결과 값이 100건을 초과하였습니다.<br>검색조건을 수정하여 조회 하십시요.';
+                    const countInactive = response.result.filter(item => item.inactive === true).length;
+                    const countActive = response.result.filter(item => item.inactive === false).length;
+                    if (countInactive >= 200 || countActive >= 100) {
+                        const errMsg = '결과값이 기준 건수를 초과하였습니다.<br>검색 조건을 수정하여 조회 하십시오.<br>(탑승예정 예약 100건, 취소/탑승완료 예약 200건)';
                         this.showMessage('Warning', errMsg);
                     }
                     this.items = this.reformTable(response.result);
@@ -399,7 +415,7 @@ export default {
         reformTable(output) {
             // "pnrStatus"와 "segmentStatus" 제거
             return output.map((row, index) => {
-                const { pnrStatus, segmentStatus, ...rest } = row;
+                const { pnrStatus, segmentStatus, inactive, ...rest } = row;
                 return {
                     id: index + 1, // 순번을 1부터 시작하려면 index + 1을 사용
                     ...rest,

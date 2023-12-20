@@ -1,37 +1,20 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import requests from './functions/requests';
-import cookies from './functions/cookies';
+// main.js
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router/index';
+import { createPinia } from 'pinia'
+import { useAuthStore } from './store/auth';
 
-const app = createApp(App)
-app.use(router)
+const app = createApp(App);
+const pinia = createPinia();
+app.use(router);
+app.use(pinia);
 
-app.config.globalProperties.$getUserinfo = async () => {
-    return new Promise((resolve) => {
-        if(!!app.config.globalProperties._userinfo) {
-            return resolve(app.config.globalProperties._userinfo);
-        }
+// 'useStore' 함수를 사용하여 스토어 초기화
+const auth = useAuthStore();
+auth.setUserinfo(); //store.dispatch('auth/setUserinfo');//로그인 이후 처리이지만, sso를 사용하므로 시작시 가져옴.
 
-        const data = requests.get('/user/userinfo').then((data) => {
-            let userinfo = data.result;
-            if(!userinfo) {
-              return;
-            }
-
-            userinfo.superuser = userinfo.department.indexOf('14') === 0 || userinfo.department.indexOf('31') === 0 || userinfo.department === 'LJ994';
-            if(true) {
-                userinfo.agencyCode = cookies.get('agencyCode') || '';
-            }
-
-            app.config.globalProperties._userinfo = data.result;
-
-            resolve(app.config.globalProperties._userinfo);
-        });
-    });
-};
-
-app.mount('#app')
+app.mount('#app');
 
 var params = new URLSearchParams(location.search);
 const page = params.get('page') || '/create';

@@ -7,9 +7,13 @@
             <li class="select"><a href="#" class="ico_bul">예약 생성</a></li>
         </ul>
     </div>
+    <div>
+        <button @click="showMessageBox">Show Message Box</button>
+    </div>
     <div class="tab02_wrap" ref="tabWrap">
         <ul class="tab_ul02">
-            <li v-for="(tab, index) in tabs" :key="index" :class="{ 'on': activeTab === index }" class="tab_li02" style="cursor: pointer;">
+            <li v-for="(tab, index) in tabs" :key="index" :class="{ 'on': activeTab === index }" class="tab_li02"
+                style="cursor: pointer;">
                 <a @click="changeTab(index)">{{ tab }}</a>
             </li>
         </ul>
@@ -22,7 +26,8 @@
                         <span id="text-Gen" style="border:0px; font-size: large; padding: 15px;">
                             <p>-- 또는 --</p><br>
                             {{ this.uploadProps.get('Gen').file.length === 0 ? '일반 예약 파일을 여기로 드래그해 주세요.' :
-                                this.uploadProps.get('Gen').file.name }}</span>
+                                this.uploadProps.get('Gen').file.name }}
+                        </span>
                     </div>
                 </div>
                 <div class="btn_wrap right">
@@ -41,7 +46,8 @@
                         <span id="text-Gum" style="border:0px; font-size: large; padding: 15px;">
                             <p>-- 또는 --</p><br>
                             {{ this.uploadProps.get('Gum').file.length === 0 ? '괌 예약 파일을 여기로 드래그해 주세요.' :
-                                this.uploadProps.get('Gum').file.name }}</span>
+                                this.uploadProps.get('Gum').file.name }}
+                        </span>
                     </div>
                 </div>
                 <div class="btn_wrap right">
@@ -74,8 +80,8 @@ export default {
             GenUploadFile: null,
             GumUploadFile: null,
             uploadProps: new Map([
-                ['Gen', {url: '/crew/createBookings', file: []}],
-                ['Gum', {url: '/crew/createBookingsForGum', file: []}],
+                ['Gen', { url: '/crew/createBookings', file: [] }],
+                ['Gum', { url: '/crew/createBookingsForGum', file: [] }],
             ]),
             tabs: ["일반 PNR 요청", "GUM PNR 요청"], // 탭의 제목들
             activeTab: 0, // 초기에 활성화된 탭의 인덱스
@@ -120,7 +126,7 @@ export default {
                 formData.append('file', upload.file);
 
                 const response = await requests.post(upload.url, {
-                    headers: {'Content-Type': 'multipart/form-data'},
+                    headers: { 'Content-Type': 'multipart/form-data' },
                     body: formData
                 });
                 console.log('response:', response);
@@ -152,5 +158,4 @@ export default {
     text-align: center !important;
     padding: 40px;
 
-}
-</style>
+}</style>

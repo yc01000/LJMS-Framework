@@ -70,7 +70,15 @@
         <table class="table_style">
             <thead>
                 <tr>
-                    <th v-for="(key, value) in failTableHeaders" :key="key">{{ value }}</th>
+                    <!-- <th v-for="(key, value) in failTableHeaders" :key="key">{{ value }}</th> -->
+                    <th style="width: 10%">생성일자</th>
+                    <th style="width: 10%">출발일자</th>
+                    <th style="width: 8%">항공편</th>
+                    <th style="width: 8%">출발지</th>
+                    <th style="width: 8%">도착지</th>
+                    <th style="width: 8%">Fare Class</th>
+                    <th style="width: 8%">좌석수</th>
+                    <th style="width: 40%">ErrorValue</th>
                 </tr>
             </thead>
             <tbody>
@@ -96,8 +104,10 @@ import { ref } from 'vue';
 import JsonExcel from "vue-json-excel3";
 import MessageBox from '@/components/MessageBox.vue';
 import { ycObject, ycUtils } from '@/components/YcUtils.js';
-//import axios from 'axios';
 import requests from '../functions/requests';
+import useUserinfo from '@/composables/auth-composition';
+import { failHistory_Search } from '@/api/reservation';
+
 
 export default {
     components: {
@@ -121,13 +131,13 @@ export default {
             paxCntOptions: ycObject.paxCntOptions,
             failTableHeaders: ycObject.failTableHeaders,
             excelName: '',
-            userinfo: Object,
-
         };
     },
-    async mounted() {
-        this.userinfo = await this.$getUserinfo();
-        console.log('userinfo', this.userinfo);
+    setup() {
+        const { userinfo } = useUserinfo();
+        return {
+            userinfo,
+        };
     },
     methods: {
         //엑셀다운로드 버튼 처리.
@@ -163,10 +173,8 @@ export default {
                 paxCount: this.paxCntOption,
             };
             try {
-                const response = await requests.post('/crew/getCreateBookingFailLog', {
-                    headers: {'Content-Type': 'application/json'},
-                    body: jsonData
-                });
+                const response = await failHistory_Search(jsonData);
+                console.log(response);
                 if (!!response.error) {
                     this.showMessage('Error', response.error);
                     return;

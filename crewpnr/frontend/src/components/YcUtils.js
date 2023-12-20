@@ -1,12 +1,12 @@
 import moment from "moment";
 
 export const ycUtils = (function() {
-    // attributey
-    var userInfo = {};
+    let cnt = 0;
     // private function ...
     return {
-        init: function (obj) {
-            this.userInfo = obj.userInfo;
+        printCount: function(plus){
+            cnt += plus;
+            console.log('ycUtil cnt', cnt);
         },
         fieldValidation: function (doc, fieldnames, callback) {
             let result = true;
@@ -15,7 +15,7 @@ export const ycUtils = (function() {
                 if(element.value === ''){
                     result = false;
                     callback == null ? '': callback(element);//Invalid Field return fn(element)
-                } //else가 없으므로, 하나라도 걸리면 false 리턴
+                }
             });
             return result;
         },
